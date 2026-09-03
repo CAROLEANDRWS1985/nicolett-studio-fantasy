@@ -14,9 +14,9 @@ El sistema centraliza y gestiona las entregas de proyectos académicos, permitie
 3. Reduce la fricción en la _colaboración grupal_ mediante una estructura clara y automatizada.
 
 ## 2. Tecnologías utilizadas
--- **Lenguajes:** Por definir
--- **Frameworks:** Por definir
--- **Base de datos:** Por definir
+-  **Lenguajes:** Por definir
+-  **Frameworks:** Por definir
+-  **Base de datos:** Por definir
 
 ## 3. Instrucciones para ejecutar el proyecto localmente
 1. Clona este repositorio:
@@ -27,7 +27,7 @@ El sistema centraliza y gestiona las entregas de proyectos académicos, permitie
    ```bash
    Proximamente
    
-> [!**IMPORTANT**]
+> [!IMPORTANT]
 > Este apartado será _actualizado_ para el desarrollo de la solución en la **Fase 2**.
 
 ## 4. Integrantes
@@ -49,5 +49,5 @@ Diseñado bajo un esquema cliente-servidor, utilizando una interfaz de usuario i
   3. Los datos actualizados son devueltos al cliente en **formato JSON** para reflejar los cambios instantáneamente.
 - **Diagrama:**
 
- > [!**IMPORTANT**]
+ > [!IMPORTANT]
 > Este apartado será _actualizado_ para el desarrollo de la solución en la **Fase 2**.
