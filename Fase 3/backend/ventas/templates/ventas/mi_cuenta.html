@@ -1,0 +1,504 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Mi cuenta · Nicolett</title>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,500;0,600;1,500;1,600&family=Playfair+Display:ital,wght@0,600;0,700;1,500&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+:root{--cafe:#2a1f1b;--crema:#faf7f4;--beige:#f3ede6;--linea:#e6ddd2;--dorado:#b8895a;--rosa:#c9a79a;--gris:#7a6a5d;--negro:#121010;--oro:#D4B26A;--panel:#1c1814;--texto-claro:#eadcc0}
+*{box-sizing:border-box}
+body{margin:0;background:var(--crema);color:var(--cafe);font-family:'Inter',sans-serif}
+
+/* ---------- Barra superior (negro con letras doradas) ---------- */
+.top{background:var(--negro);color:var(--oro);display:flex;justify-content:space-between;align-items:center;padding:16px 28px;border-bottom:1px solid rgba(212,178,106,.45)}
+.top b{font-family:'Playfair Display',serif;font-size:20px;color:var(--oro)}
+.top small{letter-spacing:.2em;font-size:10px;margin-left:6px;color:var(--oro)}
+.top .der{display:flex;align-items:center;gap:20px;font-size:12px;color:var(--oro)}
+.top a{color:var(--oro);text-decoration:none;font-size:11px;letter-spacing:.15em}
+.top a:hover{color:#fff}
+.campana{position:relative;background:none;border:0;cursor:pointer;color:var(--oro);padding:0;display:flex}
+.campana .n{position:absolute;top:-6px;right:-8px;background:var(--oro);color:var(--negro);border-radius:10px;font-size:9px;padding:1px 5px;font-weight:600}
+
+/* ---------- Menú lateral (negro con letras doradas) ---------- */
+.wrap{display:flex;min-height:calc(100vh - 56px)}
+.side{width:230px;border-right:1px solid rgba(212,178,106,.35);padding:24px 0;background:var(--negro);flex-shrink:0}
+.fidel{background:var(--negro);color:var(--oro);margin:0 18px 22px;padding:16px 14px;border:1px solid var(--oro)}
+.fidel small{display:block;font-size:9px;letter-spacing:.2em;text-transform:uppercase;color:var(--oro);margin-bottom:6px}
+.fidel b{font-family:'Playfair Display',serif;font-size:17px;display:block;margin-bottom:12px;color:var(--oro)}
+.barra{height:4px;background:#3a3128;margin-bottom:6px}
+.barra i{display:block;height:100%;background:var(--oro)}
+.fidel .pct{font-size:9px;color:var(--oro)}
+.side button{display:block;width:100%;text-align:left;background:none;border:0;padding:12px 24px;font:inherit;font-size:13px;color:var(--oro);cursor:pointer}
+.side button:hover{background:rgba(212,178,106,.12)}
+.side button.on{background:rgba(212,178,106,.18);color:var(--oro);font-weight:600;border-left:3px solid var(--oro)}
+.side .agendar{margin:0 18px 14px;width:calc(100% - 36px);background:var(--negro);color:var(--oro);border:1px solid var(--oro);text-align:center;font-size:11px;letter-spacing:.15em;text-transform:uppercase;padding:12px}
+.side .agendar:hover{background:rgba(212,178,106,.12)}
+.side .agendar.on{border-left:1px solid var(--oro);font-weight:600;background:var(--oro);color:var(--negro)}
+.badge{background:var(--oro);color:var(--negro);border-radius:10px;font-size:10px;padding:1px 7px;margin-left:6px;font-weight:600}
+
+/* ---------- Contenido y títulos (letra delicada, dorado) ---------- */
+main{flex:1;max-width:1000px;margin:0 auto;padding:36px 28px}
+h1{font-family:'Cormorant Garamond',serif;font-weight:500;font-size:44px;letter-spacing:.5px;margin:0 0 4px;color:var(--dorado)}
+h1 em{color:var(--rosa)}
+.tit{font-family:'Cormorant Garamond',serif;font-weight:600;font-size:26px;margin:0 0 14px;color:var(--dorado)}
+.sub{color:var(--gris);font-size:13px;margin-bottom:24px}
+
+/* ---------- Filtros de categorías (negro con dorado) ---------- */
+.tools{display:flex;gap:10px;flex-wrap:wrap;margin-bottom:24px}
+.chip{padding:10px 16px;border:1px solid var(--oro);background:var(--negro);font-size:11px;letter-spacing:.12em;text-transform:uppercase;cursor:pointer;color:var(--oro)}
+.chip:hover{background:rgba(212,178,106,.12)}
+.chip.on{background:var(--oro);color:var(--negro);border-color:var(--oro);font-weight:600}
+
+/* ---------- Tarjetas de servicios ---------- */
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(250px,1fr));gap:18px}
+.card{background:#fff;border:1px solid var(--linea);display:flex;flex-direction:column}
+.thumb{height:240px;background:linear-gradient(135deg,#e9dccd,#d8c1a8);position:relative}
+.card:nth-child(4n+2) .thumb{background:linear-gradient(135deg,#e8d5d0,#c9a79a)}
+.card:nth-child(4n+3) .thumb{background:linear-gradient(135deg,#d9cdbf,#b8a58e)}
+.card:nth-child(4n+4) .thumb{background:linear-gradient(135deg,#efe3d3,#d6b98f)}
+/* Cuando la tarjeta tiene foto: se ve completa, sobre fondo beige */
+.card .thumb.con-foto{background-color:var(--beige);background-repeat:no-repeat;background-position:center;background-size:contain}
+.tag{position:absolute;top:10px;left:10px;background:var(--crema);padding:4px 8px;font-size:9px;letter-spacing:.15em;text-transform:uppercase;color:var(--gris)}
+.body{padding:16px;display:flex;flex-direction:column;flex:1}
+.body h3{font-family:'Playfair Display',serif;font-size:17px;margin:0 0 6px}
+.body p{font-size:12px;color:var(--gris);margin:0 0 12px;flex:1}
+.pie{display:flex;justify-content:space-between;align-items:flex-end}
+.precio{font-family:'Playfair Display',serif;font-size:20px;font-weight:700}
+.dur{font-size:11px;color:var(--gris);margin-bottom:2px}
+.btn-card{background:var(--cafe);color:#fff;border:0;padding:10px 16px;font-size:10px;font-weight:600;letter-spacing:.14em;text-transform:uppercase;cursor:pointer}
+.btn-card:hover{background:var(--dorado)}
+
+/* ---------- Paneles, tablas y botones (negro con dorado) ---------- */
+.vacio,.panel,.item,.cita-card,.pol,.nivel-box{background:var(--negro);color:var(--oro);border:1px solid var(--oro)}
+.vacio,.panel{padding:24px}
+.panel{max-width:560px}
+.panel p{margin:0 0 14px}
+.panel label{display:block;margin:14px 0 4px;font-size:11px;letter-spacing:.1em;text-transform:uppercase;color:var(--oro)}
+.panel input,.panel select,.panel textarea{width:100%;padding:10px 12px;border:1px solid rgba(212,178,106,.5);background:var(--panel);color:#f1e6cf;font:inherit}
+.panel input:disabled{color:#a99876}
+
+table{width:100%;border-collapse:collapse;background:var(--negro);border:1px solid var(--oro)}
+th{background:var(--panel);text-align:left;padding:12px 14px;font-size:11px;letter-spacing:.1em;text-transform:uppercase;color:var(--oro);border-bottom:1px solid var(--oro)}
+td{padding:13px 14px;border-top:1px solid rgba(212,178,106,.25);font-size:14px;color:var(--texto-claro)}
+
+.btn{display:inline-block;background:var(--oro);color:var(--negro);border:0;padding:11px 20px;font-size:11px;font-weight:600;letter-spacing:.12em;text-transform:uppercase;cursor:pointer}
+.btn:hover{background:#e6c985}
+.btn:disabled{opacity:.45;cursor:not-allowed}
+.btn-del{background:transparent;color:#ef8b7e;border:1px solid #c9a79a}
+.btn-del:hover{background:#a33;color:#fff}
+.item{display:flex;justify-content:space-between;align-items:center;gap:12px;padding:14px 18px;margin-bottom:10px;max-width:700px}
+
+/* ---------- Mensajes para la clienta (negro con letras doradas) ---------- */
+.msg{background:var(--negro);color:var(--oro);border:1px solid var(--oro);border-radius:12px;padding:22px 28px;margin:0 0 22px;font-family:'Playfair Display',Georgia,serif;font-size:17px;line-height:1.7;letter-spacing:.3px;text-align:center;box-shadow:0 4px 14px rgba(0,0,0,.25)}
+.msg.error{border-color:var(--rosa);color:#E7B9AE}
+.sec{display:none}.sec.on{display:block}
+
+/* ---------- Beneficios ---------- */
+.nivel-box{padding:24px;max-width:560px;margin-bottom:18px}
+.nivel-box small{font-size:10px;letter-spacing:.2em;text-transform:uppercase;color:var(--oro)}
+.nivel-box b{display:block;font-family:'Cormorant Garamond',serif;font-weight:600;font-size:32px;margin:6px 0 14px;color:var(--oro)}
+.nivel-box .barra{height:6px;background:#3a3128}
+.nivel-box .barra i{background:var(--oro)}
+.nivel-box .pct{margin-top:8px;font-size:12px;color:var(--texto-claro)}
+
+/* ---------- Cancelar cita: política y tarjetas ---------- */
+.pol{border-left:3px solid var(--oro);padding:20px 24px;max-width:700px;margin-bottom:28px}
+.pol .t{display:block;font-size:13px;font-weight:600;margin-bottom:12px;color:var(--oro)}
+.pol .f{display:flex;justify-content:space-between;gap:12px;font-size:12px;color:#d9c9a8;padding:5px 0}
+.pol .ok{color:#8fc27a;font-weight:600}
+.pol .med{color:#e3b8ab;font-weight:600}
+.pol .no{color:#ef8b7e;font-weight:600}
+.pol .abono{border-top:1px solid rgba(212,178,106,.35);margin-top:10px;padding-top:12px;font-size:12px;line-height:1.5;color:var(--texto-claro)}
+.pol .abono b{color:var(--oro)}
+.cita-card{display:flex;justify-content:space-between;align-items:center;gap:12px;padding:18px 20px;margin-bottom:12px;max-width:700px}
+.cita-card .info{display:flex;align-items:center;gap:12px;font-family:'Cormorant Garamond',serif;font-weight:600;font-size:20px}
+.cita-card .dot{width:14px;height:14px;border:1px solid var(--oro);border-radius:50%;flex-shrink:0}
+
+/* ---------- Agendar cita: calendario y formulario ---------- */
+.agenda{display:grid;grid-template-columns:minmax(280px,340px) 1fr;gap:24px;max-width:820px}
+.cal{background:var(--negro);border:1px solid var(--oro);padding:20px;align-self:start}
+.cal-top{display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;color:var(--oro);font-family:'Cormorant Garamond',serif;font-weight:600;font-size:26px}
+.cal-top button{background:transparent;border:1px solid var(--oro);color:var(--oro);width:32px;height:32px;cursor:pointer;font-size:16px}
+.cal-top button:hover{background:rgba(212,178,106,.15)}
+#cal-grid{display:grid;grid-template-columns:repeat(7,1fr);gap:4px;text-align:center}
+#cal-grid b{font-size:10px;color:var(--oro);font-weight:600;padding:4px 0}
+#cal-grid button{border:0;background:var(--panel);color:var(--oro);padding:9px 0;cursor:pointer;font:inherit;font-size:13px}
+#cal-grid button:hover:not(:disabled){background:rgba(212,178,106,.25)}
+#cal-grid button:disabled{background:none;color:#5a4d3a;cursor:not-allowed}
+#cal-grid button.sel{background:var(--oro);color:var(--negro);font-weight:600}
+
+.agenda .datos{background:var(--negro);border:1px solid var(--oro);padding:22px}
+.agenda label{display:block;margin:0 0 6px;font-size:11px;letter-spacing:.1em;text-transform:uppercase;color:var(--oro)}
+.agenda select,.agenda input[type=text]{width:100%;padding:10px 12px;border:1px solid rgba(212,178,106,.5);background:var(--panel);color:#f1e6cf;font:inherit}
+.agenda option{background:var(--panel);color:#f1e6cf}
+.abono-info{font-size:12px;color:var(--texto-claro);margin-top:8px;background:var(--panel);border-left:3px solid var(--oro);padding:8px 12px;display:none}
+.abono-info.on{display:block}
+.horas{display:grid;grid-template-columns:repeat(auto-fill,minmax(84px,1fr));gap:8px;margin:10px 0 18px}
+.horas .sub{color:#d9c9a8;margin-bottom:0;grid-column:1 / -1}
+.horas button{padding:10px 0;border:1px solid rgba(212,178,106,.5);background:var(--panel);color:var(--oro);cursor:pointer;font:inherit;font-size:13px}
+.horas button:hover:not(:disabled){background:rgba(212,178,106,.25)}
+.horas button:disabled{background:none;color:#5a4d3a;border-color:rgba(212,178,106,.15);text-decoration:line-through;cursor:not-allowed}
+.horas button.sel{background:var(--oro);color:var(--negro);border-color:var(--oro);font-weight:600}
+#f-ok{width:100%;padding:14px}
+
+@media(max-width:700px){.side{display:none}.agenda{grid-template-columns:1fr}h1{font-size:36px}}
+</style>
+</head>
+<body>
+<div class="top">
+  <div><b>Nicolett</b><small>STUDIO</small></div>
+  <div class="der">
+    <span>Hola, <b style="font-family:Inter;font-size:12px">{{ nombre }}</b></span>
+    <button class="campana" type="button" onclick="abrir('notificaciones');history.replaceState(null,'','#notificaciones')" title="Notificaciones">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M12 22a2.5 2.5 0 0 0 2.45-2h-4.9A2.5 2.5 0 0 0 12 22zm7-6V11a7 7 0 0 0-5.5-6.84V3.5a1.5 1.5 0 0 0-3 0v.66A7 7 0 0 0 5 11v5l-2 2v1h18v-1l-2-2z"/></svg>
+      {% if citas %}<span class="n">{{ citas|length }}</span>{% endif %}
+    </button>
+    <a href="/admin-logout/">SALIR</a>
+  </div>
+</div>
+
+<div class="wrap">
+<nav class="side">
+  <div class="fidel">
+    <small>Nivel de fidelidad</small>
+    <b>{{ nivel }}</b>
+    <div class="barra"><i style="width:{{ progreso }}%"></i></div>
+    <div class="pct">{% if siguiente %}{{ progreso }}% para {{ siguiente }}{% else %}Nivel máximo alcanzado{% endif %}</div>
+  </div>
+
+  <button class="agendar" data-sec="agendar">Agendar cita</button>
+  <button class="on" data-sec="inicio">Inicio</button>
+  <button data-sec="beneficios">Mis beneficios</button>
+  <button data-sec="historial">Historial</button>
+  <button data-sec="notificaciones">Notificaciones{% if citas %}<span class="badge">{{ citas|length }}</span>{% endif %}</button>
+  <button data-sec="perfil">Mi perfil</button>
+  <button data-sec="cancelar">Cancelar cita</button>
+</nav>
+
+<main>
+{% for m in messages %}<div class="msg {{ m.tags }}">{{ m }}</div>{% endfor %}
+
+<section id="inicio" class="sec on">
+  <h1>Hola, <em>{{ nombre }}</em></h1>
+  <div class="sub">Explora nuestros servicios y agenda cuando quieras.</div>
+  <div class="tools">
+    <button class="chip on" data-cat="">Todos</button>
+    {% for c in categorias %}<button class="chip" data-cat="{{ c }}">{{ c }}</button>{% endfor %}
+  </div>
+  <div class="grid">
+    {% for s in servicios %}
+    <article class="card" data-cat="{{ s.categoria }}" data-nombre="{{ s.nombre|lower }}">
+      <div class="thumb"><span class="tag">{{ s.categoria }}</span></div>
+      <div class="body">
+        <h3>{{ s.nombre }}</h3>
+        <p>{{ s.descripcion|default:"Consulta los detalles en el salón." }}</p>
+        <div class="pie">
+          <div><div class="dur">{{ s.duracion }} min</div><div class="precio">{{ s.precio }}</div></div>
+          <button type="button" class="btn-card" onclick="agendarServicio('{{ s.pk }}')">Agendar</button>
+        </div>
+      </div>
+    </article>
+    {% endfor %}
+  </div>
+</section>
+
+<section id="beneficios" class="sec">
+  <h1>Mis beneficios</h1>
+  <div class="sub">Tu nivel sube con cada cita que realizas.</div>
+  <div class="nivel-box">
+    <small>Tu nivel actual</small>
+    <b>{{ nivel }}</b>
+    <div class="barra"><i style="width:{{ progreso }}%"></i></div>
+    <div class="pct">
+      {% if siguiente %}Te faltan {{ faltan }} cita{{ faltan|pluralize }} para llegar a {{ siguiente }}.{% else %}Llegaste al nivel máximo. ¡Gracias por preferirnos!{% endif %}
+    </div>
+  </div>
+  <div class="vacio">Citas registradas: <b>{{ n_citas }}</b></div>
+</section>
+
+<section id="agendar" class="sec">
+  <h1>Agendar cita</h1>
+  <div class="sub">Escribe tu nombre y elige el servicio, el día y la hora.</div>
+  {% if tiene_cliente %}
+  <form method="post" action="{% url 'agendar_cita' %}" class="agenda">
+    {% csrf_token %}
+    <div class="cal">
+      <div class="cal-top"><button type="button" id="cal-prev">‹</button><span id="cal-titulo"></span><button type="button" id="cal-next">›</button></div>
+      <div id="cal-grid"></div>
+    </div>
+    <div class="datos">
+      <label>Nombre</label>
+      <input type="text" name="nombre" id="f-nombre" value="{{ nombre }}" required>
+      <label style="margin-top:18px">Servicio</label>
+      <select name="servicio" id="f-servicio" required>
+        <option value="">Elige un servicio...</option>
+        {% for s in servicios %}<option value="{{ s.pk }}">{{ s.nombre }} · {{ s.precio }}</option>{% endfor %}
+      </select>
+      <div id="abono-info" class="abono-info"></div>
+      <label style="margin-top:18px">Hora</label>
+      <div class="horas" id="horas"><span class="sub">Elige primero un día en el calendario.</span></div>
+      <input type="hidden" name="fecha" id="f-fecha">
+      <input type="hidden" name="hora" id="f-hora">
+      <button class="btn" type="submit" id="f-ok" disabled>Confirmar cita</button>
+    </div>
+  </form>
+  {% else %}
+  <div class="vacio">Tu usuario aún no está vinculado a una ficha de clienta. Pídele a la dueña que use tu mismo correo en tu ficha.</div>
+  {% endif %}
+</section>
+
+<section id="historial" class="sec">
+  <h1>Historial</h1>
+  <div class="sub">Todo lo que te has hecho con nosotras.</div>
+  {% if filas %}
+  <table>
+    <thead><tr>{% for h in encabezados %}<th>{{ h }}</th>{% endfor %}</tr></thead>
+    <tbody>{% for f in filas %}<tr>{% for v in f %}<td>{{ v|default_if_none:"—" }}</td>{% endfor %}</tr>{% endfor %}</tbody>
+  </table>
+  {% elif not tiene_cliente %}
+  <div class="vacio">Tu usuario aún no está vinculado a una ficha de clienta. Pídele a la dueña que use tu mismo correo en tu ficha.</div>
+  {% else %}
+  <div class="vacio">Aún no tienes citas registradas.</div>
+  {% endif %}
+</section>
+
+<section id="notificaciones" class="sec">
+  <h1>Notificaciones</h1>
+  <div class="sub">Tus avisos y recordatorios.</div>
+  {% for c in citas %}<div class="item"><span>Tienes una cita agendada: {{ c.texto }}</span></div>
+  {% empty %}<div class="vacio">No tienes notificaciones por ahora.</div>{% endfor %}
+</section>
+
+<section id="perfil" class="sec">
+  <h1>Mi perfil</h1>
+  <div class="sub">Tus datos de contacto.</div>
+  {% if cliente %}
+  <form method="post" action="{% url 'editar_perfil' %}" class="panel">
+    {% csrf_token %}
+    <label>Nombre</label><input name="nombre" value="{{ cliente.nombre }}">
+    <label>Teléfono</label><input name="telefono" value="{{ cliente.telefono|default_if_none:'' }}">
+    <label>Correo</label><input value="{{ cliente.email|default_if_none:'' }}" disabled>
+    <p style="margin-top:18px"><button class="btn" type="submit">Guardar cambios</button></p>
+  </form>
+  {% else %}
+  <div class="vacio">Tu usuario aún no está vinculado a una ficha de clienta.</div>
+  {% endif %}
+</section>
+
+<section id="cancelar" class="sec">
+  <h1>Cancelar cita</h1>
+  <div class="sub">Revisa nuestra política de cancelación y reembolso antes de cancelar.</div>
+
+  <div class="pol">
+    <span class="t">Política de cancelación y reembolso</span>
+    <div class="f"><span>Más de 48 horas antes</span><span class="ok">Reembolso total (100%)</span></div>
+    <div class="f"><span>Entre 24 y 48 horas antes</span><span class="med">Reembolso parcial (50%)</span></div>
+    <div class="f"><span>Menos de 24 horas antes</span><span class="no">Sin reembolso</span></div>
+    <div class="abono"><b>Abono para reservar:</b> una vez reservada tu hora, debes abonar un monto fijo según el servicio (por ejemplo, corte de pelo: $5.000) por transferencia para dejarla confirmada. Al elegir tu servicio en "Agendar cita" verás cuánto debes abonar.</div>
+  </div>
+
+  <h2 class="tit">Selecciona la cita a cancelar</h2>
+  {% for c in citas %}
+  <div class="cita-card">
+    <div class="info"><span class="dot"></span><span>{{ c.texto }}</span></div>
+    <form method="post" action="{% url 'cancelar_cita' c.pk %}" onsubmit="return confirm('¿Cancelar esta cita?')">
+      {% csrf_token %}<button class="btn btn-del" type="submit">Cancelar</button>
+    </form>
+  </div>
+  {% empty %}<div class="vacio">No tienes citas para cancelar.</div>{% endfor %}
+</section>
+</main>
+</div>
+
+<!-- Todo el JavaScript va AL FINAL, cuando la página ya existe -->
+<script>
+// ---------- Menú ----------
+function abrir(id){
+  if(!document.getElementById(id)) id='inicio';
+  document.querySelectorAll('.side button').forEach(x=>x.classList.toggle('on',x.dataset.sec===id));
+  document.querySelectorAll('.sec').forEach(x=>x.classList.toggle('on',x.id===id));
+}
+document.querySelectorAll('.side button').forEach(b=>b.onclick=()=>{abrir(b.dataset.sec);history.replaceState(null,'','#'+b.dataset.sec)});
+if(location.hash) abrir(location.hash.slice(1));
+
+// ---------- Botón "Agendar" de cada tarjeta: abre agendar con el servicio elegido ----------
+function agendarServicio(pk){
+  abrir('agendar');
+  history.replaceState(null,'','#agendar');
+  const s=document.getElementById('f-servicio');
+  if(s){ s.value=pk; s.dispatchEvent(new Event('change')); }
+  window.scrollTo(0,0);
+}
+
+// ---------- Categorías del inicio ----------
+let cat='';
+function filtrar(){
+  document.querySelectorAll('.card').forEach(c=>{
+    c.style.display=(!cat||c.dataset.cat===cat)?'':'none';
+  });
+}
+document.querySelectorAll('.chip').forEach(b=>b.onclick=()=>{
+  document.querySelectorAll('.chip').forEach(x=>x.classList.remove('on'));
+  b.classList.add('on');cat=b.dataset.cat;filtrar();
+});
+
+// ---------- Fotos de los servicios ----------
+// Para agregar una foto nueva: guárdala en ventas\static\servicios\
+// y agrega una línea aquí con el nombre del servicio en minúscula.
+const FOTOS={
+  // ----- Cabello -----
+  'alisado bioplástica richée':"{% static 'servicios/bioplastica.jpg' %}",
+  'babylights':"{% static 'servicios/babylights.jpg' %}",
+  'balayage':"{% static 'servicios/balayage.jpg' %}",
+  'baño de color / matización':"{% static 'servicios/bano_de_color.jpg' %}",
+  'coloración completa':"{% static 'servicios/coloracion_completa.jpg' %}",
+  'coloración de raíz + baño de color':"{% static 'servicios/coloracion_raiz_bano_color.jpg' %}",
+  'coloración de raíz + secado':"{% static 'servicios/coloracion_raiz_secado.jpg' %}",
+  'contorno / face framing':"{% static 'servicios/contorno_face_framing.jpg' %}",
+  'iluminaciones parciales':"{% static 'servicios/iluminaciones_parciales.jpg' %}",
+  'mechas':"{% static 'servicios/mechas.jpg' %}",
+  'microlights / macrolights':"{% static 'servicios/microlights_macrolights.jpg' %}",
+
+  // ----- Depilación femenina -----
+  'axila':"{% static 'servicios/depilacion_axila.jpg' %}",
+  'bozo':"{% static 'servicios/depilacion_bozo.jpg' %}",
+  'brazo completo':"{% static 'servicios/depilacion_brazo_completo.jpg' %}",
+  'cejas':"{% static 'servicios/depilacion_cejas.jpg' %}",
+  'media pierna':"{% static 'servicios/depilacion_media_pierna.jpg' %}",
+  'medio brazo':"{% static 'servicios/depilacion_medio_brazo.jpg' %}",
+  'medio rebaje':"{% static 'servicios/depilacion_medio_rebaje.jpg' %}",
+  'mentón':"{% static 'servicios/depilacion_menton.jpg' %}",
+  'nariz':"{% static 'servicios/depilacion_nariz.jpg' %}",
+  'oídos':"{% static 'servicios/depilacion_oidos.jpg' %}",
+  'pierna completa':"{% static 'servicios/depilacion_pierna_completa.jpg' %}",
+  'rebaje completo':"{% static 'servicios/depilacion_rebaje_completo.jpg' %}",
+  'rostro completo':"{% static 'servicios/depilacion_rostro_completo.jpg' %}",
+
+  // ----- Depilación masculina -----
+  'hombre: abdomen':"{% static 'servicios/depilacion_masculina_abdomen.jpg' %}",
+  'hombre: cejas':"{% static 'servicios/depilacion_cejas_hombre.jpg' %}",
+  'hombre: axilas':"{% static 'servicios/depilacion_masculina_axila.jpg' %}",
+  'hombre: brazos completos':"{% static 'servicios/depilacion_masculina_brazo_completo.jpg' %}",
+  'hombre: espalda completa':"{% static 'servicios/depilacion_masculina_espalda.jpg' %}",
+  'hombre: hombros':"{% static 'servicios/depilacion_masculina_hombros.jpg' %}",
+  'hombre: media pierna':"{% static 'servicios/depilacion_masculina_mediapierna.jpg' %}",
+  'hombre: nariz':"{% static 'servicios/depilacion_masculina_nariz.jpg' %}",
+  'hombre: orejas':"{% static 'servicios/depilacion_masculina_orejas.jpg' %}",
+  'hombre: pecho':"{% static 'servicios/depilacion_masculina_pecho.jpg' %}",
+  'hombre: pecho + abdomen':"{% static 'servicios/depilacion_masculina_pecho_abdomen.jpg' %}",
+  'hombre: piernas completas':"{% static 'servicios/depilacion_masculina_piernas_completas.jpg' %}",
+
+  // ----- Pestañas y cejas -----
+  'extensiones de pestañas rímel o clásica':"{% static 'servicios/extensiones_clasicas.jpg' %}",
+  'extensión de pestañas tecnológicas':"{% static 'servicios/extensiones_tecnologicas.jpg' %}",
+  'laminado de cejas':"{% static 'servicios/laminadodecejas.jpg' %}",
+  'lifting coreano':"{% static 'servicios/liftingcoreano.jpg' %}",
+  'volumen tecnológico':"{% static 'servicios/volumentecnologico.jpg' %}",
+
+  // ----- Podología -----
+  'podología + tratamiento para hongos':"{% static 'servicios/podologia_tratamiento_para_hongos.jpg' %}",
+  'podología clínica básica':"{% static 'servicios/podologiaclinicabasica.jpg' %}",
+  'tratamiento de uña encarnada':"{% static 'servicios/tratamientodeuñaencarnada.jpg' %}",
+
+  // ----- Tratamientos -----
+  'hidratación profunda':"{% static 'servicios/Hidratacionprofunda.jpg' %}",
+  'nanobotox':"{% static 'servicios/Nanobotox.jpg' %}",
+  'nutrición con ampolla capilar':"{% static 'servicios/Nutricion_con_ampolla_capilar.jpg' %}",
+  'reconstrucción capilar':"{% static 'servicios/Recontruccioncapilar.jpg' %}",
+
+  // ----- Uñas -----
+  'extensión poly gel':"{% static 'servicios/ExtensionPolyGel.jpg' %}",
+  'francesa o degradé (adicional)':"{% static 'servicios/Francesa o degrade(adicional).jpg' %}",
+  'kapping poly gel':"{% static 'servicios/Kapping PolyGel.jpg' %}",
+  'limpieza de pies':"{% static 'servicios/limpiezadepies.jpg' %}",
+  'limpieza de pies + spa':"{% static 'servicios/limpiezadepiesmasspa.jpg' %}",
+  'manicura permanente':"{% static 'servicios/MnicuraPermanente.jpg' %}",
+  'manicura ruber':"{% static 'servicios/ManicuraRuber.jpg' %}",
+  'pedicure spa premium':"{% static 'servicios/PedicureSpaPremiun.jpg' %}",
+  'pedicure con esmaltado':"{% static 'servicios/Pedicureconesmaltado.jpg' %}",
+  'soft gel':"{% static 'servicios/SoftGel.jpg' %}",
+  'diseños aparte (adicional)': "{% static 'servicios/Diseñosaparte(adicional).jpg' %}",
+
+};
+
+
+const limpiar=s=>s.normalize('NFD').replace(/[\u0300-\u036f]/g,'').replace(/\s+/g,' ').trim().toLowerCase();
+const FOTOS_LIMPIAS={};
+Object.keys(FOTOS).forEach(k=>{FOTOS_LIMPIAS[limpiar(k)]=FOTOS[k];});
+document.querySelectorAll('.card').forEach(c=>{
+  const f=FOTOS_LIMPIAS[limpiar(c.dataset.nombre)];
+  if(!f) return;
+  const t=c.querySelector('.thumb');
+  t.classList.add('con-foto');
+  t.style.backgroundImage="url('"+f+"')";
+});
+
+// ---------- Calendario de agendar ----------
+(function(){
+  const g=document.getElementById('cal-grid'); if(!g) return;
+  const meses=['Enero','Febrero','Marzo','Abril','Mayo','Junio','Julio','Agosto','Septiembre','Octubre','Noviembre','Diciembre'];
+  const hoy=new Date(); hoy.setHours(0,0,0,0);
+  let vista=new Date(hoy.getFullYear(),hoy.getMonth(),1), sel=null;
+  const $=id=>document.getElementById(id);
+  const iso=d=>d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0');
+
+  function validar(){
+    $('f-ok').disabled=!($('f-nombre').value.trim()&&$('f-servicio').value&&$('f-fecha').value&&$('f-hora').value);
+  }
+  function dibujar(){
+    $('cal-titulo').textContent=meses[vista.getMonth()]+' '+vista.getFullYear();
+    g.innerHTML='';
+    ['L','M','M','J','V','S','D'].forEach(x=>g.insertAdjacentHTML('beforeend','<b>'+x+'</b>'));
+    const off=(vista.getDay()+6)%7;
+    for(let i=0;i<off;i++) g.insertAdjacentHTML('beforeend','<span></span>');
+    const n=new Date(vista.getFullYear(),vista.getMonth()+1,0).getDate();
+    for(let d=1;d<=n;d++){
+      const f=new Date(vista.getFullYear(),vista.getMonth(),d);
+      const b=document.createElement('button'); b.type='button'; b.textContent=d;
+      if(f<hoy||f.getDay()===0) b.disabled=true;   // pasado y domingos
+      if(sel===iso(f)) b.className='sel';
+      b.onclick=()=>{sel=iso(f);$('f-fecha').value=sel;$('f-hora').value='';dibujar();cargar();validar();};
+      g.appendChild(b);
+    }
+  }
+  function cargar(){
+    const box=$('horas');
+    box.innerHTML='<span class="sub">Cargando...</span>';
+    fetch('/mi-cuenta/horarios/?fecha='+sel+'&servicio='+$('f-servicio').value).then(r=>r.json()).then(j=>{
+      box.innerHTML='';
+      if(!j.slots||!j.slots.length){box.innerHTML='<span class="sub">Sin horarios para ese día.</span>';return;}
+      j.slots.forEach(s=>{
+        const b=document.createElement('button'); b.type='button'; b.textContent=s.hora; b.disabled=!s.libre;
+        b.onclick=()=>{$('f-hora').value=s.hora;box.querySelectorAll('button').forEach(x=>x.classList.remove('sel'));b.classList.add('sel');validar();};
+        box.appendChild(b);
+      });
+    }).catch(()=>{box.innerHTML='<span class="sub">No se pudieron cargar las horas. Intenta de nuevo.</span>';});
+  }
+  $('cal-prev').onclick=()=>{vista=new Date(vista.getFullYear(),vista.getMonth()-1,1);dibujar();};
+  $('cal-next').onclick=()=>{vista=new Date(vista.getFullYear(),vista.getMonth()+1,1);dibujar();};
+
+  // ---- ABONOS POR SERVICIO (cámbialos aquí) ----
+  // Escribe el nombre del servicio en minúscula (o una parte del nombre) y el monto en pesos.
+  const ABONOS={
+    'corte de pelo':5000
+    // 'otro servicio':8000,
+  };
+  function mostrarAbono(){
+    const box=$('abono-info'), op=$('f-servicio').selectedOptions[0];
+    if(!op||!op.value){box.className='abono-info';box.textContent='';return;}
+    const nombre=op.textContent.split(' · ')[0].trim().toLowerCase();
+    const k=Object.keys(ABONOS).find(x=>nombre.includes(x));
+    box.className='abono-info on';
+    box.textContent=k
+      ? 'Abono para reservar: $'+ABONOS[k].toLocaleString('es-CL')+' por transferencia, una vez reservada tu hora.'
+      : 'El abono para este servicio se te informará al reservar tu hora.';
+  }
+  $('f-servicio').onchange=()=>{$('f-hora').value='';mostrarAbono();if(sel)cargar();validar();};
+  $('f-nombre').oninput=validar;
+  dibujar();
+})();
+</script>
+</body>
+</html>

@@ -1,0 +1,28 @@
+{% extends "ventas/base_admin.html" %}
+{% block content %}
+<h1>{{ titulo }}</h1>
+{% for m in messages %}<p class="msg">{{ m }}</p>{% endfor %}
+<p><a class="btn" href="{% url 'crud_editar' clave %}">+ Nuevo</a></p>
+
+<table>
+  <thead>
+    <tr>{% for h in encabezados %}<th>{{ h }}</th>{% endfor %}<th></th></tr>
+  </thead>
+  <tbody>
+    {% for f in filas %}
+    <tr>
+      {% for v in f.valores %}<td>{{ v|default_if_none:"—" }}</td>{% endfor %}
+      <td>
+        <a class="btn btn-sec" href="{% url 'crud_editar' clave f.obj.pk %}">Editar</a>
+        <form method="post" action="{% url 'crud_borrar' clave f.obj.pk %}" style="display:inline"
+              onsubmit="return confirm('¿Eliminar?')">
+          {% csrf_token %}<button class="btn btn-del">Eliminar</button>
+        </form>
+      </td>
+    </tr>
+    {% empty %}
+    <tr><td colspan="99">Aún no hay registros. Presiona "+ Nuevo".</td></tr>
+    {% endfor %}
+  </tbody>
+</table>
+{% endblock %}

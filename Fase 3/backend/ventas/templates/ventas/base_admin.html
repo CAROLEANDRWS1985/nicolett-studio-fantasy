@@ -1,0 +1,152 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>{% block title %}Panel Administrativo{% endblock %} · Nicolett</title>
+    <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,500;0,600;1,500;1,600&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="{% static 'css/admin_panel.css' %}">
+    <style>
+    /* ===== Nicolett: negro con dorado (igual que el portal de las clientas) ===== */
+    :root{--negro:#121010;--oro:#D4B26A;--panel:#1c1814;--texto-claro:#eadcc0;--dorado:#b8895a;--crema:#faf7f4}
+    body{font-family:'Inter',sans-serif!important}
+
+    /* ---------- Menú izquierdo ---------- */
+    .sidebar{background:var(--negro)!important;border-right:1px solid rgba(212,178,106,.35)!important}
+    .sidebar-brand h1{font-family:'Cormorant Garamond',serif!important;font-weight:600!important;font-size:34px!important;color:var(--oro)!important}
+    .sidebar-brand span{color:var(--oro)!important;letter-spacing:.2em}
+    .sidebar-nav a{color:var(--oro)!important;text-decoration:none;display:block;border-left:3px solid transparent}
+    .sidebar-nav a:hover{background:rgba(212,178,106,.12)!important;border-left-color:var(--oro)}
+    .sidebar-footer p,.session-label,.session-email{color:var(--oro)!important}
+    .sidebar-footer a{color:var(--oro)!important;border:1px solid var(--oro);padding:8px 14px;display:inline-block;text-decoration:none;font-size:11px;letter-spacing:.15em}
+    .sidebar-footer a:hover{background:var(--oro);color:var(--negro)!important}
+
+    /* ---------- Zona principal ---------- */
+    .main{background:var(--crema)!important}
+    .main h1,.main h2,.main h3{font-family:'Cormorant Garamond',serif!important;font-weight:500!important;color:var(--dorado)!important}
+    .main h1{font-size:44px!important;letter-spacing:.5px}
+    .main p{color:#7a6a5d}
+
+    /* ---------- Tablas ---------- */
+    .main table{background:var(--negro)!important;border:1px solid var(--oro)!important;border-collapse:collapse;width:100%}
+    .main th{background:var(--panel)!important;color:var(--oro)!important;border-bottom:1px solid var(--oro)!important}
+    .main td{background:transparent!important;color:var(--texto-claro)!important;border-top:1px solid rgba(212,178,106,.25)!important}
+
+    /* Todas las filas negras (anula el fondo crema de las filas alternas) */
+    .main table tbody tr,
+    .main table tbody tr:nth-child(odd),
+    .main table tbody tr:nth-child(even){background:var(--negro)!important}
+    .main table tbody tr:nth-child(even){background:#17130f!important}
+    .main table tbody tr:nth-child(even) td,
+    .main table tbody tr:nth-child(odd) td{background:transparent!important;color:var(--texto-claro)!important}
+    .main table tbody tr:hover,
+    .main table tbody tr:hover td{background:rgba(212,178,106,.12)!important}
+
+    /* ---------- Botones y enlaces (+ Nuevo, Editar, Eliminar, Guardar) ---------- */
+    .main a,.main button,.main .btn,.main input[type=submit],.main input[type=button]{
+        background:var(--negro)!important;color:var(--oro)!important;border:1px solid var(--oro)!important;
+        padding:8px 16px;text-decoration:none;cursor:pointer;display:inline-block}
+    .main a:hover,.main button:hover,.main .btn:hover,.main input[type=submit]:hover{
+        background:var(--oro)!important;color:var(--negro)!important}
+    .main button:disabled{opacity:.45;cursor:not-allowed}
+
+    /* ---------- Cajas de texto, buscador y formularios ---------- */
+    .main input:not([type=submit]):not([type=button]):not([type=checkbox]):not([type=radio]),
+    .main select,.main textarea{background:var(--panel)!important;color:#f1e6cf!important;border:1px solid rgba(212,178,106,.5)!important;padding:10px 12px}
+    .main input::placeholder,.main textarea::placeholder{color:#a99876!important}
+    .main label{color:var(--dorado)!important}
+    .main form{color:var(--texto-claro)}
+
+    /* ---------- Buscador al lado de "+ Nuevo" ---------- */
+    .barra-buscar{display:flex;align-items:center;gap:12px;flex-wrap:wrap;margin:0 0 20px}
+    .barra-buscar input{width:340px;max-width:100%;font:inherit;font-size:14px}
+    .sin-resultados{display:none;padding:18px 20px;background:var(--negro);border:1px solid var(--oro);border-top:0;color:var(--oro)}
+    </style>
+</head>
+<body class="{% block body_class %}{% endblock %}">
+    <div class="admin-layout">
+
+        <aside class="sidebar">
+            <div>
+                <div class="sidebar-brand">
+                    <h1>Nicolett</h1>
+                    <span>ADMIN PANEL</span>
+                </div>
+             <nav class="sidebar-nav">
+    <a href="{% url 'usuarios_lista' %}">Usuarios</a>
+    <a href="{% url 'crud_lista' 'clientes' %}">Clientas</a>
+    <a href="{% url 'crud_lista' 'citas' %}">Citas</a>
+    <a href="{% url 'crud_lista' 'productos' %}">Productos</a>
+    <a class="nav-precios" href="{% url 'admin_precios_promos' %}">Precios</a>
+    <a href="{% url 'crud_lista' 'inventario' %}">Inventario</a>
+    <a href="{% url 'cancelar_emergencia' %}">Cancelar por emergencia</a>
+</nav>
+            </div>
+            <div class="sidebar-footer">
+                <p class="session-label">Sesión activa</p>
+                <p class="session-email">admin@nicolettstudio.cl</p>
+                <a href="/admin-logout/">CERRAR SESIÓN</a>
+            </div>
+        </aside>
+
+        <main class="main">
+            {% block content %}{% endblock %}
+        </main>
+
+    </div>
+
+<script>
+// ---------- Buscador al lado de "+ Nuevo" (Usuarios, Clientas, Citas, Productos, Inventario) ----------
+(function(){
+  var ruta = location.pathname.toLowerCase();
+  var textos = [
+    ['usuarios',   'Buscar usuario...'],
+    ['clientes',   'Buscar cliente...'],
+    ['citas',      'Buscar clienta...'],
+    ['productos',  'Buscar producto...'],
+    ['inventario', 'Buscar producto...']
+  ];
+  var ph = null;
+  textos.forEach(function(t){ if(!ph && ruta.indexOf(t[0]) !== -1) ph = t[1]; });
+  if(!ph) return;                       // otras pantallas (Precios, etc.) quedan igual
+
+  var tabla = document.querySelector('.main table');
+  if(!tabla) return;
+
+  // Crea la barra: "+ Nuevo" y la caja de búsqueda una al lado de la otra
+  var nuevo = Array.prototype.slice.call(document.querySelectorAll('.main a, .main button'))
+    .filter(function(e){ return /nuevo/i.test(e.textContent); })[0];
+  var barra = document.createElement('div');
+  barra.className = 'barra-buscar';
+  if(nuevo){ nuevo.parentNode.insertBefore(barra, nuevo); barra.appendChild(nuevo); }
+  else { tabla.parentNode.insertBefore(barra, tabla); }
+
+  var caja = document.createElement('input');
+  caja.type = 'search';
+  caja.placeholder = ph;
+  caja.setAttribute('aria-label', ph);
+  barra.appendChild(caja);
+
+  var vacio = document.createElement('div');
+  vacio.className = 'sin-resultados';
+  vacio.textContent = 'No se encontraron resultados.';
+  tabla.parentNode.insertBefore(vacio, tabla.nextSibling);
+
+  function limpiar(s){ return s.normalize('NFD').replace(/[\u0300-\u036f]/g,'').toLowerCase().trim(); }
+
+  caja.addEventListener('input', function(){
+    var q = limpiar(caja.value);
+    var filas = tabla.querySelectorAll('tbody tr');
+    var visibles = 0;
+    filas.forEach(function(f){
+      var ok = !q || limpiar(f.textContent).indexOf(q) !== -1;
+      f.style.display = ok ? '' : 'none';
+      if(ok) visibles++;
+    });
+    vacio.style.display = (q && visibles === 0) ? 'block' : 'none';
+  });
+})();
+</script>
+</body>
+</html>

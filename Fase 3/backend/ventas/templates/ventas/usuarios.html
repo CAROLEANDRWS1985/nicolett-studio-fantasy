@@ -1,0 +1,81 @@
+{% extends "ventas/base_admin.html" %}
+{% block title %}Usuarios{% endblock %}
+{% block body_class %}page-usuarios{% endblock %}
+
+{% block content %}
+<div class="main-header">
+    <div>
+        <h2>Usuarios registradas</h2>
+    </div>
+</div>
+
+<div class="kpi-grid" style="grid-template-columns: repeat(4, 1fr);">
+    <div class="kpi-card">
+        <div class="label">Clientas registradas</div>
+        <div class="value">284</div>
+    </div>
+    <div class="kpi-card">
+        <div class="label">Clientas Oro</div>
+        <div class="value">67</div>
+        <div class="delta" style="color:var(--text-gray)">23.6% del total</div>
+    </div>
+    <div class="kpi-card">
+        <div class="label">Clientas Platino</div>
+        <div class="value">14</div>
+        <div class="delta" style="color:var(--text-gray)">4.9% del total</div>
+    </div>
+    <div class="kpi-card">
+        <div class="label">Nuevas este mes</div>
+        <div class="value">12</div>
+        <div class="delta" style="color:var(--text-gray)">vs 9 mes anterior</div>
+    </div>
+</div>
+
+<div class="panel">
+    <div class="panel-header">
+        Clientas recientes
+        <span style="color:var(--text-gray); font-weight:400;">5 de 284</span>
+    </div>
+    <table>
+        <thead>
+            <tr>
+                <th>Nombre</th>
+                <th>Email</th>
+                <th>Nivel</th>
+                <th>Visitas</th>
+                <th>Último servicio</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td><strong>Valentina González</strong></td>
+                <td>valentina@ejemplo.cl</td>
+                <td><span class="badge-oro">Oro ✦</span></td>
+                <td>18</td>
+                <td>Ago 2026</td>
+            </tr>
+            <tr>
+                <td><strong>Isidora Moya</strong></td>
+                <td>isidora.m@gmail.com</td>
+                <td><span class="badge-platino">Platino ◆</span></td>
+                <td>34</td>
+                <td>Ago 2026</td>
+            </tr>
+            <tr>
+                <td><strong>Camila Soto</strong></td>
+                <td>csoto@correo.com</td>
+                <td><span class="badge-plata">Plata</span></td>
+                <td>7</td>
+                <td>Jul 2026</td>
+            </tr>
+            <tr>
+                <td><strong>Sofía Leiva</strong></td>
+                <td>sofia.l@hotmail.com</td>
+                <td><span class="badge-oro">Oro ✦</span></td>
+                <td>22</td>
+                <td>Jul 2026</td>
+            </tr>
+        </tbody>
+    </table>
+</div>
+{% endblock %}

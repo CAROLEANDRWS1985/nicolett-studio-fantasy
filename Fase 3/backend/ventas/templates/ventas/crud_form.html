@@ -1,0 +1,14 @@
+{% extends "ventas/base_admin.html" %}
+{% block content %}
+<h1>{% if obj %}Editar{% else %}Nuevo{% endif %} · {{ titulo }}</h1>
+<div class="card">
+  <form method="post" enctype="multipart/form-data">
+    {% csrf_token %}
+    {{ form.as_p }}
+    <p style="margin-top:20px">
+      <button class="btn" type="submit">Guardar</button>
+      <a class="btn btn-sec" href="{% url 'crud_lista' clave %}">Cancelar</a>
+    </p>
+  </form>
+</div>
+{% endblock %}

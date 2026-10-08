@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Crear cuenta — Nicolett Studio</title>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@500;600&family=Poppins:wght@300;400;500&display=swap" rel="stylesheet">
+    <style>
+        * { box-sizing: border-box; }
+        body {
+            font-family: 'Poppins', sans-serif;
+            background-color: #f2ece3;
+            margin: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            padding: 20px;
+        }
+        .register-container {
+            background-color: #fdfbf8;
+            width: 100%;
+            max-width: 420px;
+            padding: 45px 40px;
+            border-radius: 4px;
+            box-shadow: 0 8px 30px rgba(0,0,0,0.06);
+            border: 1px solid #e6dcc9;
+        }
+        .brand {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+        .brand h1 {
+            font-family: 'Playfair Display', serif;
+            font-size: 26px;
+            letter-spacing: 3px;
+            margin: 0;
+            color: #1a1a1a;
+        }
+        .brand span {
+            display: block;
+            font-size: 11px;
+            letter-spacing: 3px;
+            color: #b08d57;
+            margin-top: 4px;
+        }
+        .brand hr {
+            width: 60px;
+            border: none;
+            border-top: 1px solid #b08d57;
+            margin: 14px auto 0;
+        }
+        h2.title {
+            text-align: center;
+            font-family: 'Playfair Display', serif;
+            font-weight: 500;
+            font-size: 20px;
+            color: #333;
+            margin-bottom: 25px;
+        }
+        #register-form label {
+            font-size: 13px;
+            font-weight: 500;
+            margin-bottom: 6px;
+            color: #555;
+            display: block;
+        }
+        #register-form input[type="text"],
+        #register-form input[type="email"],
+        #register-form input[type="password"] {
+            width: 100%;
+            padding: 10px;
+            margin-bottom: 18px;
+            border: 1px solid #ddd0ba;
+            border-radius: 3px;
+            font-size: 15px;
+            font-family: 'Poppins', sans-serif;
+            background-color: #fff;
+        }
+        #register-form input:focus {
+            outline: none;
+            border-color: #b08d57;
+        }
+        #register-form button[type="submit"] {
+            width: 100%;
+            background-color: #1a1a1a;
+            color: #fff;
+            border: none;
+            padding: 12px;
+            border-radius: 3px;
+            font-size: 13px;
+            letter-spacing: 1px;
+            text-transform: uppercase;
+            cursor: pointer;
+            transition: background-color 0.3s;
+            margin-top: 6px;
+        }
+        #register-form button[type="submit"]:hover {
+            background-color: #b08d57;
+        }
+        #register-messages {
+            margin-top: 16px;
+            padding: 10px;
+            background-color: #f6f1e8;
+            border-radius: 3px;
+            color: #6b5b3d;
+            text-align: center;
+            font-size: 14px;
+        }
+        .login-link {
+            text-align: center;
+            margin-top: 22px;
+            color: #777;
+            font-size: 13px;
+        }
+        .login-link a {
+            color: #b08d57;
+            text-decoration: none;
+            font-weight: 500;
+        }
+        .login-link a:hover {
+            text-decoration: underline;
+        }
+    </style>
+</head>
+<body>
+    <div class="register-container">
+        <div class="brand">
+            <h1>NICOLETT</h1>
+            <span>STUDIO FANTASY</span>
+            <hr>
+        </div>
+
+        <h2 class="title">Crear cuenta</h2>
+
+        {% if messages %}
+            <div id="register-messages">
+                {% for message in messages %}
+                    <p style="margin:0;">{{ message }}</p>
+                {% endfor %}
+            </div>
+        {% endif %}
+
+        <form id="register-form" method="post">
+            {% csrf_token %}
+            {{ form.as_p }}
+            <button type="submit">Registrarme</button>
+        </form>
+
+        <p class="login-link">
+            ¿Ya tienes cuenta? <a href="{% url 'login' %}">Inicia sesión</a>
+        </p>
+    </div>
+</body>
+</html>

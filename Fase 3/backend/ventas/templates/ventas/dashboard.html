@@ -1,0 +1,67 @@
+{% extends "ventas/base_admin.html" %}
+{% block title %}Dashboard{% endblock %}
+{% block body_class %}page-dashboard{% endblock %}
+
+{% block content %}
+<div class="main-header">
+    <div>
+        <h2>Dashboard</h2>
+        <p>Resumen general · {{ hoy|date:"d \d\e F, Y" }}</p>
+    </div>
+</div>
+
+<div class="kpi-grid">
+    <div class="kpi-card">
+        <div class="label">Ingresos del mes</div>
+        <div class="value">{{ ingresos_mes_fmt }}</div>
+    </div>
+    <div class="kpi-card">
+        <div class="label">Citas este mes</div>
+        <div class="value">{{ citas_mes_count }}</div>
+    </div>
+    <div class="kpi-card">
+        <div class="label">Clientas activas</div>
+        <div class="value">{{ clientas_activas }}</div>
+    </div>
+    <div class="kpi-card">
+        <div class="label">Tasa cancelación</div>
+        <div class="value">{{ tasa_cancelacion }}%</div>
+    </div>
+</div>
+
+<div class="panel-grid">
+    <div class="panel">
+        <div class="panel-header">
+            Citas de hoy
+            <a href="{% url 'admin_citas_hoy' %}">Ver todas</a>
+        </div>
+        <table>
+            <tbody>
+                {% for cita in citas_hoy %}
+                <tr>
+                    <td style="width:90px;color:var(--text-gray)">{{ cita.hora|time:"H:i" }}</td>
+                    <td><strong>{{ cita.cliente.nombre }}</strong> · {{ cita.servicio.nombre|default:"—" }}</td>
+                    <td style="text-align:right">
+                        {% if cita.estado == 'confirmada' %}<span class="badge badge-gray">Confirmada</span>
+                        {% elif cita.estado == 'atendida' %}<span class="badge badge-green">Atendida</span>
+                        {% elif cita.estado == 'cancelada' %}<span class="badge badge-yellow">Cancelada</span>
+                        {% else %}<span class="badge badge-yellow">Pendiente</span>{% endif %}
+                    </td>
+                </tr>
+                {% empty %}
+                <tr><td colspan="3" style="color:var(--text-gray)">No hay citas agendadas para hoy.</td></tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+
+    <div class="panel">
+        <div class="panel-header">Por categoría de producto</div>
+        {% for cat in por_categoria %}
+        <div class="category-row"><span>{{ cat.categoria }}</span><span class="count">{{ cat.total }} activos</span></div>
+        {% empty %}
+        <div class="category-row"><span style="color:var(--text-gray)">Sin productos categorizados.</span></div>
+        {% endfor %}
+    </div>
+</div>
+{% endblock %}

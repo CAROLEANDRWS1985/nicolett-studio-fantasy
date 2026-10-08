@@ -1,0 +1,47 @@
+{% extends "ventas/base_admin.html" %}
+{% block title %}Citas de hoy{% endblock %}
+{% block body_class %}page-citas{% endblock %}
+
+{% block content %}
+<div class="main-header">
+    <div>
+        <h2>Citas de hoy</h2>
+        <p>{{ hoy|date:"l d \d\e F, Y" }} · {{ citas.count }} citas agendadas</p>
+    </div>
+</div>
+
+<div class="panel">
+    <table>
+        <thead>
+            <tr>
+                <th>Hora</th>
+                <th>Clienta</th>
+                <th>Servicio</th>
+                <th>Estado</th>
+                <th>Acciones</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for cita in citas %}
+            <tr>
+                <td>{{ cita.hora|time:"H:i" }}</td>
+                <td><strong>{{ cita.cliente.nombre }}</strong></td>
+                <td>{{ cita.servicio.nombre|default:"—" }}</td>
+                <td>
+                    {% if cita.estado == 'confirmada' %}<span class="badge badge-gray">Confirmada</span>
+                    {% elif cita.estado == 'atendida' %}<span class="badge badge-green">Atendida</span>
+                    {% elif cita.estado == 'cancelada' %}<span class="badge badge-yellow">Cancelada</span>
+                    {% else %}<span class="badge badge-yellow">Pendiente</span>{% endif %}
+                </td>
+                <td>
+                    <a href="#" class="btn btn-outline-green btn-sm">✓ Finalizar</a>
+                    <a href="#" class="btn btn-outline-red btn-sm">✗ Cancelar</a>
+                </td>
+            </tr>
+            {% empty %}
+            <tr><td colspan="5" style="color:var(--text-gray)">No hay citas agendadas para hoy.</td></tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+{% endblock %}

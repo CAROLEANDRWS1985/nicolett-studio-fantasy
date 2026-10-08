@@ -1,0 +1,112 @@
+{
+    "genero":{  "metodo":"SAVE",
+                "url":"",
+                "data":[
+                    {"idGenero":"0","codigo":"F","genero":"Femenino"},
+                    {"idGenero":"1","codigo":"M","genero":"Masculino"}
+                ]
+            },
+    "empleado":{  "metodo":"SAVE",
+            "url":"",
+            "data":[] 
+        },            
+    "formapago":{  "metodo":"SAVE",
+            "url":"",
+            "data":[
+            {"idFPago":"0","codigo":"RM","nombre":"F.Pago RM"},
+            {"idFPago":"1","codigo":"R1","nombre":"F.Pago R1"},
+            {"idFPago":"2","codigo":"R2","nombre":"F.Pago R2"},
+            {"idFPago":"3","codigo":"R3","nombre":"F.Pago R3"},
+            {"idFPago":"4","codigo":"R4","nombre":"F.Pago R4"},
+            {"idFPago":"5","codigo":"R5","nombre":"F.Pago R5"}
+            ] 
+        },            
+    "cargo":{  "metodo":"SAVE",
+            "url":"",
+            "data":[
+            {"idCargo":"0","codigo":"RM","nombre":"Cargo RM"},
+            {"idCargo":"1","codigo":"R1","nombre":"Cargo R1"},
+            {"idCargo":"2","codigo":"R2","nombre":"Cargo R2"},
+            {"idCargo":"3","codigo":"R3","nombre":"Cargo R3"},
+            {"idCargo":"4","codigo":"R4","nombre":"Cargo R4"},
+            {"idCargo":"5","codigo":"R5","nombre":"Cargo R5"}
+            ] 
+        },
+    "region":{  "metodo":"SAVE",
+                "url":"",
+                "data":[
+                {"idRegion":"13","codigo":"RM","nombre":"Región Harrys"},
+                {"idRegion":"1","codigo":"R1","nombre":"R1"},
+                {"idRegion":"2","codigo":"R2","nombre":"R2"},
+                {"idRegion":"3","codigo":"R3","nombre":"R3"},
+                {"idRegion":"4","codigo":"R4","nombre":"R4"},
+                {"idRegion":"5","codigo":"R5","nombre":"R5"}
+                ]
+    },
+    "provincia":{  "metodo":"SAVE",
+                "url":"",
+                "data":[
+                {"idProvincia":"1","region":"13","codigo":"PH","nombre":"Provincia Harrys"},
+                {"idProvincia":"2","region":"13","codigo":"P2","nombre":"P2"},
+                {"idProvincia":"3","region":"13","codigo":"P3","nombre":"P3"},
+                {"idProvincia":"4","region":"13","codigo":"P4","nombre":"P4"},
+                {"idProvincia":"5","region":"13","codigo":"P5","nombre":"P5"},
+                {"idProvincia":"6","region":"13","codigo":"P6","nombre":"P6"}
+                ]
+    },
+    "comuna":{  "metodo":"SAVE",
+                "url":"",
+                "data":[
+                {"idComuna":"1","provincia":"1","codigo":"C1","nombre":"Comuna Harrys"},
+                {"idComuna":"2","provincia":"1","codigo":"C2","nombre":"C2"},
+                {"idComuna":"3","provincia":"1","codigo":"C3","nombre":"C3"},
+                {"idComuna":"4","provincia":"2","codigo":"C4","nombre":"C4"},
+                {"idComuna":"5","provincia":"2","codigo":"C5","nombre":"C5"},
+                {"idComuna":"6","provincia":"2","codigo":"C6","nombre":"C6"}
+                ]
+    },
+    "sucursal":{  "metodo":"SAVE",
+                "url":"",
+                "data":[
+                {"idSucursal":"1","comuna":"1","codigo":"S1","nombre":"Sucursal Harrys"},
+                {"idSucursal":"2","comuna":"1","codigo":"S2","nombre":"Sucursal S2"},
+                {"idSucursal":"3","comuna":"1","codigo":"S3","nombre":"Sucursal S3"},
+                {"idSucursal":"4","comuna":"2","codigo":"S4","nombre":"Sucursal S4"},
+                {"idSucursal":"5","comuna":"2","codigo":"S5","nombre":"Sucursal S5"},
+                {"idSucursal":"6","comuna":"2","codigo":"S6","nombre":"Sucursal S6"}
+                ]
+    },
+    "color":{  "metodo":"SAVE",
+                "url":"",
+                "data":[
+                {"idColor":"1","rgb":"1","hex":"S1","color":"Sucursal Harrys"},
+                {"idColor":"2","rgb":"1","hex":"S2","color":"Sucursal S2"},
+                {"idColor":"3","rgb":"1","hex":"S3","color":"Sucursal S3"},
+                {"idColor":"4","rgb":"2","hex":"S4","color":"Sucursal S4"},
+                {"idColor":"5","rgb":"2","hex":"S5","color":"Sucursal S5"},
+                {"idColor":"6","rgb":"2","hex":"S6","color":"Sucursal S6"}
+                ]
+    },        
+    "persona":{  "metodo":"URL",
+                "url":"http://localhost:9010/ventas/backend/persona/",
+                "data":[
+                    {"rut":3,"dv":"1","genero":"1","fechaNacimiento":"2023-01-01","nombre":"Harrys el magnifico","papellido":"El Magnifico3333","sapellido":"Sabelo Todo","email":"harrys3333@kmail.cl","comuna":1},
+                    {"rut":1,"dv":"5","genero":"0","fechaNacimiento":"2023-01-01","nombre":"eqw","papellido":"qweq","sapellido":"qewq","email":"qweqwe@ujfd.cl","comuna":1}
+                ]
+                },
+    "cliente":{  "metodo":"URL",
+                "url":"http://localhost:9010/ventas/backend/cliente/insert/",
+                "data":[
+                    {"rut":303,"dv":"1","credito":100000,"fNacimiento":"2023-01-01","genero":"1","nombre":"Harrys el magnifico","ap_paterno":"El Magnifico3333","ap_materno":"Sabelo Todo","email":"harrys3333@kmail.cl","comuna":1},
+                    {"rut":301,"dv":"5","credito":100000,"fNacimiento":"2023-01-01","genero":"0","nombre":"eqw","ap_paterno":"qweq","ap_materno":"qewq","email":"qweqwe@ujfd.cl","comuna":1}
+                ]
+                },
+    "compra_proveedor":{   "metodo":"TEST",
+                "url":"http://localhost:9010/ventas/backend/compra_proveedor/",
+                "data":[]
+                },                
+    "venta":{   "metodo":"TEST",
+                "url":"http://localhost:9010/ventas/backend/venta/",
+                "data":[]
+                }                
+}
