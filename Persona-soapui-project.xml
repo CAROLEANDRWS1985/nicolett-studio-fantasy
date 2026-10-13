@@ -1,0 +1,299 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<con:soapui-project id="8780e053-9f60-4997-8c6a-eea3672f40e2" activeEnvironment="Default" name="Persona" soapui-version="5.7.0" xmlns:con="http://eviware.com/soapui/config"><con:settings/><con:interface xsi:type="con:WsdlInterface" id="1abe639b-5151-4a05-858c-8e8bf02c1578" wsaVersion="NONE" name="Application" type="wsdl" bindingName="{django.soap.example}Application" soapVersion="1_1" anonymous="optional" definition="http://localhost:9010/ventas/soap_service_persona/?WSDL" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"><con:settings/><con:definitionCache type="TEXT" rootPart="http://localhost:9010/ventas/soap_service_persona/?WSDL"><con:part><con:url>http://localhost:9010/ventas/soap_service_persona/?WSDL</con:url><con:content><![CDATA[<wsdl:definitions targetNamespace="django.soap.example" name="Application" xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:plink="http://schemas.xmlsoap.org/ws/2003/05/partner-link/" xmlns:wsdlsoap11="http://schemas.xmlsoap.org/wsdl/soap/" xmlns:wsdlsoap12="http://schemas.xmlsoap.org/wsdl/soap12/" xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/" xmlns:soap11enc="http://schemas.xmlsoap.org/soap/encoding/" xmlns:soap11env="http://schemas.xmlsoap.org/soap/envelope/" xmlns:soap12env="http://www.w3.org/2003/05/soap-envelope" xmlns:soap12enc="http://www.w3.org/2003/05/soap-encoding" xmlns:wsa="http://schemas.xmlsoap.org/ws/2003/03/addressing" xmlns:xop="http://www.w3.org/2004/08/xop/include" xmlns:http="http://schemas.xmlsoap.org/wsdl/http/" xmlns:tns="django.soap.example" xmlns:s0="ventas.views" xmlns:s1="spyne.model.primitive.string">
+  <wsdl:types>
+    <xs:schema targetNamespace="django.soap.example" elementFormDefault="qualified">
+      <xs:import namespace="ventas.views"/>
+      <xs:complexType name="personaLeerTodos"/>
+      <xs:complexType name="personaActualizar">
+        <xs:sequence>
+          <xs:element name="rut" type="xs:string" minOccurs="0"/>
+          <xs:element name="nombre" type="xs:string" minOccurs="0"/>
+          <xs:element name="ap_paterno" type="xs:string" minOccurs="0"/>
+          <xs:element name="ap_materno" type="xs:string" minOccurs="0"/>
+          <xs:element name="mail" type="xs:string" minOccurs="0"/>
+          <xs:element name="fechaNacimiento" type="xs:string" minOccurs="0"/>
+          <xs:element name="idComuna" type="xs:integer" minOccurs="0"/>
+        </xs:sequence>
+      </xs:complexType>
+      <xs:complexType name="personaActualizarResponse">
+        <xs:sequence>
+          <xs:element name="personaActualizarResult" type="xs:string" minOccurs="0" nillable="true"/>
+        </xs:sequence>
+      </xs:complexType>
+      <xs:complexType name="personaCrear">
+        <xs:sequence>
+          <xs:element name="rut" type="xs:string" minOccurs="0"/>
+          <xs:element name="nombre" type="xs:string" minOccurs="0"/>
+          <xs:element name="ap_paterno" type="xs:string" minOccurs="0"/>
+          <xs:element name="ap_materno" type="xs:string" minOccurs="0"/>
+          <xs:element name="mail" type="xs:string" minOccurs="0"/>
+          <xs:element name="fechaNacimiento" type="xs:string" minOccurs="0"/>
+          <xs:element name="idComuna" type="xs:integer" minOccurs="0"/>
+        </xs:sequence>
+      </xs:complexType>
+      <xs:complexType name="personaCrearResponse">
+        <xs:sequence>
+          <xs:element name="personaCrearResult" type="xs:string" minOccurs="0" nillable="true"/>
+        </xs:sequence>
+      </xs:complexType>
+      <xs:complexType name="personaEliminar">
+        <xs:sequence>
+          <xs:element name="rut" type="xs:string" minOccurs="0"/>
+        </xs:sequence>
+      </xs:complexType>
+      <xs:complexType name="personaEliminarResponse">
+        <xs:sequence>
+          <xs:element name="personaEliminarResult" type="xs:string" minOccurs="0" nillable="true"/>
+        </xs:sequence>
+      </xs:complexType>
+      <xs:complexType name="personaLeer">
+        <xs:sequence>
+          <xs:element name="rut" type="xs:integer" minOccurs="0"/>
+        </xs:sequence>
+      </xs:complexType>
+      <xs:complexType name="personaLeerTodosResponse">
+        <xs:sequence>
+          <xs:element name="personaLeerTodosResult" type="s0:TodoListArray" minOccurs="0" nillable="true"/>
+        </xs:sequence>
+      </xs:complexType>
+      <xs:complexType name="personaLeerResponse">
+        <xs:sequence>
+          <xs:element name="personaLeerResult" type="s0:TodoList" minOccurs="0" nillable="true"/>
+        </xs:sequence>
+      </xs:complexType>
+      <xs:element name="personaLeerTodos" type="tns:personaLeerTodos"/>
+      <xs:element name="personaActualizar" type="tns:personaActualizar"/>
+      <xs:element name="personaActualizarResponse" type="tns:personaActualizarResponse"/>
+      <xs:element name="personaCrear" type="tns:personaCrear"/>
+      <xs:element name="personaCrearResponse" type="tns:personaCrearResponse"/>
+      <xs:element name="personaEliminar" type="tns:personaEliminar"/>
+      <xs:element name="personaEliminarResponse" type="tns:personaEliminarResponse"/>
+      <xs:element name="personaLeer" type="tns:personaLeer"/>
+      <xs:element name="personaLeerTodosResponse" type="tns:personaLeerTodosResponse"/>
+      <xs:element name="personaLeerResponse" type="tns:personaLeerResponse"/>
+    </xs:schema>
+    <xs:schema targetNamespace="ventas.views" elementFormDefault="qualified">
+      <xs:import namespace="spyne.model.primitive.string"/>
+      <xs:simpleType name="TodoList_dvType">
+        <xs:restriction base="xs:normalizedString">
+          <xs:maxLength value="1"/>
+        </xs:restriction>
+      </xs:simpleType>
+      <xs:simpleType name="TodoList_nombreType">
+        <xs:restriction base="xs:normalizedString">
+          <xs:maxLength value="30"/>
+        </xs:restriction>
+      </xs:simpleType>
+      <xs:simpleType name="TodoList_papellidoType">
+        <xs:restriction base="xs:normalizedString">
+          <xs:maxLength value="30"/>
+        </xs:restriction>
+      </xs:simpleType>
+      <xs:simpleType name="TodoList_sapellidoType">
+        <xs:restriction base="xs:normalizedString">
+          <xs:maxLength value="30"/>
+        </xs:restriction>
+      </xs:simpleType>
+      <xs:simpleType name="TodoList_emailType">
+        <xs:restriction base="s1:Email">
+          <xs:maxLength value="254"/>
+          <xs:pattern value="[A-Za-z0-9!#-'\*\+\-/=\?\^_`\{-~]+(\.[A-Za-z0-9!#-'\*\+\-/=\?\^_`\{-~]+)*@([a-zA-Z0-9]([a-zA-Z0-9\-]*[a-zA-Z0-9])?\.)+[A-Za-z]{2,}"/>
+        </xs:restriction>
+      </xs:simpleType>
+      <xs:complexType name="TodoList">
+        <xs:sequence>
+          <xs:element name="rut" type="xs:integer" minOccurs="0"/>
+          <xs:element name="dv" type="s0:TodoList_dvType"/>
+          <xs:element name="nombre" type="s0:TodoList_nombreType" minOccurs="0" nillable="true"/>
+          <xs:element name="papellido" type="s0:TodoList_papellidoType" minOccurs="0" nillable="true"/>
+          <xs:element name="sapellido" type="s0:TodoList_sapellidoType" minOccurs="0" nillable="true"/>
+          <xs:element name="email" type="s0:TodoList_emailType"/>
+          <xs:element name="fechaNacimiento" type="xs:date" minOccurs="0" nillable="true"/>
+          <xs:element name="activo" type="xs:integer" minOccurs="0" nillable="true"/>
+          <xs:element name="fCreacion" type="xs:dateTime" minOccurs="0"/>
+          <xs:element name="idComuna_id" type="xs:integer"/>
+        </xs:sequence>
+      </xs:complexType>
+      <xs:complexType name="TodoListArray">
+        <xs:sequence>
+          <xs:element name="TodoList" type="s0:TodoList" minOccurs="0" maxOccurs="unbounded" nillable="true"/>
+        </xs:sequence>
+      </xs:complexType>
+      <xs:element name="TodoList" type="s0:TodoList"/>
+      <xs:element name="TodoListArray" type="s0:TodoListArray"/>
+    </xs:schema>
+    <xs:schema targetNamespace="spyne.model.primitive.string" elementFormDefault="qualified">
+      <xs:simpleType name="Email">
+        <xs:restriction base="xs:string">
+          <xs:pattern value="[A-Za-z0-9!#-'\*\+\-/=\?\^_`\{-~]+(\.[A-Za-z0-9!#-'\*\+\-/=\?\^_`\{-~]+)*@([a-zA-Z0-9]([a-zA-Z0-9\-]*[a-zA-Z0-9])?\.)+[A-Za-z]{2,}"/>
+        </xs:restriction>
+      </xs:simpleType>
+    </xs:schema>
+  </wsdl:types>
+  <wsdl:message name="personaCrear">
+    <wsdl:part name="personaCrear" element="tns:personaCrear"/>
+  </wsdl:message>
+  <wsdl:message name="personaCrearResponse">
+    <wsdl:part name="personaCrearResponse" element="tns:personaCrearResponse"/>
+  </wsdl:message>
+  <wsdl:message name="personaActualizar">
+    <wsdl:part name="personaActualizar" element="tns:personaActualizar"/>
+  </wsdl:message>
+  <wsdl:message name="personaActualizarResponse">
+    <wsdl:part name="personaActualizarResponse" element="tns:personaActualizarResponse"/>
+  </wsdl:message>
+  <wsdl:message name="personaLeer">
+    <wsdl:part name="personaLeer" element="tns:personaLeer"/>
+  </wsdl:message>
+  <wsdl:message name="personaLeerResponse">
+    <wsdl:part name="personaLeerResponse" element="tns:personaLeerResponse"/>
+  </wsdl:message>
+  <wsdl:message name="personaLeerTodos">
+    <wsdl:part name="personaLeerTodos" element="tns:personaLeerTodos"/>
+  </wsdl:message>
+  <wsdl:message name="personaLeerTodosResponse">
+    <wsdl:part name="personaLeerTodosResponse" element="tns:personaLeerTodosResponse"/>
+  </wsdl:message>
+  <wsdl:message name="personaEliminar">
+    <wsdl:part name="personaEliminar" element="tns:personaEliminar"/>
+  </wsdl:message>
+  <wsdl:message name="personaEliminarResponse">
+    <wsdl:part name="personaEliminarResponse" element="tns:personaEliminarResponse"/>
+  </wsdl:message>
+  <wsdl:service name="SoapServicePersona">
+    <wsdl:port name="Application" binding="tns:Application">
+      <wsdlsoap11:address location="http://localhost:9010/ventas/soap_service_persona/"/>
+    </wsdl:port>
+  </wsdl:service>
+  <wsdl:portType name="Application">
+    <wsdl:operation name="personaCrear" parameterOrder="personaCrear">
+      <wsdl:input name="personaCrear" message="tns:personaCrear"/>
+      <wsdl:output name="personaCrearResponse" message="tns:personaCrearResponse"/>
+    </wsdl:operation>
+    <wsdl:operation name="personaActualizar" parameterOrder="personaActualizar">
+      <wsdl:input name="personaActualizar" message="tns:personaActualizar"/>
+      <wsdl:output name="personaActualizarResponse" message="tns:personaActualizarResponse"/>
+    </wsdl:operation>
+    <wsdl:operation name="personaLeer" parameterOrder="personaLeer">
+      <wsdl:input name="personaLeer" message="tns:personaLeer"/>
+      <wsdl:output name="personaLeerResponse" message="tns:personaLeerResponse"/>
+    </wsdl:operation>
+    <wsdl:operation name="personaLeerTodos" parameterOrder="personaLeerTodos">
+      <wsdl:input name="personaLeerTodos" message="tns:personaLeerTodos"/>
+      <wsdl:output name="personaLeerTodosResponse" message="tns:personaLeerTodosResponse"/>
+    </wsdl:operation>
+    <wsdl:operation name="personaEliminar" parameterOrder="personaEliminar">
+      <wsdl:input name="personaEliminar" message="tns:personaEliminar"/>
+      <wsdl:output name="personaEliminarResponse" message="tns:personaEliminarResponse"/>
+    </wsdl:operation>
+  </wsdl:portType>
+  <wsdl:binding name="Application" type="tns:Application">
+    <wsdlsoap11:binding style="document" transport="http://schemas.xmlsoap.org/soap/http"/>
+    <wsdl:operation name="personaCrear">
+      <wsdlsoap11:operation soapAction="personaCrear" style="document"/>
+      <wsdl:input name="personaCrear">
+        <wsdlsoap11:body use="literal"/>
+      </wsdl:input>
+      <wsdl:output name="personaCrearResponse">
+        <wsdlsoap11:body use="literal"/>
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="personaActualizar">
+      <wsdlsoap11:operation soapAction="personaActualizar" style="document"/>
+      <wsdl:input name="personaActualizar">
+        <wsdlsoap11:body use="literal"/>
+      </wsdl:input>
+      <wsdl:output name="personaActualizarResponse">
+        <wsdlsoap11:body use="literal"/>
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="personaLeer">
+      <wsdlsoap11:operation soapAction="personaLeer" style="document"/>
+      <wsdl:input name="personaLeer">
+        <wsdlsoap11:body use="literal"/>
+      </wsdl:input>
+      <wsdl:output name="personaLeerResponse">
+        <wsdlsoap11:body use="literal"/>
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="personaLeerTodos">
+      <wsdlsoap11:operation soapAction="personaLeerTodos" style="document"/>
+      <wsdl:input name="personaLeerTodos">
+        <wsdlsoap11:body use="literal"/>
+      </wsdl:input>
+      <wsdl:output name="personaLeerTodosResponse">
+        <wsdlsoap11:body use="literal"/>
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="personaEliminar">
+      <wsdlsoap11:operation soapAction="personaEliminar" style="document"/>
+      <wsdl:input name="personaEliminar">
+        <wsdlsoap11:body use="literal"/>
+      </wsdl:input>
+      <wsdl:output name="personaEliminarResponse">
+        <wsdlsoap11:body use="literal"/>
+      </wsdl:output>
+    </wsdl:operation>
+  </wsdl:binding>
+</wsdl:definitions>]]></con:content><con:type>http://schemas.xmlsoap.org/wsdl/</con:type></con:part></con:definitionCache><con:endpoints><con:endpoint>http://localhost:9010/ventas/soap_service_persona/</con:endpoint></con:endpoints><con:operation id="757736bf-8c10-4519-957a-5e2e4d09e271" isOneWay="false" action="personaActualizar" name="personaActualizar" bindingOperationName="personaActualizar" type="Request-Response" outputName="personaActualizarResponse" inputName="personaActualizar" receivesAttachments="false" sendsAttachments="false" anonymous="optional"><con:settings/><con:call id="65e743a5-6f1d-44b7-b2b9-9831db9ee18c" name="Request 1"><con:settings><con:setting id="com.eviware.soapui.impl.wsdl.WsdlRequest@request-headers">&lt;xml-fragment/></con:setting></con:settings><con:encoding>UTF-8</con:encoding><con:endpoint>http://localhost:9010/ventas/soap_service_persona/</con:endpoint><con:request><![CDATA[<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:djan="django.soap.example">\r
+   <soapenv:Header/>\r
+   <soapenv:Body>\r
+      <djan:personaActualizar>\r
+         <!--Optional:-->\r
+         <djan:rut>1</djan:rut>\r
+         <!--Optional:-->\r
+         <djan:nombre>a</djan:nombre>\r
+         <!--Optional:-->\r
+         <djan:ap_paterno>b</djan:ap_paterno>\r
+         <!--Optional:-->\r
+         <djan:ap_materno>c</djan:ap_materno>\r
+         <!--Optional:-->\r
+         <djan:mail>d</djan:mail>\r
+         <!--Optional:-->\r
+         <djan:fechaNacimiento>f</djan:fechaNacimiento>\r
+         <!--Optional:-->\r
+         <djan:idComuna>1</djan:idComuna>\r
+      </djan:personaActualizar>\r
+   </soapenv:Body>\r
+</soapenv:Envelope>]]></con:request><con:credentials><con:authType>No Authorization</con:authType></con:credentials><con:jmsConfig JMSDeliveryMode="PERSISTENT"/><con:jmsPropertyConfig/><con:wsaConfig mustUnderstand="NONE" version="200508" action="personaActualizar"/><con:wsrmConfig version="1.2"/></con:call></con:operation><con:operation id="f8ee102a-23b9-4139-a313-6c444a532909" isOneWay="false" action="personaCrear" name="personaCrear" bindingOperationName="personaCrear" type="Request-Response" outputName="personaCrearResponse" inputName="personaCrear" receivesAttachments="false" sendsAttachments="false" anonymous="optional"><con:settings/><con:call id="bddaab1b-401e-4a51-9c8c-2aacdf71799c" name="Request 1"><con:settings><con:setting id="com.eviware.soapui.impl.wsdl.WsdlRequest@request-headers">&lt;xml-fragment/></con:setting></con:settings><con:encoding>UTF-8</con:encoding><con:endpoint>http://localhost:9010/ventas/soap_service_persona/</con:endpoint><con:request><![CDATA[<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:djan="django.soap.example">\r
+   <soapenv:Header/>\r
+   <soapenv:Body>\r
+      <djan:personaCrear>\r
+         <!--Optional:-->\r
+         <djan:rut>4</djan:rut>\r
+         <!--Optional:-->\r
+         <djan:nombre>peca</djan:nombre>\r
+         <!--Optional:-->\r
+         <djan:ap_paterno>pipo</djan:ap_paterno>\r
+         <!--Optional:-->\r
+         <djan:ap_materno>e333</djan:ap_materno>\r
+         <!--Optional:-->\r
+         <djan:mail>eee</djan:mail>\r
+         <!--Optional:-->\r
+         <djan:fechaNacimiento>12</djan:fechaNacimiento>\r
+         <!--Optional:-->\r
+         <djan:idComuna>1</djan:idComuna>\r
+      </djan:personaCrear>\r
+   </soapenv:Body>\r
+</soapenv:Envelope>]]></con:request><con:credentials><con:authType>No Authorization</con:authType></con:credentials><con:jmsConfig JMSDeliveryMode="PERSISTENT"/><con:jmsPropertyConfig/><con:wsaConfig mustUnderstand="NONE" version="200508" action="personaCrear"/><con:wsrmConfig version="1.2"/></con:call></con:operation><con:operation id="f99d76c2-b7d8-43b9-ac2d-fd3e9865a0c4" isOneWay="false" action="personaEliminar" name="personaEliminar" bindingOperationName="personaEliminar" type="Request-Response" outputName="personaEliminarResponse" inputName="personaEliminar" receivesAttachments="false" sendsAttachments="false" anonymous="optional"><con:settings/><con:call id="53da71e6-9ecf-46a2-8af7-911e29f4a388" name="Request 1"><con:settings/><con:encoding>UTF-8</con:encoding><con:endpoint>http://localhost:9010/ventas/soap_service_persona/</con:endpoint><con:request><![CDATA[<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:djan="django.soap.example">\r
+   <soapenv:Header/>\r
+   <soapenv:Body>\r
+      <djan:personaEliminar>\r
+         <!--Optional:-->\r
+         <djan:rut>?</djan:rut>\r
+      </djan:personaEliminar>\r
+   </soapenv:Body>\r
+</soapenv:Envelope>]]></con:request><con:wsaConfig mustUnderstand="NONE" version="200508" action="personaEliminar"/></con:call></con:operation><con:operation id="b04166be-0a20-45ec-bee4-03d8f2b55235" isOneWay="false" action="personaLeer" name="personaLeer" bindingOperationName="personaLeer" type="Request-Response" outputName="personaLeerResponse" inputName="personaLeer" receivesAttachments="false" sendsAttachments="false" anonymous="optional"><con:settings/><con:call id="5a81a5eb-b240-47e4-b7c2-fdcf20fbf3fa" name="Request 1"><con:settings/><con:encoding>UTF-8</con:encoding><con:endpoint>http://localhost:9010/ventas/soap_service_persona/</con:endpoint><con:request><![CDATA[<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:djan="django.soap.example">\r
+   <soapenv:Header/>\r
+   <soapenv:Body>\r
+      <djan:personaLeer>\r
+         <!--Optional:-->\r
+         <djan:rut>?</djan:rut>\r
+      </djan:personaLeer>\r
+   </soapenv:Body>\r
+</soapenv:Envelope>]]></con:request><con:wsaConfig mustUnderstand="NONE" version="200508" action="personaLeer"/></con:call></con:operation><con:operation id="7743100e-142f-4574-b75d-82864a5ae7e1" isOneWay="false" action="personaLeerTodos" name="personaLeerTodos" bindingOperationName="personaLeerTodos" type="Request-Response" outputName="personaLeerTodosResponse" inputName="personaLeerTodos" receivesAttachments="false" sendsAttachments="false" anonymous="optional"><con:settings/><con:call id="50cabbfb-02ff-45af-8414-64a3eeb770ff" name="Request 1"><con:settings><con:setting id="com.eviware.soapui.impl.wsdl.WsdlRequest@request-headers">&lt;xml-fragment/></con:setting></con:settings><con:encoding>UTF-8</con:encoding><con:endpoint>http://localhost:9010/ventas/soap_service_persona/</con:endpoint><con:request><![CDATA[<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:djan="django.soap.example">\r
+   <soapenv:Header/>\r
+   <soapenv:Body>\r
+      <djan:personaLeerTodos/>\r
+   </soapenv:Body>\r
+</soapenv:Envelope>]]></con:request><con:credentials><con:authType>No Authorization</con:authType></con:credentials><con:jmsConfig JMSDeliveryMode="PERSISTENT"/><con:jmsPropertyConfig/><con:wsaConfig mustUnderstand="NONE" version="200508" action="personaLeerTodos"/><con:wsrmConfig version="1.2"/></con:call></con:operation></con:interface><con:properties/><con:wssContainer/><con:oAuth2ProfileContainer/><con:oAuth1ProfileContainer/></con:soapui-project>

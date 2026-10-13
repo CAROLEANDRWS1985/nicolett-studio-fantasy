@@ -1,0 +1,118 @@
+{% extends "ventas/base_admin.html" %}
+{% block content %}
+<style>
+  .precios{max-width:1250px}
+  .precios h1{margin:0 0 6px}
+  .precios .intro{color:#7a6a5d;margin:0 0 20px}
+  .precios .msg{padding:12px 16px;margin:0 0 18px;border-left:3px solid #b8895a;background:#f8f3ec}
+
+  .precios .buscar{width:100%;max-width:420px;padding:12px 16px;border:1px solid #e0d5c7;background:#f8f3ec;color:#2a1f1b;font:inherit;margin:0 0 22px;border-radius:4px}
+  .precios .buscar:focus{outline:none;border-color:#b8895a;background:#faf6f1}
+
+  .precios .caja{background:#f8f3ec;border:1px solid #e3d9cc;border-radius:6px;overflow-x:auto}
+  .precios table{width:100%;min-width:960px;border-collapse:collapse;background:transparent;border:0}
+  .precios th{background:#efe6da;text-align:left;padding:14px 12px;font-size:11px;letter-spacing:.12em;text-transform:uppercase;color:#7a6a5d;border:0;border-bottom:1px solid #e3d9cc;white-space:nowrap}
+  .precios th small{display:block;font-weight:400;text-transform:none;letter-spacing:0;color:#a09184;font-size:11px;margin-top:2px}
+  .precios td{padding:12px;border:0;border-top:1px solid #ece3d7;vertical-align:middle;background:transparent}
+  .precios tbody tr:first-child td{border-top:0}
+  .precios tbody tr:hover td{background:#f3ece2}
+  .precios .col-nombre{width:28%}
+
+  .precios .nom{border:1px solid transparent;background:transparent;font:inherit;font-weight:600;color:#2a1f1b;width:100%;padding:8px 10px;border-radius:4px}
+  .precios .nom.edit{background:#faf6f1;border-color:#b8895a}
+  .precios .etiqueta-oculto{display:inline-block;font-size:11px;color:#a33;margin:2px 0 0 10px}
+
+  .precios input[type=number]{padding:9px 10px;border:1px solid #e0d5c7;background:#f3ece2;color:#2a1f1b;font:inherit;border-radius:4px;width:100%;max-width:110px}
+  .precios input[type=number]:focus{outline:none;border-color:#b8895a;background:#faf6f1}
+  .precios .unico-wrap{display:flex;align-items:center;gap:12px}
+  .precios .unico-wrap input[type=number]{max-width:110px}
+  .precios .unico{font-size:12px;color:#7a6a5d;background:#ece3d7;padding:4px 10px;border-radius:20px}
+
+  .precios .acciones{white-space:nowrap}
+  .precios .btn{display:inline-block;padding:9px 16px;margin-right:6px;font:inherit;font-size:11px;font-weight:600;letter-spacing:.1em;text-transform:uppercase;border:1px solid #2a1f1b;background:#2a1f1b;color:#f8f3ec;cursor:pointer;border-radius:4px}
+  .precios .btn:hover{background:#b8895a;border-color:#b8895a;color:#faf6f1}
+  .precios .btn-editar{background:#efe6da;color:#2a1f1b;border-color:#e0d5c7}
+  .precios .btn-editar:hover{background:#e6dbcd;color:#2a1f1b;border-color:#d4c7b6}
+  .precios .btn-eliminar{background:transparent;color:#a33;border-color:#e0c4c4}
+  .precios .btn-eliminar:hover{background:#a33;color:#faf6f1;border-color:#a33}
+
+  .precios .fila.oculto{opacity:.55}
+  .precios .vacio-fila{padding:28px 12px;color:#7a6a5d;text-align:center}
+</style>
+
+<div class="precios">
+<h1>Precios</h1>
+<p class="intro">Busca un servicio, cambia sus precios y presiona Guardar.</p>
+
+{% for m in messages %}<p class="msg">{{ m }}</p>{% endfor %}
+
+<input type="search" id="buscar" class="buscar" placeholder="Buscar servicio...">
+
+<div class="caja">
+<table>
+  <thead>
+    <tr>
+      <th>Servicio</th>
+      <th>S<small>Hasta hombros</small></th>
+      <th>M<small>Hasta axila</small></th>
+      <th>L<small>Hasta codo</small></th>
+      <th>XL<small>Bajo codo</small></th>
+      <th>Acciones</th>
+    </tr>
+  </thead>
+  <tbody>
+    {% for s in servicios %}
+    <tr class="fila {% if not s.activo %}oculto{% endif %}" data-nombre="{{ s.nombre|lower }}">
+      <td class="col-nombre">
+        <form id="f{{ s.pk }}" method="post">
+          {% csrf_token %}
+          <input type="hidden" name="servicio_id" value="{{ s.pk }}">
+        </form>
+        <input class="nom" id="n{{ s.pk }}" form="f{{ s.pk }}" name="nombre" value="{{ s.nombre }}" readonly>
+        {% if not s.activo %}<span class="etiqueta-oculto">(oculto)</span>{% endif %}
+      </td>
+      {% if s.tiene_tallas %}
+      <td><input class="talla" type="number" form="f{{ s.pk }}" name="precio_s" value="{{ s.precio_s|floatformat:'0u' }}" min="0" step="1"></td>
+      <td><input class="talla" type="number" form="f{{ s.pk }}" name="precio_m" value="{{ s.precio_m|floatformat:'0u' }}" min="0" step="1"></td>
+      <td><input class="talla" type="number" form="f{{ s.pk }}" name="precio_l" value="{{ s.precio_l|floatformat:'0u' }}" min="0" step="1"></td>
+      <td><input class="talla" type="number" form="f{{ s.pk }}" name="precio_xl" value="{{ s.precio_xl|floatformat:'0u' }}" min="0" step="1"></td>
+      {% else %}
+      <td colspan="4">
+        <div class="unico-wrap">
+          <input type="number" form="f{{ s.pk }}" name="precio" value="{{ s.precio|floatformat:'0u' }}" min="0" step="1">
+          <span class="unico">Precio único</span>
+        </div>
+      </td>
+      {% endif %}
+      <td class="acciones">
+        <button class="btn" type="submit" form="f{{ s.pk }}" name="accion" value="guardar">Guardar</button>
+        <button class="btn btn-editar" type="button" onclick="editar({{ s.pk }})">Editar</button>
+        {% if s.activo %}
+        <button class="btn btn-eliminar" type="submit" form="f{{ s.pk }}" name="accion" value="eliminar"
+                onclick="return confirm('¿Seguro que quieres eliminar este servicio? Dejará de aparecer para las clientas, pero no se pierde el historial de citas.')">Eliminar</button>
+        {% else %}
+        <button class="btn btn-editar" type="submit" form="f{{ s.pk }}" name="accion" value="reactivar">Reactivar</button>
+        {% endif %}
+      </td>
+    </tr>
+    {% empty %}
+    <tr><td colspan="6" class="vacio-fila">Primero crea servicios en la sección Servicios.</td></tr>
+    {% endfor %}
+  </tbody>
+</table>
+</div>
+</div>
+
+<script>
+document.getElementById('buscar').addEventListener('input', function(e){
+  var q = e.target.value.toLowerCase().trim();
+  document.querySelectorAll('.fila').forEach(function(r){
+    r.style.display = r.dataset.nombre.indexOf(q) !== -1 ? '' : 'none';
+  });
+});
+function editar(pk){
+  var i = document.getElementById('n' + pk);
+  i.readOnly = false; i.classList.add('edit'); i.focus(); i.select();
+}
+</script>
+{% endblock %}

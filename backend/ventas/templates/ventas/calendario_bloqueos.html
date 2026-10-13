@@ -1,0 +1,133 @@
+{% extends "ventas/base_admin.html" %}
+{% block title %}Días sin atención{% endblock %}
+
+{% block content %}
+<style>
+.bl-wrap{display:flex;gap:28px;flex-wrap:wrap;align-items:flex-start;margin-top:18px}
+.cal-admin{background:#121010;border:1px solid #D4B26A;padding:20px;width:100%;max-width:400px}
+.bl-top{display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;color:#D4B26A;font-family:'Cormorant Garamond',serif;font-weight:600;font-size:26px}
+#bl-grid{display:grid;grid-template-columns:repeat(7,1fr);gap:4px;text-align:center}
+#bl-grid .dn{font-size:10px;color:#D4B26A;font-weight:600;padding:4px 0}
+#bl-grid .dia{padding:10px 0;font-size:13px;color:#fff;cursor:pointer;user-select:none}
+#bl-grid .dia.libre{background:#1e4f8f}
+#bl-grid .dia.libre:hover{background:#2a68b8}
+#bl-grid .dia.bloqueado{background:#a33}
+#bl-grid .dia.bloqueado:hover{background:#c44}
+#bl-grid .dia.off{background:none;color:#5a4d3a;cursor:not-allowed}
+#bl-grid .dia.sel{background:#D4B26A;color:#121010;font-weight:600}
+.bl-leyenda{display:flex;gap:14px;flex-wrap:wrap;margin-top:14px;font-size:11px;color:#eadcc0}
+.bl-leyenda i{display:inline-block;width:12px;height:12px;margin-right:5px;vertical-align:middle}
+.bl-panel{flex:1;min-width:280px;max-width:420px}
+.bl-panel label{display:block;margin:16px 0 6px}
+.bl-rango{display:flex;gap:10px;margin-bottom:10px}
+.bl-rango input{flex:1}
+.bl-acciones{display:flex;gap:10px;flex-wrap:wrap;margin-top:6px}
+</style>
+
+<h1>Días sin atención</h1>
+<p>Haz clic en los días en que no vas a atender y presiona "Bloquear". Las clientas los verán en rojo y no podrán agendar.</p>
+
+<div class="bl-wrap">
+  <div class="cal-admin">
+    <div class="bl-top"><button type="button" id="bl-prev">‹</button><span id="bl-titulo"></span><button type="button" id="bl-next">›</button></div>
+    <div id="bl-grid"></div>
+    <div class="bl-leyenda">
+      <span><i style="background:#1e4f8f"></i>Atiendes</span>
+      <span><i style="background:#a33"></i>Sin atención</span>
+      <span><i style="background:#D4B26A"></i>Seleccionado</span>
+    </div>
+  </div>
+
+  <div class="bl-panel">
+    <label>Rango de días (por ejemplo, vacaciones)</label>
+    <div class="bl-rango"><input type="date" id="bl-desde"><input type="date" id="bl-hasta"></div>
+    <button type="button" id="bl-rango">Marcar rango</button>
+
+    <label>Motivo (opcional)</label>
+    <input type="text" id="bl-motivo" placeholder="Ej: Vacaciones" maxlength="200">
+
+    <p id="bl-cuenta" style="margin-top:18px">Ningún día seleccionado.</p>
+    <div class="bl-acciones">
+      <button type="button" id="bl-bloquear">Bloquear días seleccionados</button>
+      <button type="button" id="bl-desbloquear">Quitar bloqueo</button>
+    </div>
+    <p id="bl-aviso" style="margin-top:14px"></p>
+  </div>
+</div>
+
+<script>
+(function(){
+  const meses=['Enero','Febrero','Marzo','Abril','Mayo','Junio','Julio','Agosto','Septiembre','Octubre','Noviembre','Diciembre'];
+  const hoy=new Date(); hoy.setHours(0,0,0,0);
+  let vista=new Date(hoy.getFullYear(),hoy.getMonth(),1), dias={}, sel=new Set();
+  const $=id=>document.getElementById(id);
+  const iso=d=>d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0');
+  const aDate=s=>{const p=s.split('-');return new Date(+p[0],+p[1]-1,+p[2]);};
+  const csrf='{{ csrf_token }}';
+
+  function aviso(t){$('bl-aviso').textContent=t;}
+  function cuenta(){
+    const n=sel.size;
+    $('bl-cuenta').textContent=n?(n+' día'+(n>1?'s':'')+' seleccionado'+(n>1?'s':'')):'Ningún día seleccionado.';
+  }
+  function dibujar(){
+    const g=$('bl-grid');
+    $('bl-titulo').textContent=meses[vista.getMonth()]+' '+vista.getFullYear();
+    g.innerHTML='';
+    ['L','M','M','J','V','S','D'].forEach(x=>g.insertAdjacentHTML('beforeend','<div class="dn">'+x+'</div>'));
+    const off=(vista.getDay()+6)%7;
+    for(let i=0;i<off;i++) g.insertAdjacentHTML('beforeend','<div></div>');
+    const n=new Date(vista.getFullYear(),vista.getMonth()+1,0).getDate();
+    for(let d=1;d<=n;d++){
+      const f=new Date(vista.getFullYear(),vista.getMonth(),d), k=iso(f);
+      const c=document.createElement('div'); c.textContent=d; c.className='dia';
+      if(f<hoy||f.getDay()===0){ c.classList.add('off'); }
+      else{
+        c.classList.add(dias[k]!==undefined?'bloqueado':'libre');
+        if(dias[k]) c.title=dias[k];
+        if(sel.has(k)) c.classList.add('sel');
+        c.onclick=()=>{ if(sel.has(k)) sel.delete(k); else sel.add(k); dibujar(); cuenta(); };
+      }
+      g.appendChild(c);
+    }
+  }
+  function cargar(){
+    fetch('{% url "bloqueos_datos" %}').then(r=>r.json()).then(j=>{dias=j.dias||{};dibujar();}).catch(()=>aviso('No se pudieron cargar los días.'));
+  }
+  function enviar(accion){
+    if(!sel.size){aviso('Elige al menos un día en el calendario.');return;}
+    fetch('{% url "bloqueos_guardar" %}',{
+      method:'POST',
+      headers:{'Content-Type':'application/json','X-CSRFToken':csrf},
+      body:JSON.stringify({accion:accion,fechas:Array.from(sel),motivo:$('bl-motivo').value})
+    }).then(r=>r.json()).then(j=>{
+      if(j.ok){
+        sel.clear(); $('bl-motivo').value=''; cuenta();
+        aviso(accion==='bloquear'?'Listo: las clientas ya ven esos días en rojo.':'Listo: se quitó el bloqueo.');
+        cargar();
+      } else { aviso(j.error||'No se pudo guardar.'); }
+    }).catch(()=>aviso('No se pudo guardar. Intenta de nuevo.'));
+  }
+
+  $('bl-prev').onclick=()=>{vista=new Date(vista.getFullYear(),vista.getMonth()-1,1);dibujar();};
+  $('bl-next').onclick=()=>{vista=new Date(vista.getFullYear(),vista.getMonth()+1,1);dibujar();};
+  $('bl-bloquear').onclick=()=>enviar('bloquear');
+  $('bl-desbloquear').onclick=()=>enviar('desbloquear');
+  $('bl-rango').onclick=()=>{
+    const a=$('bl-desde').value, b=$('bl-hasta').value;
+    if(!a||!b){aviso('Elige la fecha de inicio y la de término.');return;}
+    let d=aDate(a); const fin=aDate(b);
+    if(fin<d){aviso('La fecha de término debe ser posterior a la de inicio.');return;}
+    let n=0;
+    while(d<=fin && n<366){
+      if(d>=hoy && d.getDay()!==0) sel.add(iso(d));
+      d=new Date(d.getFullYear(),d.getMonth(),d.getDate()+1); n++;
+    }
+    vista=new Date(aDate(a).getFullYear(),aDate(a).getMonth(),1);
+    aviso(''); dibujar(); cuenta();
+  };
+
+  dibujar(); cuenta(); cargar();
+})();
+</script>
+{% endblock %}

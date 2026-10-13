@@ -1,0 +1,22 @@
+{% extends 'index.html' %}
+{% block content %}
+
+<h1 class="title">Servicios</h1>
+
+{% if messages %}
+  {% for message in messages %}
+    <div>{{ message }}</div>
+  {% endfor %}
+{% endif %}
+<div id="servicios"></div>
+<form method="post" id="servicios-form" action="{% url 'servicios' %}">
+  {% csrf_token %}
+  <div class="form-row">
+    <div class="form-group">
+      <label for="username">Nombre de servicios</label>
+      
+    </div>
+    <button type="submit">Obtener cita</button>
+</form>
+
+{% endblock %}

@@ -1,0 +1,417 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Nicolett Studio de Belleza</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,500;0,600;1,500;1,600&family=Jost:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --cream:#F7F2EC;
+    --cream-2:#F1EAE1;
+    --ink:#231F1B;
+    --ink-2:#2E2622;
+    --rose:#C99387;
+    --line:#E4DCD1;
+    --muted:#6E655C;
+  }
+
+  *{box-sizing:border-box;}
+  html{scroll-behavior:smooth;}
+  body{
+    margin:0;
+    font-family:'Jost', sans-serif;
+    color:var(--ink);
+    background:var(--cream);
+  }
+  img{max-width:100%; display:block;}
+  .container{max-width:1240px; margin:0 auto; padding:0 60px;}
+
+  /* ---------- HEADER ---------- */
+  header{
+    position:sticky; top:0; z-index:50;
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    padding:24px 60px;
+    background:var(--cream);
+    border-bottom:1px solid var(--line);
+  }
+  .logo{line-height:1.1;}
+  .logo .name{font-family:'Playfair Display', serif; font-size:26px; font-weight:600;}
+  .logo .sub{font-size:11px; letter-spacing:2px; color:var(--muted);}
+  nav{display:flex; gap:40px;}
+  nav a{text-decoration:none; color:var(--ink); font-size:14px; letter-spacing:1px;}
+  .header-actions{display:flex; align-items:center; gap:16px;}
+  .btn-ghost, .btn-solid{
+    font-family:'Jost', sans-serif; font-size:13px; letter-spacing:1px;
+    padding:12px 22px; border-radius:2px; cursor:pointer;
+    border:1px solid var(--ink); background:transparent; color:var(--ink);
+  }
+  .btn-solid{background:var(--ink); color:var(--cream); border:1px solid var(--ink);}
+  .btn-solid:hover{opacity:.88;}
+  .btn-ghost:hover{background:var(--ink); color:var(--cream);}
+
+  /* ---------- shared section bits ---------- */
+  .eyebrow{font-size:12px; letter-spacing:2px; color:var(--rose); margin-bottom:20px;}
+  h2{font-family:'Playfair Display', serif; font-weight:500; font-size:42px; margin:0 0 16px;}
+  h2 em{font-style:italic; color:inherit;}
+
+  /* ---------- HERO ---------- */
+  .hero{display:grid; grid-template-columns:1fr 1fr; min-height:640px;}
+  .hero-copy{display:flex; flex-direction:column; justify-content:center; padding:0 80px;}
+  .hero-copy .eyebrow{color:var(--muted);}
+  h1{font-family:'Playfair Display', serif; font-weight:500; font-size:58px; line-height:1.08; margin:0 0 28px;}
+  h1 em{font-style:italic; color:var(--rose);}
+  .hero-copy p{max-width:420px; font-size:16px; line-height:1.7; color:var(--muted); margin-bottom:36px;}
+  .cta-row{display:flex; gap:16px; margin-bottom:64px;}
+  .stats{display:flex; gap:56px;}
+  .stat b{font-family:'Playfair Display', serif; font-size:30px; font-weight:600; display:block;}
+  .stat span{font-size:12px; color:var(--muted);}
+  .hero-image{
+    position:relative;
+    background:
+      linear-gradient(0deg, rgba(0,0,0,.15), rgba(0,0,0,.15)),
+      linear-gradient(135deg,#4a4a4a,#8a8a8a);
+    filter:grayscale(100%);
+    display:flex; align-items:center; justify-content:center;
+    color:rgba(255,255,255,.7); font-size:13px; text-align:center; padding:20px;
+  }
+
+  /* ---------- SERVICIOS ---------- */
+  .services{background:var(--cream-2); padding:110px 0;}
+  .services-head{margin-bottom:64px;}
+  .service-grid{
+    display:grid; grid-template-columns:repeat(3,1fr);
+    border-top:1px solid var(--line); border-left:1px solid var(--line);
+  }
+  .service-card{
+    padding:44px 40px; border-right:1px solid var(--line); border-bottom:1px solid var(--line);
+  }
+  .service-card .num{font-family:'Playfair Display', serif; font-style:italic; color:var(--rose); font-size:14px; margin-bottom:20px; display:block;}
+  .service-card h3{font-family:'Playfair Display', serif; font-weight:600; font-size:22px; margin:0 0 14px;}
+  .service-card p{font-size:14.5px; line-height:1.7; color:var(--muted); margin:0 0 20px; max-width:320px;}
+  .service-card .price{font-size:14px; font-weight:500;}
+
+  /* ---------- NOSOTRAS ---------- */
+  .about{padding:110px 60px;}
+  .about-grid{display:grid; grid-template-columns:1fr 1fr; gap:80px; align-items:center; max-width:1240px; margin:0 auto;}
+  .about-photo{
+    position:relative;
+    aspect-ratio:4/5;
+    background:linear-gradient(135deg,#6b4a3a,#c99387);
+    display:flex; align-items:center; justify-content:center;
+    color:rgba(255,255,255,.85); font-size:13px; text-align:center; padding:20px;
+  }
+  .about-badge{
+    position:absolute; right:-24px; bottom:-24px;
+    background:var(--rose); color:#fff; padding:26px 30px; text-align:center;
+  }
+  .about-badge b{font-family:'Playfair Display', serif; font-size:30px; display:block;}
+  .about-badge span{font-size:10.5px; letter-spacing:1.5px;}
+  .about h2{font-size:38px;}
+  .about h2 em{font-style:italic;}
+  .about p{font-size:15.5px; line-height:1.8; color:var(--muted); margin-bottom:20px; max-width:460px;}
+  .about-list{list-style:none; margin:32px 0 0; padding:0;}
+  .about-list li{
+    display:flex; align-items:center; gap:16px;
+    font-size:14.5px; padding:14px 0; border-top:1px solid var(--line);
+  }
+  .about-list li:last-child{border-bottom:1px solid var(--line);}
+  .about-list li::before{content:""; width:24px; height:1px; background:var(--rose); flex-shrink:0;}
+
+  /* ---------- GALERIA ---------- */
+  .gallery{background:var(--cream-2); padding:110px 60px;}
+  .gallery-head{
+    max-width:1240px; margin:0 auto 48px; display:flex; justify-content:space-between; align-items:flex-end;
+  }
+  .gallery-head a{color:var(--rose); font-size:13px; letter-spacing:1px; text-decoration:none;}
+  .gallery-grid{
+    max-width:1240px; margin:0 auto;
+    display:grid; grid-template-columns:repeat(3,1fr); grid-auto-rows:220px; gap:6px;
+  }
+  .gallery-grid div{
+    background:linear-gradient(135deg,#3a3a3a,#8f8f8f);
+    display:flex; align-items:center; justify-content:center;
+    color:rgba(255,255,255,.7); font-size:12px; text-align:center; padding:10px;
+  }
+
+  /* ---------- TESTIMONIOS ---------- */
+  .testimonials{background:var(--ink-2); color:#F4EFE8; padding:110px 60px; text-align:center;}
+  .testimonials .eyebrow{justify-content:center; display:flex;}
+  .testimonials h2{color:#fff; font-size:40px;}
+  .quote-grid{
+    max-width:1100px; margin:56px auto 0; display:grid; grid-template-columns:repeat(3,1fr); gap:40px; text-align:left;
+  }
+  .quote-card{border-top:1px solid rgba(255,255,255,.18); padding-top:26px;}
+  .quote-card p{font-family:'Playfair Display', serif; font-style:italic; font-size:16px; line-height:1.7; margin:0 0 20px;}
+  .quote-card b{display:block; font-size:14px;}
+  .quote-card span{font-size:11px; letter-spacing:1px; color:var(--rose);}
+
+  /* ---------- CONTACTO ---------- */
+  .contact-bar{background:var(--ink-2); height:70px;}
+  .contact{padding:100px 60px;}
+  .contact-grid{max-width:1240px; margin:0 auto; display:grid; grid-template-columns:1fr 1fr; gap:90px;}
+  .contact-left h2{font-size:34px;}
+  .contact-left h2 em{font-style:italic;}
+  .contact-left > p{font-size:15px; line-height:1.7; color:var(--muted); max-width:420px; margin-bottom:36px;}
+  .info-list{list-style:none; margin:0 0 32px; padding:0;}
+  .info-list li{display:flex; gap:16px; padding:16px 0; border-top:1px solid var(--line);}
+  .info-list li::before{content:""; width:24px; height:1px; background:var(--rose); margin-top:8px; flex-shrink:0;}
+  .info-list .label{font-size:11px; letter-spacing:1.5px; color:var(--muted); display:block; margin-bottom:4px;}
+  .info-list .value{font-size:14.5px; line-height:1.6;}
+  .info-box{background:var(--cream-2); border-left:3px solid var(--rose); padding:22px 26px; font-size:14px; line-height:1.7;}
+  .info-box a{color:var(--ink); font-weight:600;}
+
+  .contact-form{display:flex; flex-direction:column; gap:20px;}
+  .field label{display:block; font-size:11px; letter-spacing:1.5px; color:var(--muted); margin-bottom:8px;}
+  .field input, .field textarea{
+    width:100%; border:1px solid var(--line); background:#fff; padding:14px 16px;
+    font-family:'Jost', sans-serif; font-size:14.5px; color:var(--ink); border-radius:2px;
+  }
+  .field textarea{min-height:120px; resize:vertical;}
+  .field input:focus, .field textarea:focus{outline:2px solid var(--rose); outline-offset:1px;}
+  .contact-form button{
+    margin-top:6px; padding:16px; background:var(--ink); color:#fff; border:none;
+    font-family:'Jost', sans-serif; font-size:13px; letter-spacing:1.5px; cursor:pointer;
+  }
+  .contact-form button:hover{opacity:.88;}
+
+  footer{padding:40px 60px; text-align:center; font-size:12.5px; color:var(--muted); border-top:1px solid var(--line);}
+
+  @media (max-width: 980px){
+    header{padding:20px 24px;}
+    nav{display:none;}
+    .hero{grid-template-columns:1fr;}
+    .hero-copy{padding:48px 24px;}
+    h1{font-size:38px;}
+    .service-grid{grid-template-columns:1fr;}
+    .about{padding:70px 24px;}
+    .about-grid{grid-template-columns:1fr; gap:48px;}
+    .gallery{padding:70px 24px;}
+    .gallery-grid{grid-template-columns:repeat(2,1fr);}
+    .quote-grid{grid-template-columns:1fr; gap:32px;}
+    .contact{padding:60px 24px;}
+    .contact-grid{grid-template-columns:1fr; gap:48px;}
+  }
+</style>
+</head>
+<body>
+
+  <header>
+    <div class="logo">
+      <div class="name">Nicolett</div>
+      <div class="sub">STUDIO DE BELLEZA</div>
+    </div>
+    <nav>
+      <a href="#servicios">SERVICIOS</a>
+      <a href="#nosotras">NOSOTRAS</a>
+      <a href="#galeria">GALERÍA</a>
+      <a href="#contacto">CONTACTO</a>
+    </nav>
+    <div class="header-actions">
+      <button class="btn-ghost">INICIAR SESIÓN</button>
+      <button class="btn-solid">CREAR CUENTA</button>
+    </div>
+  </header>
+
+  <!-- HERO -->
+  <section class="hero">
+    <div class="hero-copy">
+      <div class="eyebrow">SALÓN DE BELLEZA · PROVIDENCIA, SANTIAGO</div>
+      <h1>El arte de<br><em>hacerte sentir</em><br>hermosa</h1>
+      <p>En Nicolett Studio encontrarás un espacio íntimo dedicado al cuidado y realce de tu belleza natural. Profesionales certificadas, productos premium y una experiencia que querrás repetir.</p>
+      <div class="cta-row">
+        <button class="btn-solid">CONTACTAR</button>
+        <button class="btn-ghost">VER SERVICIOS</button>
+      </div>
+      <div class="stats">
+        <div class="stat"><b>8+</b><span>Años de experiencia</span></div>
+        <div class="stat"><b>2.400+</b><span>Clientas felices</span></div>
+        <div class="stat"><b>6</b><span>Profesionales</span></div>
+      </div>
+    </div>
+    <div class="hero-image">[ Reemplazar por foto del salón ]</div>
+  </section>
+
+  <!-- SERVICIOS -->
+  <section class="services" id="servicios">
+    <div class="container">
+      <div class="services-head">
+        <div class="eyebrow">LO QUE OFRECEMOS</div>
+        <h2>Nuestros servicios</h2>
+      </div>
+    </div>
+    <div class="container">
+      <div class="service-grid">
+        <div class="service-card">
+          <span class="num">01</span>
+          <h3>Colorimetría</h3>
+          <p>Diagnóstico personalizado de color, tinte, balayage y decoloración con productos de alta gama.</p>
+          <div class="price">Desde $25.000</div>
+        </div>
+        <div class="service-card">
+          <span class="num">02</span>
+          <h3>Corte &amp; Estilo</h3>
+          <p>Cortes modernos y clásicos adaptados a tu tipo de rostro, con secado y peinado incluido.</p>
+          <div class="price">Desde $12.000</div>
+        </div>
+        <div class="service-card">
+          <span class="num">03</span>
+          <h3>Tratamientos</h3>
+          <p>Hidratación profunda, keratina, botox capilar y reconstrucción para cabello dañado.</p>
+          <div class="price">Desde $18.000</div>
+        </div>
+        <div class="service-card">
+          <span class="num">04</span>
+          <h3>Manicure &amp; Pedicure</h3>
+          <p>Semipermanente, gel, nail art y spa de manos. Uñas que hablan por ti.</p>
+          <div class="price">Desde $8.000</div>
+        </div>
+        <div class="service-card">
+          <span class="num">05</span>
+          <h3>Maquillaje</h3>
+          <p>Maquillaje social, novia y eventos especiales. Prueba previa incluida en bodas.</p>
+          <div class="price">Desde $22.000</div>
+        </div>
+        <div class="service-card">
+          <span class="num">06</span>
+          <h3>Depilación</h3>
+          <p>Cera caliente y fría, hilo facial y depilación con láser de diodo. Resultados duraderos.</p>
+          <div class="price">Desde $5.000</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- NOSOTRAS -->
+  <section class="about" id="nosotras">
+    <div class="about-grid">
+      <div class="about-photo">
+        [ Reemplazar por foto de un tratamiento en proceso ]
+        <div class="about-badge"><b>8</b><span>AÑOS DE PASIÓN</span></div>
+      </div>
+      <div class="about-copy">
+        <div class="eyebrow">NUESTRA HISTORIA</div>
+        <h2>Creamos belleza <em>con propósito</em></h2>
+        <p>Nicolett Studio de Belleza nació del sueño de crear un espacio donde cada clienta se sienta vista y valorada. Fundado en 2016 en Providencia, hemos crecido hasta convertirnos en un referente del bienestar estético en Santiago.</p>
+        <p>Nuestro equipo de 6 especialistas se capacita permanentemente en las últimas tendencias y técnicas.</p>
+        <ul class="about-list">
+          <li>Productos 100% libres de parabenos</li>
+          <li>Certificadas en colorimetría avanzada</li>
+          <li>Agenda online disponible las 24 horas</li>
+        </ul>
+      </div>
+    </div>
+  </section>
+
+  <!-- GALERIA -->
+  <section class="gallery" id="galeria">
+    <div class="gallery-head">
+      <div>
+        <div class="eyebrow">NUESTRO TRABAJO</div>
+        <h2 style="margin:0;">Galería</h2>
+      </div>
+      <a href="#">VER MÁS EN INSTAGRAM →</a>
+    </div>
+    <div class="gallery-grid">
+      <div>Foto 1</div>
+      <div style="grid-row: span 2;">Foto 2</div>
+      <div>Foto 3</div>
+      <div>Foto 4</div>
+      <div>Foto 5</div>
+      <div>Foto 6</div>
+      <div>Foto 7</div>
+    </div>
+  </section>
+
+  <!-- TESTIMONIOS -->
+  <section class="testimonials">
+    <div class="eyebrow">LO QUE DICEN</div>
+    <h2>Nuestras clientas</h2>
+    <div class="quote-grid">
+      <div class="quote-card">
+        <p>"El balayage quedó perfecto. Nicolett entendió exactamente lo que quería. ¡Ya voy tres veces y siempre salgo feliz!"</p>
+        <b>Valentina R.</b>
+        <span>COLORIMETRÍA</span>
+      </div>
+      <div class="quote-card">
+        <p>"El ambiente del salón es increíble, muy acogedor. La manicure duró más de tres semanas impecable."</p>
+        <b>Camila S.</b>
+        <span>MANICURE GEL</span>
+      </div>
+      <div class="quote-card">
+        <p>"Me hicieron el maquillaje de mi matrimonio y lloré de emoción. Profesionales en todo sentido."</p>
+        <b>Isidora M.</b>
+        <span>MAQUILLAJE NOVIA</span>
+      </div>
+    </div>
+  </section>
+
+  <!-- CONTACTO -->
+  <div class="contact-bar"></div>
+  <section class="contact" id="contacto">
+    <div class="contact-grid">
+      <div class="contact-left">
+        <div class="eyebrow">ESCRÍBENOS</div>
+        <h2>¿Tienes alguna <em>consulta?</em></h2>
+        <p>¿Quieres saber más sobre algún servicio, disponibilidad o precios? Rellena el formulario o contáctanos directamente. Respondemos a la brevedad.</p>
+        <ul class="info-list">
+          <li>
+            <div>
+              <span class="label">DIRECCIÓN</span>
+              <span class="value">Av. Providencia 1962, of. 302<br>Providencia, Santiago</span>
+            </div>
+          </li>
+          <li>
+            <div>
+              <span class="label">TELÉFONO / WHATSAPP</span>
+              <span class="value">+56 9 8765 4321</span>
+            </div>
+          </li>
+          <li>
+            <div>
+              <span class="label">EMAIL</span>
+              <span class="value">hola@nicolettstudio.cl</span>
+            </div>
+          </li>
+          <li>
+            <div>
+              <span class="label">HORARIO DE ATENCIÓN</span>
+              <span class="value">Lunes a viernes 9:00 – 20:00<br>Sábado 9:00 – 18:00</span>
+            </div>
+          </li>
+        </ul>
+        <div class="info-box">
+          Para <strong>reservar hora</strong>, crea una cuenta o inicia sesión. Desde tu perfil puedes gestionar tus citas fácilmente.<br>
+          <a href="#">CREAR CUENTA →</a>
+        </div>
+      </div>
+      <form class="contact-form" onsubmit="return false;">
+        <div class="field">
+          <label>NOMBRE COMPLETO</label>
+          <input type="text" placeholder="Valentina González">
+        </div>
+        <div class="field">
+          <label>EMAIL DE CONTACTO</label>
+          <input type="email" placeholder="valentina@ejemplo.cl">
+        </div>
+        <div class="field">
+          <label>ASUNTO</label>
+          <input type="text" placeholder="Consulta sobre colorimetría">
+        </div>
+        <div class="field">
+          <label>MENSAJE</label>
+          <textarea placeholder="Cuéntanos en qué podemos ayudarte..."></textarea>
+        </div>
+        <button type="submit">ENVIAR MENSAJE</button>
+      </form>
+    </div>
+  </section>
+
+  <footer>
+    © 2026 Nicolett Studio de Belleza. Todos los derechos reservados.
+  </footer>
+
+</body>
+</html>

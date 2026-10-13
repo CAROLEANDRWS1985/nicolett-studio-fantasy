@@ -1,0 +1,63 @@
+.- Base de Datos Vacias
+    Regiones        GET Todas Las Regiones
+    Provincias      Get De las provincias de una region
+    Comunas         Get De una Provincia
+    Roles           
+
+.- Poblar Datos(**********************)
+
+   
+
+.- Negocio
+   Comprar de productos.
+    [
+        {codigo:p1,cantidad:19,precio_compra:200},
+        {codigo:p2,cantidad:19,precio_compra:200},
+        {codigo:p3,cantidad:19,precio_compra:200},
+        {codigo:p4,cantidad:19,precio_compra:200},
+    ]
+
+
+{
+    rut:1,
+    nombre:carlos ojeda
+    direccion:83783
+    postoal_codigo:837373
+    fecha_compra:01/01/01
+    hora_compra:01/01/01
+    sucursal_retiro = 'S1'
+    productos:[
+        {codigo:p1,cantidad:10,total:200},
+        {codigo:p2,cantidad:14,total:200},
+    ]
+}
+Adentro, en la misma operacion ==> moovimiento de los productos
+        [
+            {codigo:p1,cantidad:7,bodega:b2},
+            {codigo:p1,cantidad:9,bodega:b3},
+            {codigo:p1,cantidad:3,bodega:b1},
+            {codigo:p2,cantidad:3,bodega:b1},
+        ]
+
+Nro de Boleta==> Nro Pedido
+
+Cliente Retira
+Guia Deddespacho
+    
+
+
+{
+    rut:1,
+    nombre:carlos ojeda
+    direccion:83783
+    rut_Retira:10
+    fecha_retira:
+    postoal_codigo:837373
+    fecha_compra:01/01/01
+    hora_compra:01/01/01
+    sucursal_retiro = 'S1'
+    productos:[
+        {codigo:p1,cantidad:10,total:200},
+        {codigo:p2,cantidad:14,total:200},
+    ]
+}    

@@ -1,0 +1,15 @@
+{% extends 'ventas/recuperar_base.html' %}
+{% block contenido %}
+{% if validlink %}
+<h2>🔑 Nueva clave</h2>
+<form method="POST">
+    {% csrf_token %}
+    {{ form.as_p }}
+    <button type="submit">Guardar clave</button>
+</form>
+{% else %}
+<h2>Enlace no válido</h2>
+<p>Este enlace ya se usó o venció. Pide uno nuevo.</p>
+<p class="enlaces"><a href="{% url 'password_reset' %}">Recuperar clave</a></p>
+{% endif %}
+{% endblock %}

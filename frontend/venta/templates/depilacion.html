@@ -1,0 +1,242 @@
+{% extends 'index.html' %}
+{% block margarita %}
+
+<h1 class="title">Depilacion</h1>
+
+
+<div id="coloracion-messages"></div>
+<form >
+   <div class="form-row">
+    <div class="form-group">
+      <label for="id">Id Coloracion</label>
+      <input type="text" id="id" name="id" required>
+    </div>
+    <div class="form-group">
+      <label for="username">Tipo</label>
+      <input type="text" id="tipo" name="tipo" required>
+    </div>
+    <div class="form-group">
+        <label for="username">Precio</label>
+        <input type="text" id="precio" name="precio" required>
+      </div>
+  
+    
+    <button type="button" onclick="fnAgregarDepilacion()">Agregar</button>
+    <button type="button" onclick="fnEliminarDepilacion()">Eliminar</button>
+    <button type="button" onclick="fnActualizarDepilacion()">Actualizar</button>
+</form>
+
+   <div id="objCata">
+    
+   </div>
+    
+ 
+
+<script>
+  $( document ).ready(function() {
+  
+  catalogoListarInnerHtml ()
+});
+
+function catalogoListarInnerHtml(){
+      var pathUrl= "http://localhost:9010/ventas/pelu/depilacion"
+      $.ajax({
+          type: "GET",      // GET, PUT, POST, DELETE
+          async: false,      // Sincrónico
+          url:pathUrl  ,  // Observe que agrego el rut
+          cache: false,
+          dataType: "json",             // Formato de envio
+          beforeSend: function (data){
+              // Método de ejecuta antes de enviar
+              console.log('... cargando...');
+          }
+          , error: function (data) {
+              alert("Error " + data)
+              //si hay un error mostramos un mensaje
+              console.log('Tenemos problemas Houston ' +JSON.stringify(data));
+          },
+          success: function (data) {
+              //alert("Success" + data)
+              if (!data.OK){
+                  alert(data.msg)
+                  return
+              }                
+              var stHtml = `
+              <table class="table table-hover">
+  <thead>
+    <tr>
+      <th scope="col">#</th>
+      <th scope="col">Id</th>
+      <th scope="col">Tipo</th>
+      <th scope="col">Precio</th>
+    </tr>
+  </thead>
+  <tbody>`
+              for(var x=0;x<data.registro.length;x++){
+                  reg = data.registro [x]
+                     stHtml += `
+                      <tr>
+      <th scope="row">1</th>
+      <td>${reg.id}</td>
+      <td>${reg.tipo}</td>
+      <td>${reg.precio}</td>
+      <td><button type="button" onclick='fnEditarDepilacion(${reg.id})'> editar
+        </button></td>
+    </tr>
+                    
+                     `
+                    
+              }
+              stHtml += `
+               </tbody>
+</table>
+              `
+              document.getElementById("objCata").innerHTML = stHtml
+          }
+      });
+
+  }
+  function fnEditarDepilacion(idDepilacion){
+// alert(idColoracion)
+var pathUrl= "http://localhost:9010/ventas/pelu/depilacion/" + idDepilacion
+
+      $.ajax({
+          type: "GET",      // GET, PUT, POST, DELETE
+          async: false,      // Sincrónico
+          url:pathUrl  ,  // Observe que agrego el rut
+          cache: false,
+          dataType: "json",             // Formato de envio
+          beforeSend: function (data){
+              // Método de ejecuta antes de enviar
+              console.log('... cargando...');
+          }
+          , error: function (data) {
+              //alert("Error " + data)
+              //si hay un error mostramos un mensaje
+              console.log('Tenemos problemas Houston ' +JSON.stringify(data));
+          },
+          success: function (data) {
+              //alert("Success" + data)
+              if (!data.OK){
+                  alert(data.msg)
+                  return
+              }  
+              document.getElementById('id') .value=data.registro.id             
+              document.getElementById('tipo') .value=data.registro.tipo
+              document.getElementById('precio') .value=data.registro.precio
+            
+          }
+      });
+  }
+  function fnEliminarDepilacion(){
+// alert(idProductos)
+var pathUrl= "http://localhost:9010/ventas/pelu/depilacion/" + document.getElementById ("id").value
+
+      $.ajax({
+          type: "DELETE",      // GET, PUT, POST, DELETE
+          async: false,      // Sincrónico
+          url:pathUrl  ,  // Observe que agrego el rut
+          cache: false,
+          dataType: "json",             // Formato de envio
+          beforeSend: function (data){
+              // Método de ejecuta antes de enviar
+              console.log('... cargando...');
+          }
+          , error: function (data) {
+              //alert("Error " + data)
+              //si hay un error mostramos un mensaje
+              console.log('Tenemos problemas Houston ' +JSON.stringify(data));
+          },
+          success: function (data) {
+              //alert("Success" + data)
+              
+              alert ("Eliminado")
+              catalogoListarInnerHtml ()
+            
+          }
+      });
+  }
+  function fnActualizarDepilacion(){
+// alert(idProductos)
+var pathUrl= "http://localhost:9010/ventas/pelu/depilacion/" + document.getElementById ("id").value
+var parametros= `
+{
+        "id":${document.getElementById ("id").value},
+        "tipo": "${document.getElementById ("tipo").value}",
+        "precio": "${document.getElementById("precio").value}"
+        
+    }
+`
+//"imagen": "${document.getElementById ("imagen").value}"
+
+      $.ajax({
+          type: "PUT",      // GET, PUT, POST, DELETE
+          data: parametros, 
+          async: false,      // Sincrónico
+          url:pathUrl  ,  // Observe que agrego el rut
+          cache: false,
+          dataType: "json",             // Formato de envio
+          beforeSend: function (data){
+              // Método de ejecuta antes de enviar
+              console.log('... cargando...');
+          }
+          , error: function (data) {
+              //alert("Error " + data)
+              //si hay un error mostramos un mensaje
+              console.log('Tenemos problemas Houston ' +JSON.stringify(data));
+          },
+          success: function (data) {
+              //alert("Success" + data)
+              if (!data.OK){
+                  alert(data.msg)
+                  return
+              }  
+              alert ("Actualizado")
+              catalogoListarInnerHtml ()
+            
+          }
+      });
+  }
+  function fnAgregarDepilacion(){
+// alert(idProductos)
+var pathUrl= "http://localhost:9010/ventas/pelu/depilacion/" 
+var parametros= `
+{
+        "id":${document.getElementById ("id").value},
+        "tipo": "${document.getElementById ("tipo").value}",
+        "precio": "${document.getElementById ("precio").value}"
+        
+    }
+`
+
+      $.ajax({
+          type: "POST",      // GET, PUT, POST, DELETE
+          data: parametros, 
+          async: false,      // Sincrónico
+          url:pathUrl  ,  // Observe que agrego el rut
+          cache: false,
+          dataType: "json",             // Formato de envio
+          beforeSend: function (data){
+              // Método de ejecuta antes de enviar
+              console.log('... cargando...');
+          }
+          , error: function (data) {
+              //alert("Error " + data)
+              //si hay un error mostramos un mensaje
+              console.log('Tenemos problemas Houston ' +JSON.stringify(data));
+          },
+          success: function (data) {
+              //alert("Success" + data)
+              if (!data.OK){
+                  alert(data.msg)
+                  return
+              }  
+              alert ("Agrado")
+              catalogoListarInnerHtml ()
+            
+          }
+      });
+  }
+</script>
+
+{% endblock %}

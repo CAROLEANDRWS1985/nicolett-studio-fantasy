@@ -1,0 +1,52 @@
+{% extends "ventas/base_admin.html" %}
+{% block title %}Usuarios{% endblock %}
+{% block body_class %}page-usuarios{% endblock %}
+
+{% block content %}
+<div class="main-header">
+    <div>
+        <h2>Usuarios registradas</h2>
+    </div>
+</div>
+
+<div class="kpi-grid" style="grid-template-columns: repeat(3, 1fr);">
+    <div class="kpi-card">
+        <div class="label">Clientas registradas</div>
+        <div class="value">{{ total_clientas }}</div>
+    </div>
+    <div class="kpi-card">
+        <div class="label">Clientas activas</div>
+        <div class="value">{{ clientas_activas }}</div>
+    </div>
+    <div class="kpi-card">
+        <div class="label">Nuevas este mes</div>
+        <div class="value">{{ nuevas_mes }}</div>
+    </div>
+</div>
+
+<div class="panel">
+    <div class="panel-header">Clientas recientes</div>
+    <table>
+        <thead>
+            <tr>
+                <th>Nombre</th>
+                <th>Email</th>
+                <th>Visitas</th>
+                <th>Último servicio</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for item in clientas_recientes %}
+            <tr>
+                <td><strong>{{ item.cliente.nombre }}</strong></td>
+                <td>{{ item.cliente.email|default:"—" }}</td>
+                <td>{{ item.num_visitas }}</td>
+                <td>{{ item.ultimo_servicio }}</td>
+            </tr>
+            {% empty %}
+            <tr><td colspan="4" style="color:var(--text-gray)">Aún no hay clientas registradas.</td></tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+{% endblock %}
