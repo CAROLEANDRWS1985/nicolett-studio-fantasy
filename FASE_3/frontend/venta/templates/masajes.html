@@ -1,0 +1,242 @@
+{% extends 'index.html' %}
+{% block margarita %}
+
+<h1 class="title">Masajes</h1>
+
+
+<div id="masajes"></div>
+<form >
+   <div class="form-row">
+    <div class="form-group">
+      <label for="id">Id Masajes</label>
+      <input type="text" id="id" name="id" required>
+    </div>
+    <div class="form-group">
+      <label for="username">Tipos de masajes</label>
+      <input type="text" id="tipo" name="tipo" required>
+    </div>
+  <div class="form-group">
+      <label for="Precio">Valor del masajes</label>
+      <input type="text" id="precio" name="precio" required>
+    </div>
+    
+    
+    <button type="button" onclick="fnAgregarMasaje()">Agregar</button>
+    <button type="button" onclick="fnEliminarMasaje()">Eliminar</button>
+    <button type="button" onclick="fnActualizarMasaje()">Actualizar</button>
+</form>
+
+   <div id="objCata">
+    
+   </div>
+    
+ 
+
+<script>
+  $( document ).ready(function() {
+  
+  catalogoListarInnerHtml ()
+});
+
+function catalogoListarInnerHtml(){
+      var pathUrl= "http://localhost:9010/ventas/pelu/masajes"
+      $.ajax({
+          type: "GET",      // GET, PUT, POST, DELETE
+          async: false,      // Sincrónico
+          url:pathUrl  ,  // Observe que agrego el rut
+          cache: false,
+          dataType: "json",             // Formato de envio
+          beforeSend: function (data){
+              // Método de ejecuta antes de enviar
+              console.log('... cargando...');
+          }
+          , error: function (data) {
+              //alert("Error " + data)
+              //si hay un error mostramos un mensaje
+              console.log('Tenemos problemas Houston ' +JSON.stringify(data));
+          },
+          success: function (data) {
+              //alert("Success" + data)
+              if (!data.OK){
+                  alert(data.msg)
+                  return
+              }                
+              var stHtml = `
+              <table class="table table-hover">
+  <thead>
+    <tr>
+      
+      <th scope="col">Id_masaje</th>
+      <th scope="col">Precio</th>
+      <th scope="col">Tipo</th>
+    </tr>
+  </thead>
+  <tbody>`
+              for(var x=0;x<data.registro.length;x++){
+                  reg = data.registro [x]
+                     stHtml += `
+                      <tr>
+      
+      <td>${reg.id}</td>
+      <td>${reg.precio}</td>
+      <td>${reg.tipo}</td>
+      <td><button type="button" onclick='fnEditarMasaje(${reg.id})'> editar
+        </button></td>
+    </tr>
+                    
+                     `
+                    
+              }
+              stHtml += `
+               </tbody>
+</table>
+              `
+              document.getElementById("objCata").innerHTML = stHtml
+          }
+      });
+
+  }
+  function fnEditarMasaje(idMasajes){
+// alert(idProductos)
+var pathUrl= "http://localhost:9010/ventas/pelu/masajes/" + idMasajes
+
+      $.ajax({
+          type: "GET",      // GET, PUT, POST, DELETE
+          async: false,      // Sincrónico
+          url:pathUrl  ,  // Observe que agrego el rut
+          cache: false,
+          dataType: "json",             // Formato de envio
+          beforeSend: function (data){
+              // Método de ejecuta antes de enviar
+              console.log('... cargando...');
+          }
+          , error: function (data) {
+              //alert("Error " + data)
+              //si hay un error mostramos un mensaje
+              console.log('Tenemos problemas Houston ' +JSON.stringify(data));
+          },
+          success: function (data) {
+              //alert("Success" + data)
+              if (!data.OK){
+                  alert(data.msg)
+                  return
+              }  
+              document.getElementById('id') .value=data.registro.id             
+              document.getElementById('precio') .value=data.registro.precio
+              document.getElementById('tipo') .value=data.registro.tipo
+            
+          }
+      });
+  }
+  function fnEliminarMasaje(){
+// alert(idmasajes)
+var pathUrl= "http://localhost:9010/ventas/pelu/masajes/" + document.getElementById ("id").value
+
+      $.ajax({
+          type: "DELETE",      // GET, PUT, POST, DELETE
+          async: false,      // Sincrónico
+          url:pathUrl  ,  // Observe que agrego el rut
+          cache: false,
+          dataType: "json",             // Formato de envio
+          beforeSend: function (data){
+              // Método de ejecuta antes de enviar
+              console.log('... cargando...');
+          }
+          , error: function (data) {
+              //alert("Error " + data)
+              //si hay un error mostramos un mensaje
+              console.log('Tenemos problemas Houston ' +JSON.stringify(data));
+          },
+          success: function (data) {
+              //alert("Success" + data)
+              
+              alert ("Eliminado")
+              catalogoListarInnerHtml ()
+            
+          }
+      });
+  }
+  function fnActualizarMasaje(){
+// alert(idMasajes)
+var pathUrl= "http://localhost:9010/ventas/pelu/masajes/" + document.getElementById ("id").value
+var parametros= `
+{
+        "id":${document.getElementById ("id").value},
+        "precio": "${document.getElementById ("precio").value}",
+        "tipo": "${document.getElementById ("tipo").value}"
+        
+        
+    }
+`
+      $.ajax({
+          type: "PUT",      // GET, PUT, POST, DELETE
+          data: parametros, 
+          async: false,      // Sincrónico
+          url:pathUrl  ,  // Observe que agrego el rut
+          cache: false,
+          dataType: "json",             // Formato de envio
+          beforeSend: function (data){
+              // Método de ejecuta antes de enviar
+              console.log('... cargando...');
+          }
+          , error: function (data) {
+              //alert("Error " + data)
+              //si hay un error mostramos un mensaje
+              console.log('Tenemos problemas Houston ' +JSON.stringify(data));
+          },
+          success: function (data) {
+              //alert("Success" + data)
+              if (!data.OK){
+                  alert(data.msg)
+                  return
+              }  
+              alert ("Actualizado")
+              catalogoListarInnerHtml ()
+            
+          }
+      });
+  }
+  function fnAgregarMasaje(){
+// alert(idProductos)
+var pathUrl= "http://localhost:9010/ventas/pelu/masajes/" 
+var parametros= `
+{
+        "id":${document.getElementById ("id").value},
+        "tipo": "${document.getElementById ("tipo").value}",
+        "precio": "${document.getElementById ("precio").value}"
+        
+        
+    }
+`
+
+      $.ajax({
+          type: "POST",      // GET, PUT, POST, DELETE
+          data: parametros, 
+          async: false,      // Sincrónico
+          url:pathUrl  ,  // Observe que agrego el rut
+          cache: false,
+          dataType: "json",             // Formato de envio
+          beforeSend: function (data){
+              // Método de ejecuta antes de enviar
+              console.log('... cargando...');
+          }
+          , error: function (data) {
+              //alert("Error " + data)
+              //si hay un error mostramos un mensaje
+              console.log('Tenemos problemas Houston ' +JSON.stringify(data));
+          },
+          success: function (data) {
+              //alert("Success" + data)
+              if (!data.OK){
+                  alert(data.msg)
+                  return
+              }  
+              alert ("Agregado")
+              catalogoListarInnerHtml ()
+            
+          }
+      });
+  }
+</script>
+
+{% endblock %}

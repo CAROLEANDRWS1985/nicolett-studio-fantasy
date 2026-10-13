@@ -1,0 +1,7 @@
+.btn{display:inline-block;background:#1f1714;color:#fff;border:0;padding:10px 18px;font-size:12px;font-weight:600;letter-spacing:.08em;text-transform:uppercase;text-decoration:none;cursor:pointer}
+.btn:hover{background:#b8895a}
+.btn-sec{background:#f4efe8;color:#1f1714;border:1px solid #e6ddd2}
+.btn-del{background:#fff;color:#a33;border:1px solid #e0c4c4}
+.card{background:#fff;border:1px solid #e6ddd2;padding:24px;max-width:640px}
+.msg{background:#fff;border-left:3px solid #b8895a;padding:10px 14px;margin:12px 0}
+.card input,.card select,.card textarea{width:100%;padding:10px 12px;border:1px solid #e6ddd2;background:#fff;font:inherit}

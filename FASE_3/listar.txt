@@ -1,0 +1,52 @@
+function listarDuenio() {
+  let pathUrl = url_api + lo_path;
+  $.ajax({
+    type: "GET",
+    async: false,
+    url: pathUrl,
+    cache: false,
+    dataType: "json",
+    beforeSend: function (data) {
+      console.log('... cargando...');
+    },
+    error: function (data) {
+      console.log('Tenemos problemas Houston ' + JSON.stringify(data));
+    },
+    success: function (data) {
+      if (!data.OK) {
+        alert(data.msg);
+        return;
+      }
+      let tabla = $("#tabla tbody");
+      tabla.empty(); // Limpiamos la tabla antes de rellenarla
+      let encabezado = $("#tabla thead")
+      encabezado.empty();
+      // Añadir la fila de títulos
+      let headerRow = `
+        <tr>
+          <th>Nombre</th>
+          <th>Run</th>
+          <th>Direccion</th>
+          <th>E-mail</th>
+          <th>Telefono</th>
+          <th>Acciones</th>
+        </tr>
+      `;
+      encabezado.append(headerRow);
+
+      for (let i = 0; i < data.registro.length; i++) {
+        let dueño = data.registro[i];
+        let fila = $("<tr>");
+        if (dueño.activo == 1) {
+          fila.append("<td id='lblNombre'>" + dueño.nombre_duenio + " " + dueño.appaterno_duenio + " " + dueño.apmaterno_duenio + "</td>");
+          fila.append("<td id='lblRun'>" + dueño.run + "-" + dueño.dv + "</td>");
+          fila.append("<td id='lblDireccion'>" + dueño.direccion_duenio + "</td>");
+          fila.append("<td id='lblEmail'>" + dueño.email_duenio + "</td>");
+          fila.append("<td id='lblNumCel'>" + dueño.numcel_duenio + "</td>");
+          fila.append("<td class='text-center'><div class='dropdown'><button type='button' class='btn p-0 dropdown-toggle hide-arrow' data-bs-toggle='dropdown'><i class='bx bx-dots-vertical-rounded'></i></button><div class='dropdown-menu'><a class='dropdown-item agregarMascota' data-bs-toggle='modal' data-bs-target='#exLargeModal'><i class='bx bx-plus-circle me-1'></i>Agregar mascota</a><a class='dropdown-item verMas' data-bs-toggle='modal' data-bs-target='#modalVerMasDuenio'><i class='bx bx-clipboard me-1'></i>Ver más</a><a class='dropdown-item eliminarDuenio' data-id='" + dueño.run + "'><i class='bx bx-trash me-1'></i>Eliminar</a></div></div></td>");
+          tabla.append(fila);
+        } else { }
+      }
+    }
+  });
+}

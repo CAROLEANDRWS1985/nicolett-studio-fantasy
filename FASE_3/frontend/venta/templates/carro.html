@@ -1,0 +1,242 @@
+{% extends 'index.html' %}
+{% block margarita %}
+
+<h1 class="title">Carrito</h1>
+
+
+<div id="carrito-messages"></div>
+<form >
+   <div class="form-row">
+    <div class="form-group">
+      <label for="id_carrito">Carrito</label>
+      <input type="text" id="id_carrito" name="id_carrito" required>
+    </div>
+    <div class="form-group">
+      <label for="username">Productos</label>
+      <input type="text" id="productos" name="productos" required>
+    </div>
+    <div class="form-group">
+        <label for="username">Total</label>
+        <input type="text" id="Total" name="Total" required>
+    </div>
+  
+    
+    <button type="button" onclick="fnAgregarCarrito()">Agregar</button>
+    <button type="button" onclick="fnEliminarCarrito()">Eliminar</button>
+    <button type="button" onclick="fnActualizarCarrito()">Actualizar</button>
+</form>
+
+   <div id="objCata">
+    
+   </div>
+    
+ 
+
+<script>
+  $( document ).ready(function() {
+  
+  catalogoListarInnerHtml ()
+});
+
+function catalogoListarInnerHtml(){
+      var pathUrl= "http://localhost:9010/ventas/pelu/carrito"
+      $.ajax({
+          type: "GET",      // GET, PUT, POST, DELETE
+          async: false,      // Sincrónico
+          url:pathUrl  ,  // Observe que agrego el rut
+          cache: false,
+          dataType: "json",             // Formato de envio
+          beforeSend: function (data){
+              // Método de ejecuta antes de enviar
+              console.log('... cargando...');
+          }
+          , error: function (data) {
+              //alert("Error " + data)
+              //si hay un error mostramos un mensaje
+              console.log('Tenemos problemas Houston ' +JSON.stringify(data));
+          },
+          success: function (data) {
+              //alert("Success" + data)
+              if (!data.OK){
+                  alert(data.msg)
+                  return
+              }                
+              var stHtml = `
+              <table class="table table-hover">
+  <thead>
+    <tr>
+      
+      <th scope="col">id_carrito</th>
+      <th scope="col">productos</th>
+      <th scope="col">Total</th>
+    </tr>
+  </thead>
+  <tbody>`
+              for(var x=0;x<data.registro.length;x++){
+                  reg = data.registro [x]
+                     stHtml += `
+                      <tr>
+      
+      <td>${reg.id_carrito}</td>
+      <td>${reg.productos}</td>
+      <td>${reg.Total}</td>
+      <td><button type="button" onclick='fnEditarCarrito(${reg.id_carrito})'> editar
+        </button></td>
+    </tr>
+                    
+                     `
+                    
+              }
+              stHtml += `
+               </tbody>
+</table>
+              `
+              document.getElementById("objCata").innerHTML = stHtml
+          }
+      });
+
+  }
+  function fnEditarCarrito(id_Carrito){
+// alert(idColoracion)
+var pathUrl= "http://localhost:9010/ventas/pelu/carrito/" + id_Carrito
+
+      $.ajax({
+          type: "GET",      // GET, PUT, POST, DELETE
+          async: false,      // Sincrónico
+          url:pathUrl  ,  // Observe que agrego el rut
+          cache: false,
+          dataType: "json",             // Formato de envio
+          beforeSend: function (data){
+              // Método de ejecuta antes de enviar
+              console.log('... cargando...');
+          }
+          , error: function (data) {
+              //alert("Error " + data)
+              //si hay un error mostramos un mensaje
+              console.log('Tenemos problemas Houston ' +JSON.stringify(data));
+          },
+          success: function (data) {
+              //alert("Success" + data)
+              if (!data.OK){
+                  alert(data.msg)
+                  return
+              }  
+              document.getElementById('id_carrito') .value=data.registro.id_carrito            
+              document.getElementById('productos') .value=data.registro.productos
+              document.getElementById('Total') .value=data.registro.Total
+            
+          }
+      });
+  }
+  function fnEliminarCarrito(){
+// alert(id_carrito)
+var pathUrl= "http://localhost:9010/ventas/pelu/carrito/" + document.getElementById ("id_carrito").value
+
+      $.ajax({
+          type: "DELETE",      // GET, PUT, POST, DELETE
+          async: false,      // Sincrónico
+          url:pathUrl  ,  // Observe que agrego el rut
+          cache: false,
+          dataType: "json",             // Formato de envio
+          beforeSend: function (data){
+              // Método de ejecuta antes de enviar
+              console.log('... cargando...');
+          }
+          , error: function (data) {
+              //alert("Error " + data)
+              //si hay un error mostramos un mensaje
+              console.log('Tenemos problemas Houston ' +JSON.stringify(data));
+          },
+          success: function (data) {
+              //alert("Success" + data)
+              
+              alert ("Eliminado")
+              catalogoListarInnerHtml ()
+            
+          }
+      });
+  }
+  function fnActualizarCarrito(){
+// alert(idProductos)
+var pathUrl= "http://localhost:9010/ventas/pelu/carrito/" + document.getElementById ("id_carrito").value
+var parametros= `
+{
+        "id":${document.getElementById ("id_carrito").value},
+        "productos": "${document.getElementById ("productos").value}",
+        "Total": "${document.getElementById ("Total").value}"
+        
+    }
+`
+//"imagen": "${document.getElementById ("imagen").value}"
+
+      $.ajax({
+          type: "PUT",      // GET, PUT, POST, DELETE
+          data: parametros, 
+          async: false,      // Sincrónico
+          url:pathUrl  ,  // Observe que agrego el rut
+          cache: false,
+          dataType: "json",             // Formato de envio
+          beforeSend: function (data){
+              // Método de ejecuta antes de enviar
+              console.log('... cargando...');
+          }
+          , error: function (data) {
+              //alert("Error " + data)
+              //si hay un error mostramos un mensaje
+              console.log('Tenemos problemas Houston ' +JSON.stringify(data));
+          },
+          success: function (data) {
+              //alert("Success" + data)
+              if (!data.OK){
+                  alert(data.msg)
+                  return
+              }  
+              alert ("Actualizado")
+              catalogoListarInnerHtml ()
+            
+          }
+      });
+  }
+  function fnAgregarCarrito(){
+// alert(idProductos)
+var pathUrl= "http://localhost:9010/ventas/pelu/carrito/" 
+var parametros= `
+{
+        "id":${document.getElementById ("id_carrito").value},
+        "productos": "${document.getElementById ("productos").value}",
+        "Total": "${document.getElementById ("Total").value}"
+        
+    }
+`
+
+      $.ajax({
+          type: "POST",      // GET, PUT, POST, DELETE
+          data: parametros, 
+          async: false,      // Sincrónico
+          url:pathUrl  ,  // Observe que agrego el rut
+          cache: false,
+          dataType: "json",             // Formato de envio
+          beforeSend: function (data){
+              // Método de ejecuta antes de enviar
+              console.log('... cargando...');
+          }
+          , error: function (data) {
+              //alert("Error " + data)
+              //si hay un error mostramos un mensaje
+              console.log('Tenemos problemas Houston ' +JSON.stringify(data));
+          },
+          success: function (data) {
+              //alert("Success" + data)
+              if (!data.OK){
+                  alert(data.msg)
+                  return
+              }  
+              alert ("Agregado")
+              catalogoListarInnerHtml ()
+            
+          }
+      });
+  }
+</script>
+
+{% endblock %}

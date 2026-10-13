@@ -1,0 +1,972 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Nicolett Studio de Belleza</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,500;0,600;1,500;1,600&family=Jost:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root{--cream:#F7F2EC;--cream-2:#F1EAE1;--ink:#231F1B;--ink-2:#2E2622;--rose:#C99387;--line:#E4DCD1;--muted:#6E655C;--gold:#D4B26A;--black:#121010;}
+  *{box-sizing:border-box;}
+  html{scroll-behavior:smooth;}
+  body{margin:0;font-family:'Jost',sans-serif;color:var(--ink);background:var(--cream);}
+  img{max-width:100%; display:block;}
+  .container{max-width:1240px; margin:0 auto; padding:0 60px;}
+
+  /* HEADER */
+  header{position:sticky; top:0; z-index:50; display:flex; align-items:center; justify-content:space-between; padding:24px 60px; background:var(--cream); border-bottom:1px solid var(--line);}
+  .logo{line-height:1.1;}
+  .logo .name{font-family:'Playfair Display',serif; font-size:26px; font-weight:600;}
+  .logo .sub{font-size:11px; letter-spacing:2px; color:var(--muted);}
+  nav{display:flex; align-items:center; gap:40px;}
+  nav a{text-decoration:none; color:var(--ink); font-size:14px; letter-spacing:1px;}
+  .header-actions{display:flex; align-items:center; gap:16px;}
+  .btn-ghost,.btn-solid{font-family:'Jost',sans-serif; font-size:13px; letter-spacing:1px; padding:12px 22px; border-radius:2px; cursor:pointer; border:1px solid var(--ink); background:transparent; color:var(--ink);}
+  .btn-solid{background:var(--ink); color:var(--cream);}
+  .btn-solid:hover{opacity:.88;}
+  .btn-ghost:hover{background:var(--ink); color:var(--cream);}
+
+  /* ICONO DEL CARRITO */
+  .nav-carrito{position:relative; display:inline-flex; align-items:center; justify-content:center; background:none; border:none; padding:6px; margin:0; color:var(--ink); cursor:pointer;}
+  .nav-carrito:hover{color:var(--rose);}
+  .carrito-contador{position:absolute; top:-6px; right:-8px; min-width:18px; height:18px; padding:0 4px; border-radius:9px; background:var(--rose); color:#fff; font-family:'Jost',sans-serif; font-size:11px; line-height:18px; text-align:center; display:none;}
+  .nav-carrito-mov{display:none;}
+
+  /* shared */
+  .eyebrow{font-size:12px; letter-spacing:2px; color:var(--rose); margin-bottom:20px;}
+  h2{font-family:'Playfair Display',serif; font-weight:500; font-size:42px; margin:0 0 16px;}
+  h2 em{font-style:italic; color:inherit;}
+
+  /* HERO */
+  .hero{display:grid; grid-template-columns:1fr 1fr; min-height:640px;}
+  .hero-copy{display:flex; flex-direction:column; justify-content:flex-start; padding:80px 80px 0;}
+  .hero-copy .eyebrow{color:var(--muted);}
+  h1{font-family:'Playfair Display',serif; font-weight:500; font-size:58px; line-height:1.08; margin:0 0 28px;}
+  h1 em{font-style:italic; color:var(--rose);}
+  .hero-copy p{max-width:420px; font-size:16px; line-height:1.7; color:var(--muted); margin-bottom:36px;}
+  .cta-row{display:flex; gap:16px; margin-bottom:64px;}
+  .stats{display:flex; gap:56px;}
+  .hero-image{position:relative; display:flex; align-items:center; justify-content:center; overflow:hidden;}
+  .hero-image img{transform-origin:60% 40%; animation:heroZoom 10s ease-in-out infinite alternate; will-change:transform;}
+  @keyframes heroZoom{
+    0%{transform:scale(1) translate(0,0);}
+    100%{transform:scale(1.18) translate(-3%,-2.5%);}
+  }
+  /* destello de luz que cruza la foto */
+  .hero-image::after{content:""; position:absolute; top:0; left:-60%; width:40%; height:100%; background:linear-gradient(100deg, rgba(255,255,255,0) 0%, rgba(255,255,255,.35) 50%, rgba(255,255,255,0) 100%); transform:skewX(-15deg); animation:heroBrillo 7s ease-in-out infinite; pointer-events:none;}
+  @keyframes heroBrillo{
+    0%{left:-60%;}
+    55%,100%{left:130%;}
+  }
+  @media (prefers-reduced-motion: reduce){ .hero-image img, .hero-image::after{animation:none;} }
+
+  /* SERVICIOS (carrusel automático) */
+  .services{background:var(--cream-2); padding:110px 0;}
+  .svc-head{display:flex; justify-content:space-between; align-items:flex-end; margin-bottom:40px; gap:20px;}
+  .svc-right{display:flex; align-items:center; gap:16px;}
+  .svc-ig{background:var(--black); color:var(--gold); text-decoration:none; font-size:12px; letter-spacing:1.5px; border:1px solid var(--gold); padding:12px 22px; border-radius:40px; white-space:nowrap;}
+  .svc-ig:hover{background:var(--gold); color:var(--black);}
+  .svc-nav{display:flex; gap:8px;}
+  .svc-nav button{width:44px; height:44px; border-radius:50%; border:1px solid var(--line); background:#fff; color:var(--ink); font-size:18px; cursor:pointer;}
+  .svc-nav button:hover{background:var(--ink); color:#fff;}
+  .svc-track{display:flex; gap:24px; overflow-x:auto; padding:4px 0 20px; scroll-snap-type:x mandatory; scroll-behavior:smooth; scrollbar-width:none;}
+  .svc-track::-webkit-scrollbar{display:none;}
+  .svc-card{flex:0 0 calc((100% - 48px) / 3); scroll-snap-align:start; position:relative; background:#fff; border-radius:10px; overflow:hidden; box-shadow:0 2px 8px rgba(0,0,0,.08); padding-bottom:22px;}
+  .svc-card img{width:100%; height:240px; object-fit:cover; object-position:center 30%;}
+  .svc-num{position:absolute; top:12px; left:12px; background:rgba(0,0,0,.6); color:#fff; font-size:12px; padding:2px 8px; border-radius:4px;}
+  .svc-card h3{font-family:'Playfair Display',serif; font-weight:600; font-size:22px; margin:18px 20px 8px;}
+  .svc-card p{margin:0 20px 14px; font-size:13.5px; line-height:1.6; color:var(--muted);}
+  .svc-price{margin:0 20px; font-weight:600; font-size:14px;}
+
+  /* LISTA DE SERVICIOS (etiquetas negras con letras doradas) */
+  .svc-lista{margin-top:48px; text-align:center;}
+  .svc-lista h3{font-family:'Playfair Display',serif; font-weight:500; font-size:26px; margin:0 0 24px;}
+  .svc-chips{display:flex; flex-wrap:wrap; justify-content:center; gap:12px;}
+  .svc-chip{background:var(--black); color:var(--gold); border:1px solid var(--gold); border-radius:40px; padding:12px 22px; font-size:12px; letter-spacing:1.5px; text-transform:uppercase;}
+
+  /* PRODUCTOS */
+  .prod-btns{display:flex; flex-direction:column; gap:8px;}
+  .btn-agregar{width:100%; padding:12px 22px; background:var(--ink); color:var(--cream); border:none; border-radius:2px; font-family:'Jost',sans-serif; font-size:12px; letter-spacing:1.5px; cursor:pointer;}
+  .btn-agregar:hover{background:var(--rose);}
+  .btn-agregar:disabled{opacity:.5; cursor:default; background:var(--ink);}
+  .btn-comprar-ahora{width:100%; padding:10px 22px; background:transparent; color:var(--ink); border:1px solid var(--ink); border-radius:2px; font-family:'Jost',sans-serif; font-size:11.5px; letter-spacing:1.5px; cursor:pointer;}
+  .btn-comprar-ahora:hover{background:var(--ink); color:var(--cream);}
+
+  /* RINCÓN KIDS */
+  .kids{background:var(--cream-2); padding:110px 60px;}
+  .kids-inner{max-width:1240px; margin:0 auto;}
+  .kids-intro{max-width:560px; font-size:15.5px; line-height:1.8; color:var(--muted); margin:0 0 40px;}
+  .kids-nota{margin-top:28px; padding:20px 26px; background:var(--cream); border-left:3px solid var(--rose); font-size:14px; line-height:1.7;}
+
+  /* CARRUSEL RINCÓN KIDS
+     La foto se muestra en su tamaño real (sin estirarla) para que se vea nítida.
+     Los lados tienen un dorado suave. Si lo quieres más fuerte, cambia #EADDB8 por #D4B26A (dorado) o por #F1EAE1 (crema). */
+  .kids-carousel{position:relative; margin:0 auto 40px; max-width:960px; border-radius:10px; overflow:hidden; aspect-ratio:16/9; background:#EADDB8; box-shadow:0 2px 8px rgba(0,0,0,.08); touch-action:pan-y;}
+  .kids-slide{position:absolute; inset:0; opacity:0; transition:opacity .5s ease; display:flex; align-items:center; justify-content:center;}
+  .kids-slide.activa{opacity:1;}
+  .kids-slide img{width:auto; height:auto; max-width:100%; max-height:100%; object-fit:contain;}
+  .kids-cap{position:absolute; left:0; right:0; bottom:0; padding:70px 28px 24px; background:linear-gradient(0deg, rgba(18,16,16,.75), rgba(18,16,16,0)); color:#fff; font-family:'Playfair Display',serif; font-size:24px;}
+  .kids-flecha{position:absolute; top:50%; transform:translateY(-50%); width:44px; height:44px; border-radius:50%; border:none; background:rgba(255,255,255,.85); color:var(--ink); font-size:18px; cursor:pointer; z-index:2;}
+  .kids-flecha:hover{background:#fff;}
+  .kids-flecha.prev{left:14px;}
+  .kids-flecha.next{right:14px;}
+  .kids-dots{position:absolute; right:20px; bottom:20px; display:flex; gap:8px; z-index:2;}
+  .kids-dots button{width:10px; height:10px; border-radius:50%; border:none; padding:0; background:rgba(255,255,255,.5); cursor:pointer;}
+  .kids-dots button.activa{background:var(--rose); transform:scale(1.3);}
+  @media (max-width:980px){ .kids-carousel{aspect-ratio:4/3;} .kids-cap{font-size:18px; padding:50px 18px 18px;} .kids-flecha{display:none;} }
+  @media (prefers-reduced-motion: reduce){ .kids-slide{transition:none;} }
+
+  /* NOSOTRAS */
+  .about{padding:110px 60px;}
+  .about-grid{display:grid; grid-template-columns:1fr 1fr; gap:80px; align-items:center; max-width:1240px; margin:0 auto;}
+  .about-photo{position:relative; aspect-ratio:4/5; background:linear-gradient(135deg,#6b4a3a,#c99387); display:flex; align-items:center; justify-content:center;}
+  .about-badge{position:absolute; right:-24px; bottom:-24px; background:var(--rose); color:#fff; padding:26px 30px; text-align:center;}
+  .about-badge b{font-family:'Playfair Display',serif; font-size:30px; display:block;}
+  .about-badge span{font-size:10.5px; letter-spacing:1.5px;}
+  .about h2{font-size:38px;}
+  .about p{font-size:15.5px; line-height:1.8; color:var(--muted); margin-bottom:20px; max-width:460px;}
+  .about-list{list-style:none; margin:32px 0 0; padding:0;}
+  .about-list li{display:flex; align-items:center; gap:16px; font-size:14.5px; padding:14px 0; border-top:1px solid var(--line);}
+  .about-list li:last-child{border-bottom:1px solid var(--line);}
+  .about-list li::before{content:""; width:24px; height:1px; background:var(--rose); flex-shrink:0;}
+
+  /* TESTIMONIOS */
+  .testimonials{background:var(--ink-2); color:#F4EFE8; padding:110px 60px; text-align:center;}
+  .testimonials .eyebrow{justify-content:center; display:flex;}
+  .testimonials h2{color:#fff; font-size:40px;}
+  .quote-grid{max-width:1100px; margin:56px auto 0; display:grid; grid-template-columns:repeat(3,1fr); gap:40px; text-align:left;}
+  .quote-card{border-top:1px solid rgba(255,255,255,.18); padding-top:26px;}
+  .quote-card p{font-family:'Playfair Display',serif; font-style:italic; font-size:16px; line-height:1.7; margin:0 0 20px;}
+  .quote-card b{display:block; font-size:14px;}
+  .quote-card span{font-size:11px; letter-spacing:1px; color:var(--rose);}
+
+  /* CONTACTO */
+  .contact-bar{background:var(--ink-2); height:70px;}
+  .contact{padding:100px 60px;}
+  .contact-grid{max-width:1240px; margin:0 auto; display:grid; grid-template-columns:1fr 1fr; gap:90px; align-items:start;}
+  .contact-left h2{font-size:34px;}
+  .contact-left > p{font-size:15px; line-height:1.7; color:var(--muted); max-width:420px; margin-bottom:36px;}
+  .info-list{list-style:none; margin:0 0 32px; padding:0;}
+  .info-list li{display:flex; gap:16px; padding:16px 0; border-top:1px solid var(--line);}
+  .info-list li::before{content:""; width:24px; height:1px; background:var(--rose); margin-top:8px; flex-shrink:0;}
+  .info-list .label{font-size:11px; letter-spacing:1.5px; color:var(--muted); display:block; margin-bottom:4px;}
+  .info-list .value{font-size:14.5px; line-height:1.6;}
+  .info-list .value a{color:var(--ink); text-decoration:underline;}
+  .info-box{background:var(--cream-2); border-left:3px solid var(--rose); padding:22px 26px; font-size:14px; line-height:1.7;}
+  .info-box a{color:var(--ink); font-weight:600;}
+  .contact-form{display:flex; flex-direction:column; gap:20px;}
+  .field label{display:block; font-size:11px; letter-spacing:1.5px; color:var(--muted); margin-bottom:8px;}
+  .field input,.field textarea{width:100%; border:1px solid var(--line); background:#fff; padding:14px 16px; font-family:'Jost',sans-serif; font-size:14.5px; color:var(--ink); border-radius:2px;}
+  .field textarea{min-height:120px; resize:vertical;}
+  .field input:focus,.field textarea:focus{outline:2px solid var(--rose); outline-offset:1px;}
+  .contact-form button{margin-top:6px; padding:16px; background:var(--ink); color:#fff; border:none; font-family:'Jost',sans-serif; font-size:13px; letter-spacing:1.5px; cursor:pointer;}
+  .contact-form button:hover{opacity:.88;}
+  .contact-mensajes{max-width:1240px; margin:40px auto 0;}
+  .contact-mensajes p{margin:0 0 10px; padding:16px 24px; background:#e8f5e9; color:#256029; border-left:3px solid #4f7a3a; font-size:14.5px;}
+
+  /* BANNER RESERVA */
+  .reserva{display:grid; grid-template-columns:1.1fr 1fr; background:#121010; color:#fff; min-height:460px;}
+  /* La foto se ancla abajo y se agranda hacia arriba para que el texto "Y VALORES" quede siempre fuera de vista.
+     Si todavía se asoma ese texto, sube el 130% a 140% o 150%. Si se corta de más el corazón, bájalo a 120%. */
+  .reserva-foto{position:relative; overflow:hidden; background:#1c1815;}
+  .reserva-foto img{position:absolute; left:0; bottom:0; width:100%; height:130%; object-fit:cover; object-position:center bottom;}
+  .reserva-foto::after{content:""; position:absolute; inset:0; background:linear-gradient(90deg, rgba(18,16,16,0) 55%, #121010 100%);}
+  .reserva-copy{display:flex; flex-direction:column; justify-content:center; padding:48px 60px 48px 20px;}
+  .reserva-copy h2{color:#fff; font-size:44px; line-height:1.15; margin:0 0 8px;}
+  .reserva-copy h2 em{color:var(--rose);}
+  .reserva-copy p{font-size:15px; line-height:1.7; color:#b9b0a6; margin:12px 0 32px;}
+  .reserva-btn{align-self:flex-start; background:var(--rose); color:#121010; text-decoration:none; font-size:12px; font-weight:600; letter-spacing:1.5px; padding:16px 30px; border-radius:40px;}
+  .reserva-btn:hover{opacity:.9;}
+  .reserva-ig{align-self:flex-start; margin-top:14px; background:var(--black); color:var(--gold); text-decoration:none; font-size:12px; letter-spacing:1.5px; border:1px solid var(--gold); padding:14px 28px; border-radius:40px;}
+  .reserva-ig:hover{background:var(--gold); color:var(--black);}
+
+  /* ABONOS */
+  .abono-box{margin-top:30px; padding-top:24px; border-top:1px solid rgba(255,255,255,.15);}
+  .abono-box .abono-titulo{font-size:11px; letter-spacing:2px; color:var(--rose); margin:0 0 6px;}
+  .abono-box p{margin:0 0 14px; font-size:13.5px; color:#b9b0a6;}
+  .abono-row{display:flex; flex-wrap:wrap; gap:12px;}
+  .btn-abono{background:transparent; color:#fff; border:1px solid var(--rose); border-radius:40px; padding:13px 24px; font-family:'Jost',sans-serif; font-size:12px; letter-spacing:1.5px; cursor:pointer;}
+  .btn-abono:hover{background:var(--rose); color:#121010;}
+
+  /* FOOTER */
+  footer{background:#121010; color:#cfc7bd; border-top:1px solid rgba(201,147,135,.4); padding:48px 60px 28px;}
+  .foot-grid{display:grid; grid-template-columns:1.2fr 1fr 1fr; gap:60px; max-width:1240px; margin:0 auto;}
+  .foot-brand .name{font-family:'Playfair Display',serif; font-size:24px; color:#fff;}
+  .foot-brand .sub{font-size:10px; letter-spacing:2px; color:var(--rose); margin-bottom:16px;}
+  .foot-brand p{font-size:13.5px; line-height:1.7; color:#a79e94; max-width:320px; margin:0 0 20px;}
+  .foot-links{list-style:none; margin:0; padding:0;}
+  .foot-links li{margin-bottom:10px;}
+  .foot-links a,.foot-links span{color:#cfc7bd; text-decoration:none; font-size:13.5px;}
+  .foot-links a:hover{color:var(--rose);}
+  .foot-title{font-size:11px; letter-spacing:2px; color:var(--rose); margin:0 0 16px;}
+  .foot-title.sep{margin-top:28px;}
+  .foot-map iframe{width:100%; height:190px; border:0; border-radius:8px; display:block;}
+  .foot-addr{display:flex; justify-content:space-between; align-items:center; gap:12px; margin-top:12px; font-size:12.5px; color:#a79e94;}
+  .foot-addr a{color:var(--rose); text-decoration:none; border:1px solid rgba(201,147,135,.5); padding:7px 14px; border-radius:20px; font-size:12px; white-space:nowrap;}
+  .foot-bottom{max-width:1240px; margin:36px auto 0; padding-top:20px; border-top:1px solid rgba(255,255,255,.1); display:flex; justify-content:space-between; font-size:12px; color:#7d746b;}
+
+  /* PANEL DEL CARRITO */
+  .cart-overlay{position:fixed; inset:0; background:rgba(0,0,0,.45); opacity:0; visibility:hidden; transition:opacity .25s, visibility .25s; z-index:100;}
+  .cart-overlay.abierto{opacity:1; visibility:visible;}
+  .cart-drawer{position:fixed; top:0; right:0; height:100%; width:min(420px,100%); background:var(--cream); z-index:101; display:flex; flex-direction:column; transform:translateX(100%); transition:transform .3s ease; box-shadow:-8px 0 30px rgba(0,0,0,.15);}
+  .cart-drawer.abierto{transform:translateX(0);}
+  .cart-head{display:flex; align-items:center; justify-content:space-between; padding:22px 24px; border-bottom:1px solid var(--line);}
+  .cart-head h3{font-family:'Playfair Display',serif; font-weight:600; font-size:24px; margin:0;}
+  .cart-close{background:none; border:none; font-size:28px; line-height:1; cursor:pointer; color:var(--ink);}
+  .cart-close:hover{color:var(--rose);}
+  .cart-items{flex:1; overflow-y:auto; padding:8px 24px;}
+  .cart-empty{padding:48px 0; text-align:center; color:var(--muted); font-size:14.5px; line-height:1.7;}
+  .cart-item{display:flex; gap:14px; padding:18px 0; border-bottom:1px solid var(--line);}
+  .cart-item-img{width:64px; height:64px; flex-shrink:0; background:#fff; border-radius:6px; display:flex; align-items:center; justify-content:center; overflow:hidden;}
+  .cart-item-img img{max-width:100%; max-height:100%; object-fit:contain;}
+  .cart-item-img.abono{background:var(--black); color:var(--gold); font-family:'Playfair Display',serif; font-size:22px;}
+  .cart-item-info{flex:1; min-width:0;}
+  .cart-item-nombre{font-weight:500; font-size:14.5px; margin:0 0 4px;}
+  .cart-item-precio{font-size:13px; color:var(--muted); margin:0 0 10px;}
+  .cart-qty{display:inline-flex; align-items:center; border:1px solid var(--line); border-radius:4px; background:#fff;}
+  .cart-qty button{width:30px; height:30px; border:none; background:none; font-size:16px; cursor:pointer; color:var(--ink);}
+  .cart-qty button:disabled{opacity:.3; cursor:default;}
+  .cart-qty span{min-width:28px; text-align:center; font-size:14px;}
+  .cart-item-side{display:flex; flex-direction:column; align-items:flex-end; justify-content:space-between;}
+  .cart-item-sub{font-weight:600; font-size:14.5px;}
+  .cart-item-del{background:none; border:none; color:var(--muted); font-size:12px; text-decoration:underline; cursor:pointer; padding:0;}
+  .cart-item-del:hover{color:var(--rose);}
+  .cart-foot{padding:20px 24px 24px; border-top:1px solid var(--line); background:#fff;}
+  .cart-total{display:flex; justify-content:space-between; align-items:baseline; margin-bottom:16px; font-size:15px;}
+  .cart-total b{font-size:22px; font-family:'Playfair Display',serif;}
+  .cart-pagar{width:100%; padding:16px; background:var(--ink); color:#fff; border:none; border-radius:2px; font-family:'Jost',sans-serif; font-size:13px; letter-spacing:1.5px; cursor:pointer;}
+  .cart-pagar:hover{background:var(--rose);}
+  .cart-pagar:disabled{opacity:.4; cursor:default; background:var(--ink);}
+  .cart-links{display:flex; justify-content:space-between; margin-top:14px;}
+  .cart-links button{background:none; border:none; font-family:'Jost',sans-serif; font-size:12.5px; color:var(--muted); text-decoration:underline; cursor:pointer; padding:0;}
+  .cart-links button:hover{color:var(--rose);}
+  .cart-nota{margin:12px 0 0; font-size:11.5px; color:var(--muted); line-height:1.5;}
+  .cart-toast{position:fixed; left:50%; bottom:28px; transform:translate(-50%,20px); background:var(--ink); color:#fff; padding:14px 24px; border-radius:40px; font-size:13.5px; opacity:0; pointer-events:none; transition:opacity .25s, transform .25s; z-index:200; max-width:90%; text-align:center;}
+  .cart-toast.visible{opacity:1; transform:translate(-50%,0);}
+
+  @media (max-width:980px){
+    header{padding:20px 24px;}
+    nav{display:none;}
+    .nav-carrito-mov{display:inline-flex;}
+    .container{padding:0 24px;}
+    .hero{grid-template-columns:1fr;}
+    .hero-copy{padding:48px 24px;}
+    h1{font-size:38px;}
+    .svc-head{flex-direction:column; align-items:flex-start;}
+    .kids{padding:70px 24px;}
+    .about{padding:70px 24px;}
+    .about-grid{grid-template-columns:1fr; gap:48px;}
+    .quote-grid{grid-template-columns:1fr; gap:32px;}
+    .testimonials{padding:70px 24px;}
+    .contact{padding:60px 24px;}
+    .contact-grid{grid-template-columns:1fr; gap:48px;}
+    .reserva{grid-template-columns:1fr; min-height:0;}
+    .reserva-foto{min-height:300px;}
+    .reserva-foto::after{display:none;}
+    .reserva-copy{padding:40px 24px;}
+    .reserva-copy h2{font-size:34px;}
+    footer{padding:40px 24px 24px;}
+    .foot-grid{grid-template-columns:1fr; gap:36px;}
+    .foot-bottom{flex-direction:column; gap:8px;}
+  }
+  @media (max-width:900px){ .svc-card{flex-basis:calc((100% - 24px) / 2);} }
+  @media (max-width:560px){ .svc-card{flex-basis:85%;} .svc-nav{display:none;} }
+  @media (prefers-reduced-motion: reduce){ .svc-track{scroll-behavior:auto;} .cart-drawer,.cart-overlay,.cart-toast{transition:none;} }
+</style>
+</head>
+<body>
+
+  <header>
+    <div class="logo">
+      <div class="name">Nicolett</div>
+      <div class="sub">STUDIO FANTASY</div>
+    </div>
+    <nav>
+      <a href="#inicio">INICIO</a>
+      <a href="#servicios">SERVICIOS</a>
+      <a href="#nosotras">NOSOTRAS</a>
+      <a href="#contacto">CONTACTO</a>
+      <a href="#productos">PRODUCTOS</a>
+      <a href="#rincon-kids">RINCÓN KIDS</a>
+      <a href="http://localhost:8000/mi-cuenta/?abrir=agendar" style="color:var(--rose); font-weight:600;">RESERVA TU CITA</a>
+      <button type="button" class="nav-carrito" data-abrir-carrito aria-label="Abrir carrito de compras">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+          <circle cx="9" cy="21" r="1"></circle>
+          <circle cx="20" cy="21" r="1"></circle>
+          <path d="M1 1h4l2.7 13.4a2 2 0 0 0 2 1.6h9.7a2 2 0 0 0 2-1.6L23 6H6"></path>
+        </svg>
+        <span class="carrito-contador">0</span>
+      </button>
+    </nav>
+    <div class="header-actions">
+      <!-- Carrito para celular (en pantallas chicas el menú se oculta) -->
+      <button type="button" class="nav-carrito nav-carrito-mov" data-abrir-carrito aria-label="Abrir carrito de compras">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+          <circle cx="9" cy="21" r="1"></circle>
+          <circle cx="20" cy="21" r="1"></circle>
+          <path d="M1 1h4l2.7 13.4a2 2 0 0 0 2 1.6h9.7a2 2 0 0 0 2-1.6L23 6H6"></path>
+        </svg>
+        <span class="carrito-contador">0</span>
+      </button>
+      {% if user.is_authenticated %}
+        <span style="font-size:13px; color:var(--muted);">Hola, {{ user.username }}</span>
+        <a href="{% url 'logout' %}" class="btn-ghost" style="text-decoration:none; display:inline-block;">CERRAR SESIÓN</a>
+      {% else %}
+        <a href="http://localhost:8000/segur/login/" class="btn-ghost" style="text-decoration:none; display:inline-block;">INICIAR SESIÓN</a>
+        <a href="http://localhost:8000/segur/registro/" class="btn-solid" style="text-decoration:none; display:inline-block;">CREAR CUENTA</a>
+      {% endif %}
+    </div>
+  </header>
+
+  <!-- PANEL DEL CARRITO -->
+  <div class="cart-overlay" id="cartOverlay"></div>
+  <aside class="cart-drawer" id="cartDrawer" aria-label="Carrito de compras" aria-hidden="true">
+    <div class="cart-head">
+      <h3>Tu carrito</h3>
+      <button type="button" class="cart-close" id="cartCerrar" aria-label="Cerrar carrito">&times;</button>
+    </div>
+    <div class="cart-items" id="cartItems"></div>
+    <div class="cart-foot">
+      <div class="cart-total"><span>Total</span><b id="cartTotal">$0</b></div>
+      <button type="button" class="cart-pagar" id="cartPagar" disabled>PAGAR CON WEBPAY</button>
+      <div class="cart-links">
+        <button type="button" id="cartSeguir">Seguir comprando</button>
+        <button type="button" id="cartVaciar">Vaciar carrito</button>
+      </div>
+      <p class="cart-nota">Pagas de forma segura en Webpay (Transbank).</p>
+    </div>
+  </aside>
+  <div class="cart-toast" id="cartToast" role="status" aria-live="polite"></div>
+
+  <!-- LÓGICA DEL CARRITO (va antes de los productos para que ellos puedan usarla) -->
+  <script>
+  (function(){
+    var KEY = 'carrito_nicolett';
+    // Dirección del backend que recibe el carrito y crea el pago en Webpay.
+    var URL_PAGO_CARRITO = 'http://localhost:8000/carrito/pagar/';
+
+    var drawer   = document.getElementById('cartDrawer');
+    var overlay  = document.getElementById('cartOverlay');
+    var listaEl  = document.getElementById('cartItems');
+    var totalEl  = document.getElementById('cartTotal');
+    var btnPagar = document.getElementById('cartPagar');
+    var toast    = document.getElementById('cartToast');
+    var toastTimer = null;
+
+    function leer(){
+      try {
+        var d = JSON.parse(localStorage.getItem(KEY) || '[]');
+        return Array.isArray(d) ? d : [];
+      } catch (e) { return []; }
+    }
+    function guardar(c){
+      try { localStorage.setItem(KEY, JSON.stringify(c)); } catch (e) {}
+      render();
+    }
+    function fmt(n){ return '$' + Number(n).toLocaleString('es-CL'); }
+    function el(tag, clase, texto){
+      var e = document.createElement(tag);
+      if (clase) e.className = clase;
+      if (texto !== undefined) e.textContent = texto;
+      return e;
+    }
+    function avisar(msg){
+      toast.textContent = msg;
+      toast.classList.add('visible');
+      clearTimeout(toastTimer);
+      toastTimer = setTimeout(function(){ toast.classList.remove('visible'); }, 2200);
+    }
+
+    function abrir(){
+      drawer.classList.add('abierto'); overlay.classList.add('abierto');
+      drawer.setAttribute('aria-hidden', 'false');
+      document.body.style.overflow = 'hidden';
+    }
+    function cerrar(){
+      drawer.classList.remove('abierto'); overlay.classList.remove('abierto');
+      drawer.setAttribute('aria-hidden', 'true');
+      document.body.style.overflow = '';
+    }
+
+    // item: {id, tipo, nombre, precio, stock, imagen}
+    function agregar(item){
+      var c = leer();
+      var ex = c.filter(function(p){ return p.id === item.id; })[0];
+      var stock = item.stock || 1;
+      if (ex) {
+        if (ex.cantidad >= (ex.stock || 1)) {
+          avisar(item.tipo === 'abono' ? 'Ese abono ya está en tu carrito' : 'Ya tienes todo el stock disponible');
+          return false;
+        }
+        ex.cantidad += 1;
+      } else {
+        c.push({ id:item.id, tipo:item.tipo, nombre:item.nombre, precio:Number(item.precio), cantidad:1, stock:stock, imagen:item.imagen || '' });
+      }
+      guardar(c);
+      avisar('Agregado al carrito: ' + item.nombre);
+      return true;
+    }
+
+    function cambiarCantidad(id, delta){
+      var c = leer();
+      c.forEach(function(p){
+        if (p.id === id) {
+          var nueva = p.cantidad + delta;
+          if (nueva >= 1 && nueva <= (p.stock || 1)) p.cantidad = nueva;
+        }
+      });
+      guardar(c);
+    }
+    function quitar(id){
+      guardar(leer().filter(function(p){ return p.id !== id; }));
+    }
+    function vaciar(){ guardar([]); }
+
+    function render(){
+      var c = leer();
+      var unidades = 0, total = 0;
+      c.forEach(function(p){ unidades += p.cantidad; total += p.precio * p.cantidad; });
+
+      // contadores del ícono
+      document.querySelectorAll('.carrito-contador').forEach(function(s){
+        s.textContent = unidades;
+        s.style.display = unidades > 0 ? 'block' : 'none';
+      });
+
+      listaEl.textContent = '';
+      if (!c.length) {
+        var vacio = el('div', 'cart-empty');
+        vacio.appendChild(el('p', '', 'Tu carrito está vacío.'));
+        vacio.appendChild(el('p', '', 'Agrega productos o un abono para reservar tu hora.'));
+        listaEl.appendChild(vacio);
+      }
+      c.forEach(function(p){
+        var fila = el('div', 'cart-item');
+
+        var img = el('div', 'cart-item-img' + (p.tipo === 'abono' ? ' abono' : ''));
+        if (p.tipo === 'abono') { img.textContent = '$'; }
+        else if (p.imagen) {
+          var im = document.createElement('img');
+          im.src = p.imagen; im.alt = p.nombre;
+          img.appendChild(im);
+        }
+        fila.appendChild(img);
+
+        var info = el('div', 'cart-item-info');
+        info.appendChild(el('p', 'cart-item-nombre', p.nombre));
+        info.appendChild(el('p', 'cart-item-precio', fmt(p.precio) + (p.tipo === 'abono' ? '' : ' c/u')));
+        if (p.tipo !== 'abono') {
+          var qty = el('div', 'cart-qty');
+          var menos = el('button', '', '−'); menos.type = 'button'; menos.setAttribute('aria-label', 'Quitar una unidad');
+          menos.disabled = p.cantidad <= 1;
+          menos.onclick = function(){ cambiarCantidad(p.id, -1); };
+          var mas = el('button', '', '+'); mas.type = 'button'; mas.setAttribute('aria-label', 'Agregar una unidad');
+          mas.disabled = p.cantidad >= (p.stock || 1);
+          mas.onclick = function(){ cambiarCantidad(p.id, 1); };
+          qty.appendChild(menos); qty.appendChild(el('span', '', String(p.cantidad))); qty.appendChild(mas);
+          info.appendChild(qty);
+        }
+        fila.appendChild(info);
+
+        var lado = el('div', 'cart-item-side');
+        lado.appendChild(el('span', 'cart-item-sub', fmt(p.precio * p.cantidad)));
+        var del = el('button', 'cart-item-del', 'Quitar'); del.type = 'button';
+        del.onclick = function(){ quitar(p.id); };
+        lado.appendChild(del);
+        fila.appendChild(lado);
+
+        listaEl.appendChild(fila);
+      });
+
+      totalEl.textContent = fmt(total);
+      btnPagar.disabled = !c.length;
+    }
+
+    // Envía solo ids y cantidades; el backend debe recalcular los precios.
+    // Formato: p12x2,a5000x1  (p = producto, a = abono)
+    function pagar(){
+      var c = leer();
+      if (!c.length) return;
+      var partes = c.map(function(p){
+        var codigo = p.tipo === 'abono' ? ('a' + p.precio) : ('p' + String(p.id).replace(/^p/, ''));
+        return codigo + 'x' + p.cantidad;
+      });
+      window.location.href = URL_PAGO_CARRITO + '?items=' + encodeURIComponent(partes.join(','));
+    }
+
+    document.addEventListener('click', function(e){
+      if (e.target.closest('[data-abrir-carrito]')) { abrir(); return; }
+      var ab = e.target.closest('[data-abono]');
+      if (ab) {
+        var monto = Number(ab.getAttribute('data-abono'));
+        agregar({ id:'a' + monto, tipo:'abono', nombre:'Abono de reserva', precio:monto, stock:1 });
+        abrir();
+      }
+    });
+    overlay.addEventListener('click', cerrar);
+    document.getElementById('cartCerrar').addEventListener('click', cerrar);
+    document.getElementById('cartSeguir').addEventListener('click', cerrar);
+    document.getElementById('cartVaciar').addEventListener('click', vaciar);
+    btnPagar.addEventListener('click', pagar);
+    document.addEventListener('keydown', function(e){ if (e.key === 'Escape') cerrar(); });
+    window.addEventListener('storage', render);
+
+    window.Carrito = { agregar:agregar, abrir:abrir, cerrar:cerrar };
+
+    // Después de un pago aprobado, el backend vuelve con ?pago=ok y se vacía el carrito.
+    if (new URLSearchParams(location.search).get('pago') === 'ok') {
+      try { localStorage.removeItem(KEY); } catch (e) {}
+      history.replaceState(null, '', location.pathname + location.hash);
+    }
+
+    render();
+  })();
+  </script>
+
+  <!-- HERO -->
+  <section class="hero" id="inicio">
+    <div class="hero-copy">
+      <div class="eyebrow">SALÓN DE BELLEZA · BUIN , REGION METROPOLITANA.</div>
+      <h1>Belleza<br><em> a tu Ritmo</em><br> y sin barreras.</h1>
+      <p>En Nicolett Studio encontrarás un espacio íntimo dedicado al cuidado y realce de tu belleza natural. Profesionales certificadas, productos premium y una experiencia que querrás repetir.</p>
+      <div class="cta-row"></div>
+      <div class="stats"></div>
+    </div>
+    <div class="hero-image">
+      <img src="{% static 'img/servicios-valores-difuminada.png' %}" alt="Nicolett Studio de Belleza" style="width:100%; height:100%; object-fit:cover;">
+    </div>
+  </section>
+
+  <!-- SERVICIOS -->
+  <section class="services" id="servicios">
+    <div class="container">
+      <div class="svc-head">
+        <div>
+          <div class="eyebrow">LO QUE OFRECEMOS</div>
+          <h2>Nuestros servicios</h2>
+        </div>
+        <div class="svc-right">
+          <a class="svc-ig" href="https://www.instagram.com/nicolettstudiofantasy/" target="_blank" rel="noopener">SÍGUENOS EN INSTAGRAM</a>
+          <div class="svc-nav">
+            <button type="button" id="svcPrev" aria-label="Anterior">&#8592;</button>
+            <button type="button" id="svcNext" aria-label="Siguiente">&#8594;</button>
+          </div>
+        </div>
+      </div>
+
+      <div class="svc-track" id="svcTrack">
+
+        <article class="svc-card">
+          <img src="{% static 'img/colorimetria.jpg' %}" alt="Colorimetría">
+          <span class="svc-num">01</span>
+          <h3>Colorimetría</h3>
+          <p>Trabajamos con productos de color de alta gama, formulados para cuidar la fibra capilar. Logramos tonos vibrantes y duraderos, adaptados a cada clienta, con resultados profesionales en cada aplicación.</p>
+          <div class="svc-price">Desde $35.000</div>
+        </article>
+
+        <article class="svc-card">
+          <img src="{% static 'img/corte&Estilo.jpg' %}" alt="Corte y estilo">
+          <span class="svc-num">02</span>
+          <h3>Corte &amp; Estilo</h3>
+          <p>Cortes modernos y clásicos adaptados a tu tipo de rostro, con secado y peinado incluido.</p>
+          <div class="svc-price">Desde $12.000</div>
+        </article>
+
+        <article class="svc-card">
+          <img src="{% static 'img/Tratamientos.jpg' %}" alt="Tratamientos">
+          <span class="svc-num">03</span>
+          <h3>Tratamientos</h3>
+          <p>Hidratación profunda, keratina, botox capilar y reconstrucción para cabello dañado.</p>
+          <div class="svc-price">Desde $25.000</div>
+        </article>
+
+        <article class="svc-card">
+          <img src="{% static 'img/manicure.jpeg' %}" alt="Manicure">
+          <span class="svc-num">04</span>
+          <h3>Manicure &amp;</h3>
+          <p>"Más que uñas, es un momento para ti"</p>
+          <div class="svc-price">Desde $15.000</div>
+        </article>
+
+        <article class="svc-card">
+          <img src="{% static 'img/pedicure.jpg' %}" alt="Pedicure">
+          <span class="svc-num">05</span>
+          <h3>Pedicure</h3>
+          <p>Limpieza de tus pies, Spa, Esmaltado y Spa Premiun "No solo es esmaltar, es regalarle a tus pies el bienestar que merecen".</p>
+          <div class="svc-price">Desde $15.000</div>
+        </article>
+
+        <article class="svc-card">
+          <img src="{% static 'img/depilacion.jpg' %}" alt="Depilación">
+          <span class="svc-num">06</span>
+          <h3>Depilación</h3>
+          <p>Cera de Abeja Hipoalergénica suaviza tu piel, cuida, protege y entrega resultados duraderos.</p>
+          <div class="svc-price">Desde $3.000</div>
+        </article>
+
+      </div>
+
+      <!-- LISTA DE SERVICIOS -->
+      <div class="svc-lista">
+        <h3>Todos nuestros servicios</h3>
+        <div class="svc-chips">
+          <span class="svc-chip">Colorimetría</span>
+          <span class="svc-chip">Corte de cabello</span>
+          <span class="svc-chip">Tratamientos</span>
+          <span class="svc-chip">Manicure</span>
+          <span class="svc-chip">Pedicure</span>
+          <span class="svc-chip">Podología</span>
+          <span class="svc-chip">Uñas</span>
+          <span class="svc-chip">Cejas</span>
+          <span class="svc-chip">Pestañas</span>
+          <span class="svc-chip">Depilación femenina</span>
+          <span class="svc-chip">Depilación masculina</span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- PRODUCTOS -->
+  <section id="productos" style="padding:110px 60px; background:var(--cream);">
+    <div style="max-width:1240px; margin:0 auto;">
+      <div class="eyebrow">TIENDA</div>
+      <h2>Nuestros productos</h2>
+      <div id="productosGrid" style="display:grid; grid-template-columns:repeat(auto-fill,minmax(260px,1fr)); gap:24px; margin-top:40px;"></div>
+      <p id="productosVacio" style="display:none; color:var(--muted);">Pronto tendremos productos disponibles.</p>
+    </div>
+  </section>
+
+  <script>
+  (function(){
+    var grid = document.getElementById('productosGrid');
+    var vacio = document.getElementById('productosVacio');
+    function el(tag, css, texto){
+      var e = document.createElement(tag);
+      if (css) e.style.cssText = css;
+      if (texto) e.textContent = texto;
+      return e;
+    }
+    fetch('http://localhost:8000/api/catalogo/')
+      .then(function(r){ return r.json(); })
+      .then(function(lista){
+        if (!lista.length) { vacio.style.display = 'block'; return; }
+        lista.forEach(function(p){
+          var card = el('article', 'background:#fff; border-radius:10px; overflow:hidden; box-shadow:0 2px 8px rgba(0,0,0,.08); display:flex; flex-direction:column;');
+          var foto = el('div', 'height:240px; background:#fff; display:flex; align-items:center; justify-content:center; padding:10px;');
+          if (p.imagen) {
+            var img = document.createElement('img');
+            img.src = p.imagen; img.alt = p.nombre;
+            img.style.cssText = 'max-width:100%; max-height:100%; object-fit:contain;';
+            foto.appendChild(img);
+          }
+          card.appendChild(foto);
+          var cuerpo = el('div', 'display:flex; flex-direction:column; flex:1; padding:0 20px 22px;');
+          cuerpo.appendChild(el('h3', "font-family:'Playfair Display',serif; font-weight:600; font-size:20px; margin:16px 0 8px;", p.nombre));
+          cuerpo.appendChild(el('p', 'margin:0 0 14px; font-size:13.5px; line-height:1.6; color:var(--muted); flex:1;', p.descripcion));
+          cuerpo.appendChild(el('div', 'margin:0 0 14px; font-weight:600; font-size:16px;', '$' + p.precio.toLocaleString('es-CL')));
+
+          var botones = document.createElement('div');
+          botones.className = 'prod-btns';
+
+          var agregar = document.createElement('button');
+          agregar.type = 'button';
+          agregar.className = 'btn-agregar';
+          if (p.stock > 0) {
+            agregar.textContent = 'AGREGAR AL CARRITO';
+            agregar.onclick = function(){
+              window.Carrito.agregar({ id:'p' + p.id, tipo:'producto', nombre:p.nombre, precio:p.precio, stock:p.stock, imagen:p.imagen });
+            };
+          } else {
+            agregar.textContent = 'SIN STOCK';
+            agregar.disabled = true;
+          }
+          botones.appendChild(agregar);
+
+          
+          cuerpo.appendChild(botones);
+          card.appendChild(cuerpo);
+          grid.appendChild(card);
+        });
+      })
+      .catch(function(){ vacio.style.display = 'block'; });
+  })();
+  </script>
+
+  <!-- RINCÓN KIDS -->
+  <section class="kids" id="rincon-kids">
+    <div class="kids-inner">
+      <div class="eyebrow">PARA LAS MAMÁS</div>
+      <h2>Rincón <em>Kids</em></h2>
+      <p class="kids-intro">¿Vienes con tus hijos? No te preocupes: tenemos un rinconcito pensado para ellos, para que puedan jugar y entretenerse mientras tú te atiendes con tranquilidad.</p>
+
+      <!-- CARRUSEL DE FOTOS (las 4 fotos están en static/img/)
+           El "?v=3" al final de cada foto obliga al navegador a descargarla de nuevo.
+           Si vuelves a cambiar alguna foto, sube el número en todas: ?v=4, ?v=5...
+           Para cambiar el texto que sale sobre cada foto, edita lo que está dentro de <div class="kids-cap"> -->
+      <div class="kids-carousel" id="kidsCarousel">
+        <div class="kids-slide activa">
+          <img src="{% static 'img/kids-jugando.jpg' %}?v=3" alt="Niños jugando en el Rincón Kids" decoding="async">
+          <div class="kids-cap">Un espacio para jugar y colorear</div>
+        </div>
+        <div class="kids-slide">
+          <img src="{% static 'img/kids-tele.jpg' %}?v=3" alt="Niños viendo televisión en el Rincón Kids" decoding="async">
+          <div class="kids-cap">Sus programas favoritos mientras esperan</div>
+        </div>
+        <div class="kids-slide">
+          <img src="{% static 'img/kids-durmiendo.jpg' %}?v=3" alt="Niño descansando en el Rincón Kids" decoding="async">
+          <div class="kids-cap">Un ratito de descanso mientras esperan</div>
+        </div>
+        <div class="kids-slide">
+          <img src="{% static 'img/kids-mama.jpg' %}?v=3" alt="Mamá atendiéndose mientras mira a sus hijos" decoding="async">
+          <div class="kids-cap">Tú te atiendes, ellos se divierten a tu vista</div>
+        </div>
+
+        <button type="button" class="kids-flecha prev" id="kidsPrev" aria-label="Anterior">&#8592;</button>
+        <button type="button" class="kids-flecha next" id="kidsNext" aria-label="Siguiente">&#8594;</button>
+        <div class="kids-dots" id="kidsDots"></div>
+      </div>
+
+      <div class="kids-nota">
+        Los niños deben permanecer acompañados por un adulto.<br>
+        ¿Dudas? Escríbenos por WhatsApp al
+        <a href="https://wa.me/56940322551" target="_blank" rel="noopener" style="color:var(--ink); font-weight:600;">+569 4032 2551</a>.
+      </div>
+    </div>
+  </section>
+
+  <!-- NOSOTRAS -->
+  <section class="about" id="nosotras">
+    <div class="about-grid">
+      <div class="about-photo">
+        <img src="{% static 'img/instagram-google.jpeg' %}" alt="Tratamiento en proceso en Nicolett Studio Fantasy">
+        <div class="about-badge"><b>3</b><span>AÑOS DE PASIÓN</span></div>
+      </div>
+      <div class="about-copy">
+        <div class="eyebrow">NUESTRA HISTORIA</div>
+        <h2>Creamos belleza <em>con propósito</em></h2>
+        <p>Nicolett Studio Fantasy nació del sueño de crear un espacio donde cada clienta se sienta vista y valorada. Fundado en el 2023 en la comuna de Buin, hemos crecido hasta convertirnos en un referente del bienestar estético en nuestra comuna.</p>
+        <p>Nuestro equipo de especialistas se capacita permanentemente en las últimas tendencias y técnicas.</p>
+        <ul class="about-list">
+          <li>Productos 100% libres de parabenos</li>
+          <li>Certificadas en un nivel avanzado en Belleza</li>
+          <li>Agenda online disponible las 24 horas</li>
+        </ul>
+      </div>
+    </div>
+  </section>
+
+  <!-- TESTIMONIOS -->
+  <section class="testimonials" id="testimonios">
+    <div class="eyebrow">LO QUE DICEN</div>
+    <h2>Nuestras clientas</h2>
+    <div class="quote-grid">
+      <div class="quote-card">
+        <p>"Excelente servicio!!llegue donde Nicolett a prepararme para mi examen de grado y me dejo hermosa!!Me realizo un corte de cabello, aplicacion de color, masaje capilar y una manicura polygel de buenisima calidad y maravillosas!!la recomiendo al 100% muy acogedora y simpatica. "</p>
+        <b>Betsabe Vigueras.</b>
+        <span>COLORIMETRÍA</span>
+      </div>
+      <div class="quote-card">
+        <p>"Me quedaron hermosas las uñas y Nicole es un amor de persona, super bien atendida, muy agradecida."</p>
+        <b>Fernanda Matinez.</b>
+        <span>MANICURE GEL</span>
+      </div>
+      <div class="quote-card">
+        <p>"Un lugar muy acogedor y hermoso, la estilista es un amor y su servicio es 10/10, tiene precios muy convenientes que atraen a la clientela, me encanta. 100% recomendada ."</p>
+        <b>Maria Karina Nuñez.</b>
+        <span>SERVICIO PERSONALIZADO.</span>
+      </div>
+    </div>
+  </section>
+
+  <!-- CONTACTO -->
+  <div class="contact-bar"></div>
+  <section class="contact" id="contacto">
+    <div class="contact-grid">
+      <div class="contact-left">
+        <div class="eyebrow">ESCRÍBENOS</div>
+        <h2>¿Tienes alguna <em>consulta?</em></h2>
+        <p>¿Quieres saber más sobre algún servicio, disponibilidad o precios? Rellena el formulario o contáctanos directamente. Respondemos a la brevedad.</p>
+        <ul class="info-list">
+          <li><div><span class="label">DIRECCIÓN</span><span class="value">Avenida Bernardo O'Higgins 979<br>Buin</span></div></li>
+          <li><div><span class="label">TELÉFONO / WHATSAPP</span><span class="value"><a href="https://wa.me/56940322551" target="_blank" rel="noopener">+569 4032 2551</a></span></div></li>
+          <li><div><span class="label">INSTAGRAM</span><span class="value"><a href="https://www.instagram.com/nicolettstudiofantasy/" target="_blank" rel="noopener">@nicolettstudiofantasy</a></span></div></li>
+          <li><div><span class="label">HORARIO DE ATENCIÓN</span><span class="value">Lunes a viernes 10:00 – 17:00<br>Sábado 9:00 – 18:00</span></div></li>
+        </ul>
+        <div class="info-box">
+          Para <strong>reservar hora</strong>, crea una cuenta o inicia sesión. Desde tu perfil puedes gestionar tus citas fácilmente.<br>
+          <a href="http://localhost:8000/segur/registro/">CREAR CUENTA →</a>
+        </div>
+      </div>
+
+      <form class="contact-form" method="post" action="{% url 'index' %}#contacto">
+        {% csrf_token %}
+        <div class="field"><label>NOMBRE COMPLETO</label><input type="text" name="nombre" placeholder="Valentina González" required></div>
+        <div class="field"><label>EMAIL DE CONTACTO</label><input type="email" name="email" placeholder="valentina@ejemplo.cl" required></div>
+        <div class="field"><label>ASUNTO</label><input type="text" name="asunto" placeholder="Consulta sobre colorimetría" required></div>
+        <div class="field"><label>MENSAJE</label><textarea name="mensaje" placeholder="Cuéntanos en qué podemos ayudarte..." required></textarea></div>
+        <button type="submit">ENVIAR MENSAJE</button>
+      </form>
+    </div>
+
+    {% if messages %}
+    <div class="contact-mensajes">
+      {% for message in messages %}<p>{{ message }}</p>{% endfor %}
+    </div>
+    {% endif %}
+  </section>
+
+  <!-- BANNER RESERVA -->
+  <section class="reserva" id="reservar">
+    <div class="reserva-foto">
+      <img src="{% static 'img/servicios-valores.jpg' %}" alt="Nicolett Studio Fantasy">
+    </div>
+    <div class="reserva-copy">
+      <h2>Ámate a ti misma<br><em>y sé tu mejor versión.</em></h2>
+      <p>Atención personalizada con cita confirmada mediante abono.<br>Agenda online disponible las 24 horas.</p>
+      <a class="reserva-btn" href="http://localhost:8000/mi-cuenta/?abrir=agendar">RESERVA TU CITA</a>
+      <a class="reserva-ig" href="https://www.instagram.com/nicolettstudiofantasy/" target="_blank" rel="noopener">SÍGUENOS EN INSTAGRAM</a>
+
+      <div class="abono-box">
+        <div class="abono-titulo">PAGA TU ABONO</div>
+        <p>Elige el monto y se agrega a tu carrito.</p>
+        <div class="abono-row">
+          <button type="button" class="btn-abono" data-abono="5000">ABONO $5.000</button>
+          <button type="button" class="btn-abono" data-abono="10000">ABONO $10.000</button>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- FOOTER -->
+  <footer>
+    <div class="foot-grid">
+
+      <div class="foot-brand">
+        <div class="name">Nicolett</div>
+        <div class="sub">STUDIO FANTASY</div>
+        <p>Un espacio íntimo dedicado al cuidado y realce de tu belleza natural, en el corazón de Buin.</p>
+        <ul class="foot-links">
+          <li><a href="https://wa.me/56940322551" target="_blank" rel="noopener">WhatsApp: +569 4032 2551</a></li>
+          <li><a href="https://www.instagram.com/nicolettstudiofantasy/" target="_blank" rel="noopener">Instagram: @nicolettstudiofantasy</a></li>
+          <li><span>Av. Bernardo O'Higgins 979, Buin</span></li>
+        </ul>
+      </div>
+
+      <div>
+        <div class="foot-title">NAVEGACIÓN</div>
+        <ul class="foot-links">
+          <li><a href="#inicio">Inicio</a></li>
+          <li><a href="#servicios">Servicios</a></li>
+          <li><a href="#rincon-kids">Rincón Kids</a></li>
+          <li><a href="#nosotras">Nosotras</a></li>
+          <li><a href="#testimonios">Testimonios</a></li>
+          <li><a href="#reservar">Reservar</a></li>
+          <li><a href="#contacto">Contacto</a></li>
+        </ul>
+        <div class="foot-title sep">HORARIO</div>
+        <ul class="foot-links">
+          <li><span>Lunes a viernes 10:00 – 17:00</span></li>
+          <li><span>Sábado 9:00 – 18:00</span></li>
+        </ul>
+      </div>
+
+      <div class="foot-map">
+        <iframe src="https://www.google.com/maps?q=Avenida+Bernardo+O%27Higgins+979,+Buin,+Chile&output=embed" loading="lazy" referrerpolicy="no-referrer-when-downgrade" title="Mapa Nicolett Studio"></iframe>
+        <div class="foot-addr">
+          <span>Av. Bernardo O'Higgins 979, Buin</span>
+          <a href="https://www.google.com/maps/dir/?api=1&destination=Avenida+Bernardo+O%27Higgins+979,+Buin,+Chile" target="_blank" rel="noopener">Cómo llegar</a>
+        </div>
+      </div>
+
+    </div>
+    <div class="foot-bottom">
+      <span>© 2026 Nicolett Studio de Belleza — Todos los derechos reservados.</span>
+      <span>Belleza y bienestar en Buin</span>
+    </div>
+  </footer>
+
+<!-- CARRUSEL DE SERVICIOS -->
+<script>
+  (function(){
+    var track = document.getElementById('svcTrack');
+    var INTERVALO = 3500; // milisegundos entre cada avance
+    var timer = null;
+    var reducido = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+    function paso(){ return track.querySelector('.svc-card').offsetWidth + 24; }
+    function siguiente(){
+      var fin = track.scrollLeft + track.clientWidth >= track.scrollWidth - 4;
+      track.scrollTo({ left: fin ? 0 : track.scrollLeft + paso() });
+    }
+    function anterior(){
+      var inicio = track.scrollLeft <= 4;
+      track.scrollTo({ left: inicio ? track.scrollWidth : track.scrollLeft - paso() });
+    }
+    function iniciar(){ if (reducido || timer) return; timer = setInterval(siguiente, INTERVALO); }
+    function detener(){ clearInterval(timer); timer = null; }
+
+    document.getElementById('svcNext').addEventListener('click', function(){ detener(); siguiente(); iniciar(); });
+    document.getElementById('svcPrev').addEventListener('click', function(){ detener(); anterior(); iniciar(); });
+    track.addEventListener('mouseenter', detener);
+    track.addEventListener('mouseleave', iniciar);
+    track.addEventListener('touchstart', detener, { passive: true });
+    track.addEventListener('touchend', function(){ setTimeout(iniciar, 4000); }, { passive: true });
+    document.addEventListener('visibilitychange', function(){ if (document.hidden) { detener(); } else { iniciar(); } });
+    iniciar();
+  })();
+</script>
+
+<!-- CARRUSEL RINCÓN KIDS (cambia cada 2 segundos) -->
+<script>
+  (function(){
+    var cont = document.getElementById('kidsCarousel');
+    if (!cont) return;
+    var slides = cont.querySelectorAll('.kids-slide');
+    var dotsBox = document.getElementById('kidsDots');
+    var INTERVALO = 2000; // milisegundos entre fotos (más bajo = más rápido)
+    var actual = 0, timer = null;
+    var reducido = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+    var dots = [];
+    slides.forEach(function(_, i){
+      var b = document.createElement('button');
+      b.type = 'button';
+      b.setAttribute('aria-label', 'Ir a la foto ' + (i + 1));
+      b.addEventListener('click', function(){ detener(); mostrar(i); iniciar(); });
+      dotsBox.appendChild(b);
+      dots.push(b);
+    });
+
+    function mostrar(i){
+      actual = (i + slides.length) % slides.length;
+      slides.forEach(function(s, n){ s.classList.toggle('activa', n === actual); });
+      dots.forEach(function(d, n){ d.classList.toggle('activa', n === actual); });
+    }
+    function iniciar(){ if (reducido || timer) return; timer = setInterval(function(){ mostrar(actual + 1); }, INTERVALO); }
+    function detener(){ clearInterval(timer); timer = null; }
+
+    document.getElementById('kidsNext').addEventListener('click', function(){ detener(); mostrar(actual + 1); iniciar(); });
+    document.getElementById('kidsPrev').addEventListener('click', function(){ detener(); mostrar(actual - 1); iniciar(); });
+    cont.addEventListener('mouseenter', detener);
+    cont.addEventListener('mouseleave', iniciar);
+
+    // Deslizar con el dedo en el celular
+    var x0 = null;
+    cont.addEventListener('touchstart', function(e){ x0 = e.touches[0].clientX; detener(); }, { passive: true });
+    cont.addEventListener('touchend', function(e){
+      if (x0 !== null) {
+        var dx = e.changedTouches[0].clientX - x0;
+        if (Math.abs(dx) > 40) mostrar(actual + (dx < 0 ? 1 : -1));
+      }
+      x0 = null;
+      setTimeout(iniciar, 2500);
+    }, { passive: true });
+    document.addEventListener('visibilitychange', function(){ if (document.hidden) { detener(); } else { iniciar(); } });
+
+    mostrar(0);
+    iniciar();
+  })();
+</script>
+</body>
+</html>

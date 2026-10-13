@@ -1,0 +1,43 @@
+{% extends "ventas/base_admin.html" %}
+{% block title %}Recordatorios{% endblock %}
+{% block body_class %}page-recordatorios{% endblock %}
+
+{% block content %}
+<div class="main-header">
+    <div>
+        <h2>Recordatorios por WhatsApp</h2>
+        <p>Clientas que están por cumplir un mes desde su última atención · {{ pendientes|length }} pendientes</p>
+    </div>
+</div>
+
+<div class="panel">
+    <table>
+        <thead>
+            <tr>
+                <th>Clienta</th>
+                <th>Última atención</th>
+                <th>Fecha de aviso</th>
+                <th>Acciones</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for p in pendientes %}
+            <tr>
+                <td><strong>{{ p.atencion.cliente.nombre }}</strong></td>
+                <td>{{ p.atencion.fecha|date:"d/m/Y" }}</td>
+                <td>{{ p.fecha_aviso|date:"d/m/Y" }}</td>
+                <td>
+                    <a href="{{ p.link }}" target="_blank" rel="noopener">Enviar WhatsApp</a>
+                    <form method="post" action="{% url 'marcar_recordatorio' p.atencion.pk %}" style="display:inline">
+                        {% csrf_token %}
+                        <button type="submit">Marcar enviado</button>
+                    </form>
+                </td>
+            </tr>
+            {% empty %}
+            <tr><td colspan="4" style="color:var(--text-gray)">No hay recordatorios pendientes por ahora.</td></tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+{% endblock %}

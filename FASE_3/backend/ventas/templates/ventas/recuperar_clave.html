@@ -1,0 +1,12 @@
+{% extends 'ventas/recuperar_base.html' %}
+{% block contenido %}
+<h2>🔑 Recuperar clave</h2>
+<p>Escribe el correo con el que creaste tu cuenta y te enviaremos un enlace para crear una clave nueva.</p>
+<form method="POST">
+    {% csrf_token %}
+    {{ form.email.errors }}
+    <input type="email" name="email" placeholder="Tu correo" required>
+    <button type="submit">Enviar enlace</button>
+</form>
+<p class="enlaces"><a href="{% url 'login' %}">Volver al ingreso</a></p>
+{% endblock %}

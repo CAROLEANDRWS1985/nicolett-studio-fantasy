@@ -1,0 +1,4 @@
+.- ejecutar en powerShell
+.- Realiza un dir con tuberia
+.- Renombra los archivos
+dir | rename-item -NewName {$_.name -replace ".descarga",""}
