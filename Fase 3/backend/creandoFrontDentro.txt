@@ -1,2 +1,0 @@
-.- django-admin startapp front
-.- Agregar al settings Apps
