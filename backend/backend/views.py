@@ -1,8 +1,8 @@
-from functools import wraps
+﻿from functools import wraps
 from datetime import timedelta
 from urllib.parse import quote
 
-from django.db.models import Sum, Count
+from django.db.models import Sum, Count, Exists, OuterRef
 from django.utils import timezone
 from django.shortcuts import render, redirect, get_object_or_404
 from django.http import JsonResponse
@@ -18,6 +18,7 @@ from ventas.serializers import (
 )
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth import authenticate, login, logout
+from .permisos import SoloEquipo, LecturaPublica
 
 
 def solo_equipo(view):
@@ -115,43 +116,43 @@ class LoadMenu(APIView):
 
 class ClienteViewSet(viewsets.ModelViewSet):
     queryset = Cliente.objects.all()
-    permission_classes = [permissions.AllowAny]
+    permission_classes = [SoloEquipo]
     serializer_class = ClienteSerializer
 
 
 class ProductoViewSet(viewsets.ModelViewSet):
     queryset = Producto.objects.all()
-    permission_classes = [permissions.AllowAny]
+    permission_classes = [LecturaPublica]
     serializer_class = ProductoSerializer
 
 
 class InventarioViewSet(viewsets.ModelViewSet):
     queryset = Inventario.objects.all()
-    permission_classes = [permissions.AllowAny]
+    permission_classes = [SoloEquipo]
     serializer_class = InventarioSerializer
 
 
 class ServicioBellezaViewSet(viewsets.ModelViewSet):
     queryset = ServicioBelleza.objects.all()
-    permission_classes = [permissions.AllowAny]
+    permission_classes = [LecturaPublica]
     serializer_class = ServicioBellezaSerializer
 
 
 class CitaViewSet(viewsets.ModelViewSet):
     queryset = Cita.objects.all()
-    permission_classes = [permissions.AllowAny]
+    permission_classes = [SoloEquipo]
     serializer_class = CitaSerializer
 
 
 class PagoViewSet(viewsets.ModelViewSet):
     queryset = Pago.objects.all()
-    permission_classes = [permissions.AllowAny]
+    permission_classes = [SoloEquipo]
     serializer_class = PagoSerializer
 
 
 class AbonoViewSet(viewsets.ModelViewSet):
     queryset = Abono.objects.all()
-    permission_classes = [permissions.AllowAny]
+    permission_classes = [SoloEquipo]
     serializer_class = AbonoSerializer
 
 
@@ -342,13 +343,10 @@ def recordatorios(request):
             recordatorio_enviado=False,
             cliente__activo=True,
         )
-        .select_related("cliente")
+        .select_related("cliente").annotate(ya_volvio=Exists(Atencion.objects.filter(cliente=OuterRef("cliente"), fecha__gt=OuterRef("fecha")))).filter(ya_volvio=False)
         .order_by("fecha")
     )
     for a in atenciones:
-        # si la clienta ya volvió después, no hace falta avisarle
-        if Atencion.objects.filter(cliente=a.cliente, fecha__gt=a.fecha).exists():
-            continue
         numero = _telefono_wa(a.cliente.telefono)
         if not numero:
             continue

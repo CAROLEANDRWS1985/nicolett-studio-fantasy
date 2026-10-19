@@ -1,4 +1,4 @@
-from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
+﻿from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
 from rest_framework_simplejwt.views import TokenObtainPairView
 from django.contrib.auth.models import User
 from rest_framework import serializers
@@ -8,15 +8,15 @@ from rest_framework import serializers
 class MyTokenObtainPairSerializer(TokenObtainPairSerializer):
     @classmethod
     def get_token(cls, user):
-        print("user:",user)
+        # print("user:",user)
         token = super().get_token(user)
-        print("token:",token)
+        # print("token:",token)
 
         # Add custom claims
         token['name'] = user.username
         token['rol'] = "Harristio el Simpatico"
         # ...
-        print("token Ultimo:",token)
+        # print("token Ultimo:",token)
         return token
 
 
