@@ -1,11 +1,13 @@
 import html
+import io
+import os
 import re
 import time as _time
 from datetime import date, datetime, time
 from urllib.parse import quote
 from django.apps import apps
 from django.conf import settings
-from django.core.mail import send_mail
+from django.core.mail import send_mail, EmailMessage
 from django.contrib import messages
 from django.contrib.auth import authenticate, logout
 from django.contrib.auth.decorators import login_required
@@ -369,6 +371,70 @@ def _cita_de_orden(orden):
     return CitaModel.objects.filter(pk=int(m.group(1))).first() if m else None
 
 
+def _enviar_boleta(cita, orden, monto, resp):
+    """Genera la boleta de SIMULACIÓN, la guarda en media/boletas y la envía
+    por correo a la clienta y a la dueña.
+    Si algo falla, NO afecta al pago: solo se muestra el error en la terminal."""
+    try:
+        from boleta import generar_boleta
+
+        try:
+            tarjeta = _r(resp, "card_detail") or {}
+        except Exception:
+            tarjeta = {}
+        if not isinstance(tarjeta, dict):
+            tarjeta = {"card_number": getattr(tarjeta, "card_number", "")}
+
+        datos = {
+            "orden": orden,
+            "fecha": timezone.localtime().strftime("%d-%m-%Y %H:%M"),
+            "cliente": cita.cliente.nombre,
+            "monto": monto,
+            "tarjeta": str(tarjeta.get("card_number", "0000"))[-4:],
+            "autorizacion": str(_r(resp, "authorization_code") or "-"),
+        }
+        try:
+            if cita.servicio:
+                datos["servicio"] = "Abono - " + cita.servicio.nombre
+        except Exception:
+            pass
+
+        buffer = io.BytesIO()
+        generar_boleta(datos, buffer)
+        pdf = buffer.getvalue()
+
+        # Copia en disco, para poder verla aunque el correo no esté configurado
+        carpeta = os.path.join(settings.BASE_DIR, "media", "boletas")
+        os.makedirs(carpeta, exist_ok=True)
+        with open(os.path.join(carpeta, f"boleta_{orden}.pdf"), "wb") as f:
+            f.write(pdf)
+
+        # Un correo para la clienta y otro para la dueña
+        envios = []
+        if getattr(cita.cliente, "email", ""):
+            envios.append((
+                cita.cliente.email,
+                "Comprobante de abono - Nicolett Studio",
+                "Hola! Adjuntamos la boleta de tu abono (documento de simulación)."))
+        if getattr(settings, "EMAIL_DUENA", ""):
+            envios.append((
+                settings.EMAIL_DUENA,
+                "Nueva reserva pagada - boleta",
+                f"{cita.cliente.nombre} pagó su abono. Boleta adjunta (simulación)."))
+
+        for destino, asunto, cuerpo in envios:
+            msg = EmailMessage(
+                subject=asunto,
+                body=cuerpo,
+                from_email=getattr(settings, "DEFAULT_FROM_EMAIL", None),
+                to=[destino],
+            )
+            msg.attach(f"boleta_{orden}.pdf", pdf, "application/pdf")
+            msg.send(fail_silently=False)
+    except Exception as e:
+        print("No se pudo generar/enviar la boleta:", e)
+
+
 @login_required(login_url="/")
 def pagar_abono(request, pk):
     cliente = _cliente(request.user)
@@ -430,6 +496,7 @@ def webpay_retorno(request):
         _avisar_duena(
             "Cita confirmada con abono",
             f"{cita.cliente.nombre} pagó su abono de {_precio(monto)} por Webpay. Cita: {cita}.")
+        _enviar_boleta(cita, orden, monto, resp)      # <-- BOLETA DE SIMULACIÓN
         messages.success(request, f"¡Pago recibido! Tu cita quedó confirmada. Abono pagado: {_precio(monto)}.")
         return redirect("/mi-cuenta/#historial")
 
