@@ -73,4 +73,4 @@ def login_view(request):
 
 def logout_view(request):
     logout(request)
-    return redirect('home')
+    return redirect('http://127.0.0.1:9020/venta/index')   # ← NUEVO: vuelve a la página de Nicolett

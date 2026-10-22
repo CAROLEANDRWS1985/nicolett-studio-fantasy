@@ -192,3 +192,41 @@ class Atencion(models.Model):
 
     def __str__(self):
         return f"{self.cliente.nombre} - {self.fecha}"
+
+    
+
+# ===================== PROVEEDORES =====================
+
+class Proveedor(models.Model):
+    nombre = models.CharField(max_length=150, verbose_name='Nombre')
+    rut = models.CharField(max_length=15, blank=True, verbose_name='RUT')
+    contacto = models.CharField(max_length=150, blank=True, verbose_name='Persona de contacto')
+    telefono = models.CharField(max_length=20, blank=True, verbose_name='Teléfono')
+    correo = models.EmailField(blank=True, verbose_name='Correo')
+    notas = models.TextField(blank=True, verbose_name='Notas')
+    activo = models.BooleanField(default=True, verbose_name='Activo')
+
+    class Meta:
+        ordering = ['nombre']
+        verbose_name = 'Proveedor'
+        verbose_name_plural = 'Proveedores'
+
+    def __str__(self):
+        return self.nombre
+
+
+class CompraProveedor(models.Model):
+    proveedor = models.ForeignKey(Proveedor, on_delete=models.PROTECT,
+                                  related_name='compras', verbose_name='Proveedor')
+    fecha = models.DateField(default=date.today, verbose_name='Fecha de compra')
+    documento = models.CharField(max_length=50, blank=True, verbose_name='N° factura o boleta')
+    monto = models.DecimalField(max_digits=12, decimal_places=0, default=0, verbose_name='Monto total')
+    nota = models.TextField(verbose_name='Qué se compró')
+
+    class Meta:
+        ordering = ['-fecha']
+        verbose_name = 'Compra a proveedor'
+        verbose_name_plural = 'Compras a proveedores'
+
+    def __str__(self):
+        return f"{self.proveedor.nombre} - {self.fecha}"

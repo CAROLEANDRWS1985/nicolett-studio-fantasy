@@ -30,7 +30,9 @@ def _buscar_modelo(palabra):
 def _modelo(clave):
     palabras = {"servicios": "servicio", "citas": "cita",
                 "clientes": "cliente", "productos": "producto",
-                "inventario": "inventario", "atenciones": "atencion"}
+                "inventario": "inventario", "atenciones": "atencion",
+                "proveedores": "proveedor",
+                "compras": "compraproveedor"}
     M = _buscar_modelo(palabras[clave]) if clave in palabras else None
     if M is None:
         raise Http404("Modelo no encontrado")
@@ -70,8 +72,10 @@ def _valor(o, f):
         return _nombre_usuario(v)
     if f.choices:
         return getattr(o, f"get_{f.name}_display")()
-    if f.name == "monto_cobrado":
+    if f.name in ("monto_cobrado", "monto"):
         return "$" + f"{int(v):,}".replace(",", ".")
+    if isinstance(v, bool):
+        return "Sí" if v else "No"
     return v
 
 
@@ -108,8 +112,12 @@ def crud_editar(request, clave, pk=None):
 def crud_borrar(request, clave, pk):
     M = _modelo(clave)
     if request.method == "POST":
-        get_object_or_404(M, pk=pk).delete()
-        messages.success(request, "Eliminado.")
+        try:
+            get_object_or_404(M, pk=pk).delete()
+            messages.success(request, "Eliminado.")
+        except Exception:
+            messages.error(request, "No se puede eliminar: tiene registros asociados. "
+                                    "Puedes marcarlo como no activo.")
     return redirect("crud_lista", clave=clave)
 from .models import ServicioBelleza
 

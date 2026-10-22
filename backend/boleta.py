@@ -1,11 +1,12 @@
 ﻿from reportlab.lib.pagesizes import A5
 from reportlab.pdfgen import canvas
-from reportlab.lib.colors import HexColor, white
+from reportlab.lib.colors import HexColor
 
-ROSA = HexColor("#C2185B")
+NEGRO = HexColor("#111111")
+DORADO = HexColor("#C9A227")
 OSCURO = HexColor("#2B2B2B")
 GRIS = HexColor("#777777")
-CLARO = HexColor("#FBEAF1")
+CLARO = HexColor("#F5F1E6")
 
 
 def pesos(n):
@@ -27,9 +28,9 @@ def generar_boleta(datos, ruta):
     c.restoreState()
 
     # Franja superior
-    c.setFillColor(ROSA)
+    c.setFillColor(NEGRO)
     c.rect(0, alto - 110, ancho, 110, stroke=0, fill=1)
-    c.setFillColor(white)
+    c.setFillColor(DORADO)
     c.setFont("Helvetica-Bold", 24)
     c.drawString(m, alto - 55, "NICOLETT STUDIO")
     c.setFont("Helvetica", 10)
@@ -54,11 +55,11 @@ def generar_boleta(datos, ruta):
 
     # Detalle
     y = y - 90
-    c.setFillColor(ROSA)
+    c.setFillColor(NEGRO)
     c.setFont("Helvetica-Bold", 10)
     c.drawString(m, y, "DETALLE")
     c.drawRightString(ancho - m, y, "MONTO")
-    c.setStrokeColor(ROSA)
+    c.setStrokeColor(DORADO)
     c.setLineWidth(1.2)
     c.line(m, y - 6, ancho - m, y - 6)
 
@@ -76,9 +77,9 @@ def generar_boleta(datos, ruta):
 
     # Total
     y = y - 80
-    c.setFillColor(ROSA)
+    c.setFillColor(NEGRO)
     c.roundRect(m, y - 34, ancho - 2 * m, 40, 8, stroke=0, fill=1)
-    c.setFillColor(white)
+    c.setFillColor(DORADO)
     c.setFont("Helvetica-Bold", 12)
     c.drawString(m + 14, y - 20, "TOTAL PAGADO")
     c.setFont("Helvetica-Bold", 16)
@@ -96,8 +97,8 @@ def generar_boleta(datos, ruta):
     c.drawString(m, y - 50, "Codigo de autorizacion: " + datos["autorizacion"])
 
     # Pie
-    c.setStrokeColor(HexColor("#DDDDDD"))
-    c.setLineWidth(0.6)
+    c.setStrokeColor(DORADO)
+    c.setLineWidth(0.8)
     c.line(m, 78, ancho - m, 78)
     c.setFillColor(OSCURO)
     c.setFont("Helvetica-Bold", 11)

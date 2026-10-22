@@ -51,7 +51,7 @@ def admin_login(request):
 
 def admin_logout(request):
     logout(request)
-    return redirect('/')
+    return redirect('http://127.0.0.1:9020/venta/index')
 
 
 @solo_equipo

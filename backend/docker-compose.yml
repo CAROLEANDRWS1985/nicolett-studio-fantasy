@@ -10,3 +10,16 @@ services:
       - ./db.sqlite3:/app/db.sqlite3
       - ./media:/app/media
     restart: unless-stopped
+
+  frontend:
+    build: ../frontend
+    container_name: nicolett-frontend
+    ports:
+      - "9020:9020"
+    env_file:
+      - ../frontend/.env
+    volumes:
+      - ../frontend/db.sqlite3:/app/db.sqlite3
+    depends_on:
+      - web
+    restart: unless-stopped

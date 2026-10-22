@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="es">
+<head><meta charset="utf-8"></head>
+<body style="margin:0;padding:24px;background:#f7f1ec;font-family:Arial,sans-serif;color:#2b2422;">
+<table width="600" align="center" cellpadding="0" cellspacing="0" style="background:#ffffff;border:1px solid #e8dcd3;">
+<tr><td style="padding:28px;font-size:14px;line-height:1.6;">
+
+  <p style="font-size:18px;margin-top:0;">Hola Nicolett,</p>
+
+  <p>¡Tenemos una nueva venta! <b>N° {{ numero }}</b></p>
+
+  <p><b>{{ cliente_nombre }}</b> ({{ cliente_email }}) compró el {{ fecha }}:</p>
+
+  <table width="100%" cellpadding="8" cellspacing="0" style="font-size:13px;border-collapse:collapse;">
+    {% for it in items %}
+    <tr style="border-bottom:1px solid #eeeeee;">
+      <td>
+        <b>{{ it.cantidad }} x {{ it.nombre }}</b><br>
+        <span style="color:#8a7a73;font-size:12px;">{{ it.descripcion }}</span>
+      </td>
+      <td align="right">{{ it.subtotal_fmt }}</td>
+    </tr>
+    {% endfor %}
+  </table>
+
+  <p style="font-size:16px;text-align:right;color:#c4897a;"><b>Total pagado: {{ total_fmt }}</b></p>
+  <p style="text-align:right;font-size:12px;color:#6b5d57;">Medio de pago: {{ metodo_pago }}</p>
+
+  <p>Va adjunto el <b>duplicado de la boleta</b> (simulación) para que entregues el producto con confianza.</p>
+
+  <p style="font-size:11px;color:#a09089;border-top:1px solid #e8dcd3;padding-top:12px;">
+    Nicolett Studio Fantasy · Mensaje automático de la tienda
+  </p>
+
+</td></tr>
+</table>
+</body>
+</html>

@@ -1,3 +1,6 @@
+from django.core.cache import cache
+from .models import Producto
+from .correos import enviar_boletas
 import re
 import time
 import random
@@ -15,6 +18,9 @@ from transbank.common.options import WebpayOptions
 from transbank.common.integration_type import IntegrationType
 from transbank.common.integration_commerce_codes import IntegrationCommerceCodes
 from transbank.common.integration_api_keys import IntegrationApiKeys
+from django.core.cache import cache
+from .models import Producto
+from .correos import enviar_boletas
 
 TIENDA_URL = 'http://127.0.0.1:9020/venta/index#productos'
 # Al volver con ?pago=ok, la tienda vacía el carrito del navegador.
@@ -157,6 +163,21 @@ def carrito_pagar(request):
         return _pagina('Carrito muy grande', 'Reduce la cantidad de productos distintos e inténtalo de nuevo.')
 
     orden = 'C' + str(int(time.time())) + str(random.randint(100, 999))
+
+    # Guardar quién compra, para enviarle la boleta al volver de Webpay          # ← NUEVO
+    print('Compra iniciada por:', request.user)                                   # ← NUEVO
+    if request.user.is_authenticated:                                             # ← NUEVO
+        email_clienta = request.user.email                                        # ← NUEVO
+        nombre_clienta = request.user.get_full_name() or request.user.username    # ← NUEVO
+    else:                                                                         # ← NUEVO
+        email_clienta = request.GET.get('email', '')                              # ← NUEVO
+        nombre_clienta = request.GET.get('nombre', '') or 'Clienta'               # ← NUEVO
+    if email_clienta:                                                             # ← NUEVO
+        cache.set('compra_' + orden, {                                            # ← NUEVO
+            'email': email_clienta,                                               # ← NUEVO
+            'nombre': nombre_clienta,                                             # ← NUEVO
+        }, 60 * 60)                                                               # ← NUEVO
+
     retorno = request.build_absolute_uri(reverse('webpay_carrito_retorno'))
     r = _tx().create(orden, session_id, total, retorno)
 
@@ -165,6 +186,50 @@ def carrito_pagar(request):
         '<input type="hidden" name="token_ws" value="' + r['token'] + '"></form>'
         '<script>document.getElementById("f").submit();</script>'
     )
+
+
+
+
+def _enviar_boleta_compra(request, r, items):
+    """Arma la boleta con lo comprado y la envía a la clienta y a Nicolett."""
+    try:
+        datos = cache.get('compra_' + str(r['buy_order'])) or {}
+        user = request.user if request.user.is_authenticated else None
+
+        email = datos.get('email') or (user.email if user else '')
+        nombre = datos.get('nombre') or ((user.get_full_name() or user.username) if user else 'Clienta')
+
+        if not email:
+            print('Boleta NO enviada: no se encontró el correo de la clienta')
+            return
+
+        lineas = []
+        for tipo, num, cant in items:
+            if tipo == 'p':
+                p = Producto.objects.filter(pk=num).first()
+                if p:
+                    lineas.append({
+                        'nombre': getattr(p, 'nombre', str(p)),
+                        'descripcion': getattr(p, 'descripcion', ''),
+                        'cantidad': cant,
+                        'precio_unitario': int(getattr(p, 'precio', 0)),
+                    })
+            else:
+                lineas.append({
+                    'nombre': 'Abono a cita',
+                    'descripcion': '',
+                    'cantidad': 1,
+                    'precio_unitario': int(num),
+                })
+
+        enviar_boletas(
+            numero=r['buy_order'],
+            cliente_nombre=nombre,
+            cliente_email=email,
+            items=lineas,
+        )
+    except Exception as e:
+        print('Error enviando boleta:', e)
 
 
 @csrf_exempt
@@ -195,6 +260,8 @@ def webpay_carrito_retorno(request):
                 abonos += num
         if abonos:
             _registrar_abono(abonos, r['buy_order'])
+
+        _enviar_boleta_compra(request, r, items)   # ← envía la boleta
 
         monto = '{:,}'.format(int(r['amount'])).replace(',', '.')
         return _pagina('¡Pago aprobado!', 'Monto pagado: $' + monto + '. Gracias por tu compra.', TIENDA_OK_URL)

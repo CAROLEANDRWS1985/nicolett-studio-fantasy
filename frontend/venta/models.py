@@ -3,7 +3,8 @@ from django.db import models
 # Create your models here.
 class MensajeContacto(models.Model):
     nombre = models.CharField(max_length=150)
-    email = models.EmailField()
+    email = models.EmailField(blank=True, default='')                   # ← NUEVO (ahora es opcional)
+    whatsapp = models.CharField(max_length=20, blank=True, default='')  # ← NUEVO
     asunto = models.CharField(max_length=200)
     mensaje = models.TextField()
     creado = models.DateTimeField(auto_now_add=True)

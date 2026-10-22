@@ -5,7 +5,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Nicolett Studio de Belleza</title>
-<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,500;0,600;1,500;1,600&family=Jost:wght@400;500;600&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Great+Vibes&family=Playfair+Display:ital,wght@0,500;0,600;1,500;1,600&family=Jost:wght@400;500;600&display=swap" rel="stylesheet">
 <style>
   :root{--cream:#F7F2EC;--cream-2:#F1EAE1;--ink:#231F1B;--ink-2:#2E2622;--rose:#C99387;--line:#E4DCD1;--muted:#6E655C;--gold:#D4B26A;--black:#121010;}
   *{box-sizing:border-box;}
@@ -17,8 +17,8 @@
   /* HEADER */
   header{position:sticky; top:0; z-index:50; display:flex; align-items:center; justify-content:space-between; padding:24px 60px; background:var(--cream); border-bottom:1px solid var(--line);}
   .logo{line-height:1.1;}
-  .logo .name{font-family:'Playfair Display',serif; font-size:26px; font-weight:600;}
-  .logo .sub{font-size:11px; letter-spacing:2px; color:var(--muted);}
+  .logo .name{font-family:'Great Vibes',cursive; font-size:42px; font-weight:400; line-height:1;}
+  .logo .sub{font-family:'Great Vibes',cursive; font-size:20px; letter-spacing:0; color:var(--muted); line-height:1;}
   nav{display:flex; align-items:center; gap:40px;}
   nav a{text-decoration:none; color:var(--ink); font-size:14px; letter-spacing:1px;}
   .header-actions{display:flex; align-items:center; gap:16px;}
@@ -42,8 +42,8 @@
   .hero{display:grid; grid-template-columns:1fr 1fr; min-height:640px;}
   .hero-copy{display:flex; flex-direction:column; justify-content:flex-start; padding:80px 80px 0;}
   .hero-copy .eyebrow{color:var(--muted);}
-  h1{font-family:'Playfair Display',serif; font-weight:500; font-size:58px; line-height:1.08; margin:0 0 28px;}
-  h1 em{font-style:italic; color:var(--rose);}
+  h1{font-family:'Great Vibes',cursive; font-weight:400; font-size:84px; line-height:1.05; margin:0 0 28px;}
+  h1 em{font-style:normal; color:var(--rose);}
   .hero-copy p{max-width:420px; font-size:16px; line-height:1.7; color:var(--muted); margin-bottom:36px;}
   .cta-row{display:flex; gap:16px; margin-bottom:64px;}
   .stats{display:flex; gap:56px;}
@@ -252,7 +252,7 @@
     .container{padding:0 24px;}
     .hero{grid-template-columns:1fr;}
     .hero-copy{padding:48px 24px;}
-    h1{font-size:38px;}
+    h1{font-size:58px;}
     .svc-head{flex-direction:column; align-items:flex-start;}
     .kids{padding:70px 24px;}
     .about{padding:70px 24px;}
@@ -280,7 +280,7 @@
   <header>
     <div class="logo">
       <div class="name">Nicolett</div>
-      <div class="sub">STUDIO FANTASY</div>
+      <div class="sub">Studio Fantasy</div>
     </div>
     <nav>
       <a href="#inicio">INICIO</a>
@@ -802,7 +802,7 @@
       <form class="contact-form" method="post" action="{% url 'index' %}#contacto">
         {% csrf_token %}
         <div class="field"><label>NOMBRE COMPLETO</label><input type="text" name="nombre" placeholder="Valentina González" required></div>
-        <div class="field"><label>EMAIL DE CONTACTO</label><input type="email" name="email" placeholder="valentina@ejemplo.cl" required></div>
+                <div class="field"><label>WHATSAPP</label><input type="tel" name="whatsapp" placeholder="+569 1234 5678" pattern="[0-9+ ]{8,16}" title="Ingresa tu número de WhatsApp, por ejemplo +569 1234 5678" required></div>
         <div class="field"><label>ASUNTO</label><input type="text" name="asunto" placeholder="Consulta sobre colorimetría" required></div>
         <div class="field"><label>MENSAJE</label><textarea name="mensaje" placeholder="Cuéntanos en qué podemos ayudarte..." required></textarea></div>
         <button type="submit">ENVIAR MENSAJE</button>
@@ -811,7 +811,12 @@
 
     {% if messages %}
     <div class="contact-mensajes">
-      {% for message in messages %}<p>{{ message }}</p>{% endfor %}
+      {% for message in messages %}
+        <p{% if message.tags == 'error' %} style="background:#fdecea; color:#8a2c22; border-left-color:#c0392b;"{% endif %}>{{ message }}</p>
+        {% if message.tags == 'success' %}
+        <p>Si no te contactamos dentro de 10 a 15 minutos, escríbenos al WhatsApp de Nicolett Studio: <a href="https://wa.me/56940322551" target="_blank" rel="noopener" style="color:inherit; font-weight:600;">+569 4032 2551</a>.</p>
+        {% endif %}
+      {% endfor %}
     </div>
     {% endif %}
   </section>
@@ -969,4 +974,5 @@
   })();
 </script>
 </body>
+<script>window.addEventListener("load",function(){var m=document.querySelector(".contact-mensajes");if(!m)return;[300,1500].forEach(function(t){setTimeout(function(){m.scrollIntoView({block:"center"});},t);});});</script>
 </html>

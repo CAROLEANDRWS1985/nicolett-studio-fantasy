@@ -10,6 +10,9 @@ from django.conf import settings
 from django.core.mail import send_mail, EmailMessage
 from django.contrib import messages
 from django.contrib.auth import authenticate, logout
+from django.contrib.auth import get_user_model
+from django.core.exceptions import ValidationError
+from django.core.validators import validate_email
 from django.contrib.auth.decorators import login_required
 from django.db import models
 from django.http import JsonResponse, HttpResponse
@@ -106,11 +109,39 @@ def _precio(p):
     return "$" + f"{int(p):,}".replace(",", ".")
 
 
-def _avisar_duena(asunto, mensaje):
+# ---- Fechas en español para los correos ----
+MESES = ["enero", "febrero", "marzo", "abril", "mayo", "junio", "julio",
+         "agosto", "septiembre", "octubre", "noviembre", "diciembre"]
+DIAS = ["lunes", "martes", "miércoles", "jueves", "viernes", "sábado", "domingo"]
+
+
+def _fecha_larga(f):
+    """Ej: lunes 26 de octubre de 2026"""
+    return f"{DIAS[f.weekday()]} {f.day} de {MESES[f.month - 1]} de {f.year}"
+
+
+def _fecha_hora_obj(cita):
+    """Devuelve (fecha, hora) de la cita como objetos date y time. Si falla, (None, None)."""
+    try:
+        c = _campos_cita(CitaModel)
+        if c["dt"]:
+            v = getattr(cita, c["dt"].name)
+            if v and timezone.is_aware(v):
+                v = timezone.localtime(v)
+            return v.date(), v.time()
+        if c["d"] and c["t"]:
+            return getattr(cita, c["d"].name), getattr(cita, c["t"].name)
+    except Exception:
+        pass
+    return None, None
+
+
+def _avisar_duena(asunto, mensaje, mensaje_html=None):
     """Manda un correo a la dueña. Si falla, no impide agendar ni cancelar."""
     try:
         send_mail(asunto, mensaje, settings.DEFAULT_FROM_EMAIL,
-                  [settings.EMAIL_DUENA], fail_silently=False)
+                  [settings.EMAIL_DUENA], fail_silently=False,
+                  html_message=mensaje_html)
     except Exception as e:
         print("No se pudo enviar el correo a la dueña:", e)
 
@@ -151,6 +182,24 @@ def _estado_horas(Cita, c, fecha):
         pasada = fecha == date.today() and h <= ahora
         res.append({"hora": h, "libre": h not in ocupadas and not pasada})
     return res
+
+
+def _fecha_hora_cita(cita):
+    """Devuelve (fecha, hora) de la cita como texto, ej: ('26-10-2026', '15:00')."""
+    try:
+        c = _campos_cita(CitaModel)
+        if c["dt"]:
+            v = getattr(cita, c["dt"].name)
+            if v and timezone.is_aware(v):
+                v = timezone.localtime(v)
+            return v.strftime("%d-%m-%Y"), v.strftime("%H:%M")
+        if c["d"] and c["t"]:
+            f = getattr(cita, c["d"].name)
+            h = getattr(cita, c["t"].name)
+            return f.strftime("%d-%m-%Y"), h.strftime("%H:%M")
+    except Exception:
+        pass
+    return "-", "-"
 
 
 @login_required(login_url="/")
@@ -270,11 +319,128 @@ def cancelar_cita(request, pk):
     c = _campos_cita(Cita) if Cita else None
     if cliente and c and c["cli"]:
         cita = get_object_or_404(Cita, pk=pk, **{c["cli"].name: cliente})
-        detalle = str(cita)
+
+        # Se guardan los datos ANTES de borrar la cita
+        try:
+            servicio = cita.servicio.nombre if cita.servicio else "No especificado"
+        except Exception:
+            servicio = "No especificado"
+        try:
+            estado = cita.get_estado_display()
+        except Exception:
+            estado = "-"
+        fecha, hora = _fecha_hora_obj(cita)
+
         cita.delete()
-        # Aviso por correo a la dueña
-        _avisar_duena("Cita cancelada", f"{cliente.nombre} canceló su cita: {detalle}")
-        messages.success(request, "Tu cita fue cancelada.")
+
+        # ---- Correo completo para la dueña ----
+        if fecha and hora:
+            fecha_txt = _fecha_larga(fecha)
+            hora_txt = hora.strftime("%H:%M") + " hrs"
+            asunto = (f"Cita cancelada: {cliente.nombre}, "
+                      f"{fecha.day} de {MESES[fecha.month - 1]} a las {hora.strftime('%H:%M')}")
+        else:
+            fecha_txt = hora_txt = "-"
+            asunto = f"Cita cancelada: {cliente.nombre}"
+
+        cancelada_el = timezone.localtime().strftime("%d-%m-%Y %H:%M")
+        telefono = cliente.telefono or "No registrado"
+        correo = cliente.email or "No registrado"
+
+        texto = (
+            "Hola Nicolett,\n\n"
+            f"{cliente.nombre} ha cancelado su cita.\n\n"
+            "DETALLE DE LA CITA CANCELADA\n"
+            "----------------------------\n"
+            f"Clienta:  {cliente.nombre}\n"
+            f"Servicio: {servicio}\n"
+            f"Fecha:    {fecha_txt}\n"
+            f"Hora:     {hora_txt}\n"
+            f"Estado de la cita: {estado}\n"
+            f"Cancelada el: {cancelada_el}\n\n"
+            "CONTACTO DE LA CLIENTA\n"
+            "----------------------\n"
+            f"Teléfono: {telefono}\n"
+            f"Correo:   {correo}\n\n"
+            "Ese horario ya quedó libre en tu agenda.\n\n"
+            "Nicolett Studio"
+        )
+
+        e = html.escape
+        filas = [
+            ("Clienta", cliente.nombre), ("Servicio", servicio),
+            ("Fecha", fecha_txt), ("Hora", hora_txt),
+            ("Estado de la cita", estado), ("Cancelada el", cancelada_el),
+        ]
+        filas_html = "".join(
+            f'<tr><td style="padding:8px 12px;color:#6E655C;border-bottom:1px solid #E4DCD1;">{e(k)}</td>'
+            f'<td style="padding:8px 12px;font-weight:600;border-bottom:1px solid #E4DCD1;">{e(str(v))}</td></tr>'
+            for k, v in filas
+        )
+        cuerpo_html = (
+            '<div style="font-family:Arial,sans-serif;max-width:520px;margin:auto;color:#231F1B;">'
+            '<h2 style="margin:0 0 8px;">Cita cancelada</h2>'
+            f'<p>Hola Nicolett, <b>{e(cliente.nombre)}</b> ha cancelado su cita.</p>'
+            '<h3 style="margin:24px 0 8px;font-size:15px;">Detalle de la cita cancelada</h3>'
+            f'<table style="width:100%;border-collapse:collapse;background:#F7F2EC;">{filas_html}</table>'
+            '<h3 style="margin:24px 0 8px;font-size:15px;">Contacto de la clienta</h3>'
+            f'<p style="margin:0;">Teléfono: {e(telefono)}<br>Correo: {e(correo)}</p>'
+            '<p style="margin-top:24px;">Ese horario ya quedó libre en tu agenda.</p>'
+            '<p style="color:#6E655C;">Nicolett Studio</p></div>'
+        )
+
+        _avisar_duena(asunto, texto, cuerpo_html)
+
+        # ---- Correo de cancelación para la clienta ----
+        # Se usa el correo de su cuenta o el de su ficha, nunca el de la dueña.
+        try:
+            duena = (getattr(settings, "EMAIL_DUENA", "") or "").strip().lower()
+            usuario = getattr(cliente, "usuario", None)
+            candidatos = [
+                (getattr(usuario, "email", "") or "").strip(),
+                (getattr(cliente, "email", "") or "").strip(),
+            ]
+            correo_clienta = next((x for x in candidatos if x and x.lower() != duena), "")
+            if correo_clienta:
+                texto_clienta = (
+                    f"Hola {cliente.nombre},\n\n"
+                    "Tu cita fue cancelada.\n\n"
+                    "DETALLE DE LA CITA CANCELADA\n"
+                    "----------------------------\n"
+                    f"Servicio: {servicio}\n"
+                    f"Fecha:    {fecha_txt}\n"
+                    f"Hora:     {hora_txt}\n\n"
+                    "Nicolett Studio"
+                )
+                filas_cli = [("Servicio", servicio), ("Fecha", fecha_txt), ("Hora", hora_txt)]
+                filas_cli_html = "".join(
+                    f'<tr><td style="padding:8px 12px;color:#6E655C;border-bottom:1px solid #E4DCD1;">{e(k)}</td>'
+                    f'<td style="padding:8px 12px;font-weight:600;border-bottom:1px solid #E4DCD1;">{e(str(v))}</td></tr>'
+                    for k, v in filas_cli
+                )
+                html_clienta = (
+                    '<div style="font-family:Arial,sans-serif;max-width:520px;margin:auto;color:#231F1B;">'
+                    '<h2 style="margin:0 0 8px;">Tu cita fue cancelada</h2>'
+                    f'<p>Hola <b>{e(cliente.nombre)}</b>, tu cita fue cancelada.</p>'
+                    '<h3 style="margin:24px 0 8px;font-size:15px;">Detalle de la cita cancelada</h3>'
+                    f'<table style="width:100%;border-collapse:collapse;background:#F7F2EC;">{filas_cli_html}</table>'
+                    '<p style="color:#6E655C;margin-top:24px;">Nicolett Studio</p></div>'
+                )
+                send_mail("Tu cita fue cancelada - Nicolett Studio", texto_clienta,
+                          settings.DEFAULT_FROM_EMAIL, [correo_clienta],
+                          fail_silently=False, html_message=html_clienta)
+            else:
+                print("La clienta no tiene un correo propio distinto al de la dueña; "
+                      "no se envió su aviso de cancelación.")
+        except Exception as err:
+            print("No se pudo enviar el correo de cancelación a la clienta:", err)
+
+        primer_nombre = (cliente.nombre or "").split()[0] if (cliente.nombre or "").strip() else ""
+        messages.success(
+            request,
+            f"Hola {primer_nombre}, tu cita fue cancelada. "
+            "Para volver a reagendar, utiliza la página web o escríbenos por WhatsApp. "
+            "Te estaremos esperando pronto.")
     return redirect("/mi-cuenta/#cancelar")
 
 
@@ -296,9 +462,30 @@ def editar_perfil(request):
                 messages.error(request, "La fecha de cumpleaños no puede ser futura.")
                 return redirect("/mi-cuenta/#perfil")
 
+        # Correo (opcional): también se valida antes de guardar nada
+        correo = (request.POST.get("email") or request.POST.get("correo") or "").strip().lower()
+        if correo:
+            try:
+                validate_email(correo)
+            except ValidationError:
+                messages.error(request, "El correo no es válido.")
+                return redirect("/mi-cuenta/#perfil")
+            User = get_user_model()
+            en_uso = (
+                User.objects.filter(email__iexact=correo).exclude(pk=request.user.pk).exists()
+                or Cliente.objects.filter(email__iexact=correo).exclude(pk=cliente.pk).exists()
+            )
+            if en_uso:
+                messages.error(request, "Ese correo ya está en uso por otra cuenta.")
+                return redirect("/mi-cuenta/#perfil")
+
         cliente.nombre = request.POST.get("nombre", cliente.nombre).strip() or cliente.nombre
         cliente.telefono = request.POST.get("telefono", cliente.telefono or "").strip()
         cliente.fecha_nacimiento = nacimiento
+        if correo:
+            cliente.email = correo
+            request.user.email = correo          # el correo de la cuenta también
+            request.user.save(update_fields=["email"])
         cliente.save()
         messages.success(request, "Perfil actualizado.")
     return redirect("/mi-cuenta/#perfil")
@@ -393,11 +580,16 @@ def _enviar_boleta(cita, orden, monto, resp):
             "tarjeta": str(tarjeta.get("card_number", "0000"))[-4:],
             "autorizacion": str(_r(resp, "authorization_code") or "-"),
         }
+        nombre_servicio = "-"
         try:
             if cita.servicio:
-                datos["servicio"] = "Abono - " + cita.servicio.nombre
+                nombre_servicio = cita.servicio.nombre
+                datos["servicio"] = "Abono - " + nombre_servicio
         except Exception:
             pass
+
+        # Día y hora de la cita agendada (para el correo)
+        fecha_cita, hora_cita = _fecha_hora_cita(cita)
 
         buffer = io.BytesIO()
         generar_boleta(datos, buffer)
@@ -409,20 +601,33 @@ def _enviar_boleta(cita, orden, monto, resp):
         with open(os.path.join(carpeta, f"boleta_{orden}.pdf"), "wb") as f:
             f.write(pdf)
 
-        # Un correo para la clienta y otro para la dueña
-        envios = []
-        if getattr(cita.cliente, "email", ""):
-            envios.append((
-                cita.cliente.email,
-                "Comprobante de abono - Nicolett Studio",
-                "Hola! Adjuntamos la boleta de tu abono (documento de simulación)."))
-        if getattr(settings, "EMAIL_DUENA", ""):
-            envios.append((
-                settings.EMAIL_DUENA,
-                "Nueva reserva pagada - boleta",
-                f"{cita.cliente.nombre} pagó su abono. Boleta adjunta (simulación)."))
+        detalle_cita = (
+            f"Clienta: {cita.cliente.nombre}\n"
+            f"Servicio: {nombre_servicio}\n"
+            f"Fecha: {fecha_cita}\n"
+            f"Hora: {hora_cita}\n"
+        )
 
-        for destino, asunto, cuerpo in envios:
+        # Detalle de la cita para el correo de la clienta (sin la línea "Clienta")
+        detalle_clienta = (
+            f"Servicio: {nombre_servicio}\n"
+            f"Fecha: {fecha_cita}\n"
+            f"Hora: {hora_cita}\n"
+        )
+
+        # Correo de la clienta: se toma el de su cuenta (usuario) o el de su ficha,
+        # pero NUNCA el de la dueña (así no se le manda a Nicolett el correo de la clienta).
+        duena = (getattr(settings, "EMAIL_DUENA", "") or "").strip().lower()
+        usuario = getattr(cita.cliente, "usuario", None)
+        candidatos = [
+            (getattr(usuario, "email", "") or "").strip(),
+            (getattr(cita.cliente, "email", "") or "").strip(),
+        ]
+        correo_clienta = next((e for e in candidatos if e and e.lower() != duena), "")
+
+        nombre = cita.cliente.nombre
+
+        def _mandar(destino, asunto, cuerpo):
             msg = EmailMessage(
                 subject=asunto,
                 body=cuerpo,
@@ -431,6 +636,42 @@ def _enviar_boleta(cita, orden, monto, resp):
             )
             msg.attach(f"boleta_{orden}.pdf", pdf, "application/pdf")
             msg.send(fail_silently=False)
+
+        # ---- 1) Correo para la dueña (va primero y solo, para que siempre llegue) ----
+        if duena:
+            try:
+                _mandar(
+                    settings.EMAIL_DUENA,
+                    f"Nueva reserva pagada - {nombre}",
+                    f"Hola Nicolett, {nombre} pagó su abono de {_precio(monto)}.\n"
+                    "Adjuntamos la boleta del abono de la clienta.\n\n"
+                    "Reserva agendada:\n"
+                    f"Clienta: {nombre}\n"
+                    f"Servicio: {nombre_servicio}\n"
+                    f"Fecha: {fecha_cita}\n"
+                    f"Hora: {hora_cita}\n\n"
+                    "Boleta adjunta (simulación).")
+            except Exception as err:
+                print("No se pudo enviar el correo a la dueña:", err)
+        else:
+            print("EMAIL_DUENA está vacío en el .env; no se envió el correo a la dueña.")
+
+        # ---- 2) Correo para la clienta (si falla, ya no afecta el de la dueña) ----
+        if correo_clienta:
+            try:
+                _mandar(
+                    correo_clienta,
+                    "Tu cita está confirmada - Nicolett Studio",
+                    f"Hola {nombre}! Tu cita está registrada con éxito.\n"
+                    f"Esta es tu boleta del abono de {_precio(monto)} "
+                    "(documento de simulación).\n\n"
+                    "Tu cita:\n" + detalle_clienta +
+                    "\nTe esperamos en Nicolett Studio.")
+            except Exception as err:
+                print("No se pudo enviar el correo a la clienta:", err)
+        else:
+            print("La clienta no tiene un correo propio distinto al de la dueña; "
+                  "no se envió su comprobante.")
     except Exception as e:
         print("No se pudo generar/enviar la boleta:", e)
 
@@ -493,9 +734,7 @@ def webpay_retorno(request):
         Abono.objects.create(
             cliente=cita.cliente, monto=monto,
             motivo=f"Abono Webpay - cita #{cita.pk} - orden {orden}")
-        _avisar_duena(
-            "Cita confirmada con abono",
-            f"{cita.cliente.nombre} pagó su abono de {_precio(monto)} por Webpay. Cita: {cita}.")
+        # Un solo correo a la dueña: lo manda _enviar_boleta (con servicio, fecha, hora y boleta)
         _enviar_boleta(cita, orden, monto, resp)      # <-- BOLETA DE SIMULACIÓN
         messages.success(request, f"¡Pago recibido! Tu cita quedó confirmada. Abono pagado: {_precio(monto)}.")
         return redirect("/mi-cuenta/#historial")

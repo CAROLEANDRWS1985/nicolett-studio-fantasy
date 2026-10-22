@@ -159,7 +159,7 @@ td{padding:13px 14px;border-top:1px solid rgba(212,178,106,.25);font-size:14px;c
       <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M12 22a2.5 2.5 0 0 0 2.45-2h-4.9A2.5 2.5 0 0 0 12 22zm7-6V11a7 7 0 0 0-5.5-6.84V3.5a1.5 1.5 0 0 0-3 0v.66A7 7 0 0 0 5 11v5l-2 2v1h18v-1l-2-2z"/></svg>
       {% if citas %}<span class="n">{{ citas|length }}</span>{% endif %}
     </button>
-    <a href="/admin-logout/">SALIR</a>
+        <a href="/segur/logout/">SALIR</a>
   </div>
 </div>
 
@@ -238,7 +238,7 @@ td{padding:13px 14px;border-top:1px solid rgba(212,178,106,.25);font-size:14px;c
       <label style="margin-top:18px">Servicio</label>
       <select name="servicio" id="f-servicio" required>
         <option value="">Elige un servicio...</option>
-        {% for s in servicios %}<option value="{{ s.pk }}">{{ s.nombre }} · {{ s.precio }}</option>{% endfor %}
+        {% for s in servicios %}<option value="{{ s.pk }}" data-abono="{{ s.abono }}">{{ s.nombre }} · {{ s.precio }}</option>{% endfor %}
       </select>
       <div id="abono-info" class="abono-info"></div>
       <label style="margin-top:18px">Hora</label>
@@ -295,7 +295,7 @@ td{padding:13px 14px;border-top:1px solid rgba(212,178,106,.25);font-size:14px;c
     <label>Fecha de cumpleaños</label>
     <input type="date" name="fecha_nacimiento" class="editable" value="{{ cliente.fecha_nacimiento|date:'Y-m-d' }}" readonly>
     <label>Correo</label>
-    <input value="{{ cliente.email|default_if_none:'' }}" disabled>
+    <input type="email" name="email" class="editable" value="{{ cliente.email|default_if_none:'' }}" readonly>
     <div class="acciones">
       <button class="btn" type="button" id="perfil-editar">Editar</button>
       <button class="btn" type="submit" id="perfil-guardar" style="display:none">Guardar cambios</button>
@@ -338,7 +338,7 @@ td{padding:13px 14px;border-top:1px solid rgba(212,178,106,.25);font-size:14px;c
     <div class="f"><span>Más de 48 horas antes</span><span class="ok">Reembolso total (100%)</span></div>
     <div class="f"><span>Entre 24 y 48 horas antes</span><span class="med">Reembolso parcial (50%)</span></div>
     <div class="f"><span>Menos de 24 horas antes</span><span class="no">Sin reembolso</span></div>
-    <div class="abono"><b>Abono para reservar:</b> una vez reservada tu hora, debes abonar un monto fijo según el servicio (por ejemplo, corte de pelo: $5.000) por transferencia para dejarla confirmada. Al elegir tu servicio en "Agendar cita" verás cuánto debes abonar.</div>
+    <div class="abono"><b>Abono para reservar:</b> al agendar tu hora pagas un abono con Webpay para dejarla confirmada: $5.000 para la mayoría de los servicios y $10.000 para tratamientos. Al elegir tu servicio en "Agendar cita" verás cuánto debes abonar.</div>
   </div>
 
   <h2 class="tit">Selecciona la cita a cancelar</h2>
@@ -537,20 +537,14 @@ document.querySelectorAll('.card').forEach(c=>{
   $('cal-prev').onclick=()=>{vista=new Date(vista.getFullYear(),vista.getMonth()-1,1);dibujar();};
   $('cal-next').onclick=()=>{vista=new Date(vista.getFullYear(),vista.getMonth()+1,1);dibujar();};
 
-  // ---- ABONOS POR SERVICIO (cámbialos aquí) ----
-  // Escribe el nombre del servicio en minúscula (o una parte del nombre) y el monto en pesos.
-  const ABONOS={
-    'corte de pelo':5000
-    // 'otro servicio':8000,
-  };
+  // ---- ABONO: el monto lo calcula el servidor (views.py: ABONO_TRATAMIENTOS y ABONO_OTROS) ----
   function mostrarAbono(){
     const box=$('abono-info'), op=$('f-servicio').selectedOptions[0];
     if(!op||!op.value){box.className='abono-info';box.textContent='';return;}
-    const nombre=op.textContent.split(' · ')[0].trim().toLowerCase();
-    const k=Object.keys(ABONOS).find(x=>nombre.includes(x));
+    const monto=parseInt(op.dataset.abono,10);
     box.className='abono-info on';
-    box.textContent=k
-      ? 'Abono para reservar: $'+ABONOS[k].toLocaleString('es-CL')+' por transferencia, una vez reservada tu hora.'
+    box.textContent=monto
+      ? 'Abono para reservar: $'+monto.toLocaleString('es-CL')+', se paga con Webpay al confirmar tu cita.'
       : 'El abono para este servicio se te informará al reservar tu hora.';
   }
   $('f-servicio').onchange=()=>{$('f-hora').value='';mostrarAbono();if(sel)cargar();validar();};
