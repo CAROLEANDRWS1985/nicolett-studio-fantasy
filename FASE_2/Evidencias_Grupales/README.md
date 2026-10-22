@@ -33,6 +33,10 @@ Plataforma web de gestión, ventas y atención de clientes para la peluquería N
 - Bloqueo de días en los que la dueña no atiende, de forma inmediata o con anticipación y por emergencia.
 - Venta de productos desde la página web.
 - Notificaciones por correo a la dueña al agendar o cancelar.
+- Boleta de simulación por correo al comprar productos en la tienda: la clienta recibe su boleta con el detalle de lo comprado y la dueña recibe un aviso de la venta con el duplicado de la boleta, ambos con el PDF adjunto.
+- Formulario de contacto con el WhatsApp de la clienta, y correo a la dueña con un botón para responderle por WhatsApp.
+- Al cerrar sesión, tanto la clienta como la dueña vuelven a la página principal de la peluquería.
+- Gestión de proveedores y de compras a proveedores desde el panel administrativo.
 
 ## Tecnologías utilizadas
 
@@ -43,6 +47,7 @@ Plataforma web de gestión, ventas y atención de clientes para la peluquería N
 | Base de datos | SQLite |
 | Pagos | WebPay Plus (ambiente de pruebas de Transbank) |
 | Correo | SMTP con Gmail (contraseña de aplicación) |
+| Boletas PDF de la tienda | xhtml2pdf |
 | Contenedores | Docker y Docker Compose |
 | Configuración | Variables de entorno (archivo `.env`) |
 | Nube / alojamiento | Ninguno por ahora: el sistema funciona en entorno local |
@@ -64,6 +69,17 @@ Están en la carpeta `backend`, junto a `manage.py`.
 | `.dockerignore` | Evita copiar a la imagen archivos innecesarios o secretos. |
 | `requirements.txt` | Lista de librerías de Python que se instalan en la imagen. |
 
+La página principal de la peluquería (proyecto `frontend`) tiene sus propios archivos de Docker, en la carpeta `frontend`, junto a su `manage.py`:
+
+| Archivo | Para qué sirve |
+|---|---|
+| `Dockerfile` | Receta para construir la imagen de la página principal (puerto `9020`). |
+| `.env` | Variables de entorno del correo del formulario de contacto (no se sube a Git). |
+| `.dockerignore` | Evita copiar a la imagen archivos temporales y el `.env`. |
+| `requirements.txt` | Librerías del frontend: `Django==5.2.3`, `python-dotenv` y `tzdata`. |
+
+En el `requirements.txt` del backend se agregaron `xhtml2pdf` (PDF de las boletas de la tienda) y `python-dotenv` (lectura del `.env`), y `reportlab` quedó en la versión 4, que es la que exige `xhtml2pdf`.
+
 ### Dockerfile
 
 1. Parte de la imagen `python:3.12-slim`.
@@ -82,6 +98,20 @@ El archivo `docker-compose.yml` levanta el servicio `web` con esta configuració
 - **Variables de entorno:** las lee desde el archivo `.env`.
 - **Volúmenes:** `db.sqlite3` y `media/` se guardan en el computador, así la base de datos y las boletas no se pierden al apagar el contenedor.
 - **Reinicio:** `restart: unless-stopped`.
+
+El mismo `docker-compose.yml` levanta también el servicio `frontend`, la página principal de la peluquería:
+
+- **Construcción:** arma la imagen desde `../frontend/Dockerfile`.
+- **Puerto:** publica el `9020` del contenedor en el `9020` del computador.
+- **Variables de entorno:** las lee desde `../frontend/.env`.
+- **Volúmenes:** `../frontend/db.sqlite3` se guarda en el computador, así los mensajes del formulario de contacto no se pierden.
+- **Orden de arranque:** `depends_on: web`, primero se levanta el backend.
+- **Reinicio:** `restart: unless-stopped`.
+
+| Servicio | Contenedor | Puerto | Dirección |
+|---|---|---|---|
+| `web` (backend) | `nicolett` | `8000` | http://localhost:8000/ |
+| `frontend` (página principal) | `nicolett-frontend` | `9020` | http://127.0.0.1:9020/venta/index |
 
 ### Variables de entorno
 
@@ -115,6 +145,14 @@ python -c "import secrets; print(secrets.token_urlsafe(50))"
 
 La contraseña de aplicación se crea en la cuenta de Google, en *Seguridad → Contraseñas de aplicaciones* (requiere la verificación en 2 pasos activada).
 
+El frontend necesita su propio `.env` en la carpeta `frontend`, con las variables `EMAIL_HOST_USER`, `EMAIL_HOST_PASSWORD` y `EMAIL_DUENA`. Se puede crear copiando el del backend:
+
+```
+copy backend\.env frontend\.env
+```
+
+En el backend, el correo de la dueña que recibe el aviso de venta de la tienda (`NICOLETT_EMAIL`) se toma de `EMAIL_DUENA`. En el frontend, `CORREO_DUENA` también se toma de `EMAIL_DUENA`.
+
 > El archivo `.env` está en `.gitignore` y nunca debe subirse al repositorio.
 
 ## Instrucciones para ejecutar el proyecto localmente
@@ -130,14 +168,19 @@ git clone <URL-DEL-REPOSITORIO>
 cd backend
 ```
 
-2. Crear el archivo `.env` con las variables descritas arriba.
-3. Construir y levantar el sistema:
+2. Crear el archivo `.env` con las variables descritas arriba, en la carpeta `backend` y en la carpeta `frontend`.
+3. Construir y levantar el sistema (backend y página principal juntos):
 
 ```
 docker compose up --build
 ```
 
-4. Abrir en el navegador **http://localhost:8000/**
+4. Esperar a que aparezcan las dos líneas `Starting development server`, una de `nicolett` (puerto 8000) y otra de `nicolett-frontend` (puerto 9020).
+5. Abrir en el navegador:
+   - Página principal de la peluquería: **http://127.0.0.1:9020/venta/index**
+   - Backend: **http://localhost:8000/**
+
+> Antes de levantar con Docker hay que cerrar los servidores que estén corriendo a mano con `runserver`, para que los puertos 8000 y 9020 queden libres.
 
 Comandos útiles:
 
@@ -191,6 +234,17 @@ python manage.py runserver
 
 7. Abrir en el navegador **http://127.0.0.1:8000/**
 
+### Página principal de la peluquería (frontend)
+
+La página pública de la peluquería (inicio, servicios, nosotras, contacto, productos, Rincón Kids y carrito) corre en un proyecto Django aparte, en el puerto `9020`. Se levanta en otra terminal, con el backend corriendo en el puerto `8000`:
+
+```
+cd frontend
+python manage.py runserver 9020
+```
+
+Y se abre en **http://127.0.0.1:9020/venta/index**
+
 ## Pago de prueba (WebPay Plus)
 
 El sistema usa el ambiente de integración de Transbank. Para probar un pago:
@@ -201,9 +255,103 @@ El sistema usa el ambiente de integración de Transbank. Para probar un pago:
 
 Al aprobarse el pago, la cita queda confirmada y se genera una boleta de simulación en `media/boletas/`, que además se envía por correo a la clienta y a la dueña.
 
+## Boletas por compra de productos
+
+Cuando una clienta compra productos desde la tienda y el pago con WebPay es aprobado, se envían dos correos con la boleta de simulación en PDF adjunta:
+
+| Para | Asunto | Contenido | Adjunto |
+|---|---|---|---|
+| Clienta | Tu boleta N° … · Nicolett Studio Fantasy | Saludo, número de boleta, fecha, medio de pago, detalle de cada producto (nombre, descripción, cantidad, precio y subtotal), neto, IVA y total. | `boleta_<N°>.pdf` |
+| Dueña | Nueva venta N° … · nombre de la clienta | "Hola Nicolett, ¡tenemos una nueva venta!", quién compró, su correo, la fecha, qué compró y el total pagado. | `boleta_<N°>_duplicado.pdf`, con la franja **DUPLICADO** |
+
+**Cómo funciona:**
+
+1. Al iniciar el pago, `carrito_pagar` (`ventas/views_catalogo.py`) guarda el correo y el nombre de la clienta en la caché de Django, asociados al número de orden.
+2. Al volver de WebPay con el pago aprobado, `webpay_carrito_retorno` descuenta el stock y llama a `_enviar_boleta_compra`.
+3. `_enviar_boleta_compra` recupera los datos de la clienta y llama a `enviar_boletas` (`ventas/correos.py`), que genera los PDF y envía los dos correos.
+4. Si la página de retorno se recarga, WebPay rechaza la segunda confirmación, por lo que la boleta no se envía dos veces.
+
+**Archivos nuevos:**
+
+| Archivo | Función |
+|---|---|
+| `ventas/correos.py` | Calcula totales, neto e IVA, genera los PDF con `xhtml2pdf` y envía los correos. |
+| `front/templates/emails/boleta.html` | Diseño de la boleta (correo de la clienta y los dos PDF). |
+| `front/templates/emails/aviso_nicolett.html` | Diseño del aviso de venta para la dueña. |
+
+**Configuración usada en `settings.py`:** `DEFAULT_FROM_EMAIL` (correo que envía las boletas, armado con `EMAIL_HOST_USER`) y `NICOLETT_EMAIL` (correo de la dueña que recibe el aviso de venta, tomado de `EMAIL_DUENA`). Ambos se leen desde el `.env`.
+
+## Formulario de contacto con WhatsApp
+
+El formulario de la sección Contacto de la página principal pide el **WhatsApp** de la clienta en lugar de su correo. Los campos son nombre completo, WhatsApp, asunto y mensaje.
+
+Al enviarlo:
+
+1. El mensaje se guarda en el modelo `MensajeContacto`, que ahora tiene el campo `whatsapp`. El campo `email` quedó opcional para conservar los mensajes antiguos.
+2. La dueña recibe un correo con diseño, con los datos de la clienta, su mensaje y un botón **RESPONDER POR WHATSAPP** que abre el chat directo con ella.
+
+**Archivos modificados (proyecto frontend):** `venta/models.py`, `venta/views.py`, `venta/templates/index.html` y la migración `venta/migrations/0002_mensajecontacto_whatsapp_alter_mensajecontacto_email.py`.
+
+## Cierre de sesión
+
+| Quién | Botón | Ruta | Después de cerrar sesión |
+|---|---|---|---|
+| Clienta | SALIR, en *Mi cuenta* | `/segur/logout/` | Vuelve a la página principal de la peluquería |
+| Dueña y equipo | Cerrar sesión, en el panel | `/admin-logout/` | Vuelve a la página principal de la peluquería |
+
+**Archivos modificados (proyecto backend):** `segur/views.py` (`logout_view`), `backend/views.py` (`admin_logout`) y `ventas/templates/ventas/mi_cuenta.html` (el botón SALIR usa `/segur/logout/`).
+
+## Proveedores y compras a proveedores
+
+En el menú del panel administrativo, debajo de *Cancelar por emergencia*, se agregaron las secciones **Proveedores** y **Compras a proveedores**.
+
+**Proveedores** (`Proveedor`):
+
+| Campo | Descripción |
+|---|---|
+| Nombre | Nombre del proveedor. |
+| RUT | Opcional. |
+| Persona de contacto | Opcional. |
+| Teléfono | Opcional. |
+| Correo | Opcional. |
+| Notas | Condiciones, días de despacho, pedido mínimo, etc. |
+| Activo | Indica si todavía se trabaja con ese proveedor. Si se marca como no activo, su historial de compras se conserva. |
+
+**Compras a proveedores** (`CompraProveedor`):
+
+| Campo | Descripción |
+|---|---|
+| Proveedor | A quién se le compró. |
+| Fecha de compra | Por defecto, el día de hoy. |
+| N° factura o boleta | Opcional. |
+| Monto total | Se ingresa solo el número, sin puntos ni signo `$`. En la lista se muestra como `$185.000`. |
+| Qué se compró | Nota con el detalle de la compra. |
+
+No se puede eliminar un proveedor que tiene compras registradas; el panel muestra un aviso y sugiere marcarlo como no activo.
+
+Ambas secciones usan el sistema genérico del panel (`ventas/views_crud.py`, plantillas `crud_lista.html` y `crud_form.html`). La migración es `ventas/migrations/0010_proveedor_compraproveedor.py`.
+
+## Registro de cambios
+
+### 21 de octubre de 2026
+
+- Boleta de simulación por correo a la clienta al comprar productos en la tienda, con PDF adjunto.
+- Aviso de venta por correo a la dueña, con el detalle de la compra y el duplicado de la boleta en PDF.
+- Nueva librería `xhtml2pdf` para generar los PDF de las boletas de la tienda.
+- Formulario de contacto con WhatsApp en lugar de correo, y correo a la dueña con diseño y botón para responder por WhatsApp.
+- Al cerrar sesión, la clienta y la dueña vuelven a la página principal de la peluquería.
+- Nuevas secciones de Proveedores y Compras a proveedores en el panel administrativo.
+- En las listas del panel, los montos se muestran con formato `$185.000` y los campos de sí o no se muestran como "Sí" o "No".
+- Aviso al intentar eliminar un registro que tiene datos asociados.
+- Corrección del inventario del producto *Inoar.*, que no tenía registro de stock y aparecía como sin stock.
+- Limpieza de los usuarios de prueba.
+- Docker: la página principal de la peluquería (frontend) quedó contenerizada con su propio `Dockerfile`, `.dockerignore`, `requirements.txt` y `.env`, y se agregó como servicio `frontend` en `docker-compose.yml`. Un solo `docker compose up --build` levanta el sistema completo.
+- Docker: se agregaron `xhtml2pdf` y `python-dotenv` al `requirements.txt` del backend, y `reportlab` quedó en la versión 4.
+- El correo del backend y del frontend se lee desde el `.env`; se quitaron las claves escritas directamente en `settings.py`.
+
 ## Estado del despliegue
 
-El sistema está contenerizado con Docker y Docker Compose, y se ejecuta de forma local. Todavía no está desplegado en un servidor ni en la nube. La configuración actual usa el servidor de desarrollo de Django (`runserver`); para producción se recomienda `gunicorn`, `DEBUG=False` y una base de datos como PostgreSQL.
+El sistema está contenerizado con Docker y Docker Compose (backend y página principal), y se ejecuta de forma local. Todavía no está desplegado en un servidor ni en la nube. La configuración actual usa el servidor de desarrollo de Django (`runserver`); para producción se recomienda `gunicorn`, `DEBUG=False` y una base de datos como PostgreSQL.
 
 ## Integrantes del equipo
 
@@ -226,4 +374,53 @@ La aplicación sigue la arquitectura MTV (Modelo – Plantilla – Vista) de Dja
 
 ### Diagrama de arquitectura
 
-_(Insertar aquí la imagen del diagrama)_
+```mermaid
+flowchart TB
+    subgraph FRONTEND["Frontend · contenedor nicolett-frontend · puerto 9020"]
+        NAV["Navegador web<br/>(clienta, profesional y administrador)"]
+        PAG["Página de la peluquería<br/>inicio, servicios, productos,<br/>Rincón Kids, carrito y<br/>contacto con WhatsApp"]
+    end
+
+    subgraph BACKEND["Backend · contenedor nicolett · puerto 8000"]
+        SW["Servidor web"]
+        API["Controlador API"]
+        APP["Servidor de aplicación<br/>agendamiento, agenda, alertas, roles,<br/>fidelización, inventario, tienda,<br/>boletas PDF, proveedores y compras"]
+    end
+
+    subgraph BD["Base de datos"]
+        DB[("Base de datos backend<br/>SQLite")]
+        DBF[("Base de datos frontend<br/>SQLite · mensajes de contacto")]
+    end
+
+    subgraph EXT["Servicios externos"]
+        TB["Transbank<br/>Webpay Plus"]
+        WA["WhatsApp"]
+        MAIL["Correo<br/>Gmail SMTP"]
+        IG["Instagram"]
+    end
+
+    NAV -->|"Visitar la página"| PAG
+    PAG -->|"Mostrar la página"| NAV
+    PAG -->|"Catálogo de productos<br/>y pago del carrito"| SW
+    NAV -->|"Solicitud HTTP<br/>login, panel de la clienta<br/>y panel administrativo"| SW
+    SW -->|"Respuesta HTTP"| NAV
+    SW -.->|"Cerrar sesión: vuelve<br/>a la página de la peluquería"| PAG
+    SW -->|"Enrutar solicitud"| API
+    API -->|"Procesar solicitud"| APP
+    APP -->|"Enviar respuesta"| API
+    APP -->|"Consultar datos"| DB
+    DB -->|"Devolver datos"| APP
+    PAG -->|"Guardar mensaje de contacto"| DBF
+    APP -->|"Procesar abono y<br/>compra de productos"| TB
+    TB -->|"Confirmar pago"| APP
+    APP -->|"Enviar recordatorios"| WA
+    APP -->|"Recordatorios, boleta PDF a la clienta<br/>y aviso de venta con duplicado a la dueña"| MAIL
+    PAG -->|"Aviso de mensaje de contacto"| MAIL
+    MAIL -.->|"Botón responder por WhatsApp"| WA
+    NAV -->|"Galería y contacto"| IG
+
+    style FRONTEND fill:#fdf0fb,stroke:#d68fd6
+    style BACKEND fill:#eefaf8,stroke:#7cc7bb
+    style BD fill:#fff5ea,stroke:#e8a35c
+    style EXT fill:#eafafc,stroke:#7cc9d6
+```
