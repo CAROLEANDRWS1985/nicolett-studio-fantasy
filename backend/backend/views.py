@@ -42,6 +42,9 @@ def admin_login(request):
             login(request, user)
             # Equipo -> panel, clientas -> su cuenta
             if user.is_staff or user.is_superuser:
+                # NUEVO: las colaboradoras van directo a su agenda
+                if not user.is_superuser and user.groups.filter(name='Colaboradoras').exists():
+                    return redirect('/panel/mi-agenda/')
                 return redirect('/panel/gestionar/citas/')
             return redirect('mi_cuenta')
         else:

@@ -5,149 +5,177 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Mi cuenta · Nicolett</title>
-<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,500;0,600;1,500;1,600&family=Playfair+Display:ital,wght@0,600;0,700;1,500&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@500;600;700&family=Cormorant+Garamond:ital,wght@0,500;0,600;0,700;1,500;1,600&family=Great+Vibes&family=Montserrat:wght@400;500;600&display=swap" rel="stylesheet">
 <style>
-:root{--cafe:#2a1f1b;--crema:#faf7f4;--beige:#f3ede6;--linea:#e6ddd2;--dorado:#b8895a;--rosa:#c9a79a;--gris:#7a6a5d;--negro:#121010;--oro:#D4B26A;--panel:#1c1814;--texto-claro:#eadcc0}
+/* ===== Nicolett Studio Fantasy: crema, dorado y café (igual que el afiche y el panel) ===== */
+:root{--cafe:#3E2C1F;--cafe-2:#4A3524;--crema:#F6EEE3;--beige:#EFE3D3;--linea:#E6D7C0;--dorado:#B8925A;--oro:#B8925A;--oro-claro:#D9BC8C;--marfil:#FFFBF5;--tinta:#2B1F16;--gris:#7A6553;--rosa:#C99387;--crema-claro:#F3E3C6}
 *{box-sizing:border-box}
-body{margin:0;background:var(--crema);color:var(--cafe);font-family:'Inter',sans-serif}
+body{margin:0;background:radial-gradient(circle at 90% 0%,rgba(217,188,140,.22),transparent 45%),var(--crema);background-attachment:fixed;color:var(--tinta);font-family:'Montserrat',sans-serif}
 
-/* ---------- Barra superior (negro con letras doradas) ---------- */
-.top{background:var(--negro);color:var(--oro);display:flex;justify-content:space-between;align-items:center;padding:16px 28px;border-bottom:1px solid rgba(212,178,106,.45)}
-.top b{font-family:'Playfair Display',serif;font-size:20px;color:var(--oro)}
-.top small{letter-spacing:.2em;font-size:10px;margin-left:6px;color:var(--oro)}
-.top .der{display:flex;align-items:center;gap:20px;font-size:12px;color:var(--oro)}
-.top a{color:var(--oro);text-decoration:none;font-size:11px;letter-spacing:.15em}
-.top a:hover{color:#fff}
-.campana{position:relative;background:none;border:0;cursor:pointer;color:var(--oro);padding:0;display:flex}
-.campana .n{position:absolute;top:-6px;right:-8px;background:var(--oro);color:var(--negro);border-radius:10px;font-size:9px;padding:1px 5px;font-weight:600}
+/* ---------- Barra superior (café con letras crema) ---------- */
+.top{background:linear-gradient(90deg,var(--cafe-2),var(--cafe));color:var(--crema-claro);display:flex;justify-content:space-between;align-items:center;padding:16px 28px;border-bottom:1px solid rgba(217,188,140,.35)}
+.top b{font-family:'Cinzel',serif;font-weight:700;font-size:21px;letter-spacing:.08em;text-transform:uppercase;color:var(--crema-claro)}
+.top small{font-family:'Great Vibes',cursive;font-size:20px;letter-spacing:0;margin-left:8px;color:var(--oro-claro)}
+.top .der{display:flex;align-items:center;gap:20px;font-size:12px;color:var(--crema-claro)}
+.top a{color:var(--crema-claro);text-decoration:none;font-size:11px;letter-spacing:.15em;border:1px solid var(--oro-claro);border-radius:999px;padding:7px 16px}
+.top a:hover{background:var(--oro-claro);color:var(--cafe)}
+.campana{position:relative;background:none;border:0;cursor:pointer;color:var(--oro-claro);padding:0;display:flex}
+.campana .n{position:absolute;top:-6px;right:-8px;background:var(--oro-claro);color:var(--cafe);border-radius:10px;font-size:9px;padding:1px 5px;font-weight:600}
 
-/* ---------- Menú lateral (negro con letras doradas) ---------- */
-.wrap{display:flex;min-height:calc(100vh - 56px)}
-.side{width:230px;border-right:1px solid rgba(212,178,106,.35);padding:24px 0;background:var(--negro);flex-shrink:0}
-.fidel{background:var(--negro);color:var(--oro);margin:0 18px 22px;padding:16px 14px;border:1px solid var(--oro)}
-.fidel small{display:block;font-size:9px;letter-spacing:.2em;text-transform:uppercase;color:var(--oro);margin-bottom:6px}
-.fidel b{font-family:'Playfair Display',serif;font-size:17px;display:block;margin-bottom:12px;color:var(--oro)}
-.barra{height:4px;background:#3a3128;margin-bottom:6px}
-.barra i{display:block;height:100%;background:var(--oro)}
-.fidel .pct{font-size:9px;color:var(--oro)}
-.side button{display:block;width:100%;text-align:left;background:none;border:0;padding:12px 24px;font:inherit;font-size:13px;color:var(--oro);cursor:pointer}
-.side button:hover{background:rgba(212,178,106,.12)}
-.side button.on{background:rgba(212,178,106,.18);color:var(--oro);font-weight:600;border-left:3px solid var(--oro)}
-.side .agendar{margin:0 18px 14px;width:calc(100% - 36px);background:var(--negro);color:var(--oro);border:1px solid var(--oro);text-align:center;font-size:11px;letter-spacing:.15em;text-transform:uppercase;padding:12px}
-.side .agendar:hover{background:rgba(212,178,106,.12)}
-.side .agendar.on{border-left:1px solid var(--oro);font-weight:600;background:var(--oro);color:var(--negro)}
-.badge{background:var(--oro);color:var(--negro);border-radius:10px;font-size:10px;padding:1px 7px;margin-left:6px;font-weight:600}
+/* ---------- Menú lateral (café con letras crema) ---------- */
+.wrap{display:flex;min-height:calc(100vh - 62px)}
+.side{width:240px;border-right:1px solid rgba(217,188,140,.35);padding:24px 0;background:linear-gradient(180deg,var(--cafe-2),var(--cafe));flex-shrink:0}
+.fidel{background:rgba(255,255,255,.05);color:var(--crema-claro);margin:0 18px 22px;padding:16px 14px;border:1px solid rgba(217,188,140,.5);border-radius:12px}
+.fidel small{display:block;font-size:9px;letter-spacing:.2em;text-transform:uppercase;color:var(--oro-claro);margin-bottom:6px}
+.fidel b{font-family:'Cormorant Garamond',serif;font-weight:600;font-size:23px;display:block;margin-bottom:12px;color:var(--crema-claro)}
+.barra{height:5px;background:rgba(255,255,255,.15);border-radius:5px;overflow:hidden;margin-bottom:6px}
+.barra i{display:block;height:100%;background:linear-gradient(90deg,#E8D2AB,#C9A46A);border-radius:5px}
+.fidel .pct{font-size:10px;color:var(--oro-claro)}
+.side button{display:block;width:100%;text-align:left;background:none;border:0;border-left:3px solid transparent;padding:12px 24px;font-family:'Montserrat',sans-serif;font-size:14px;color:#F1E4CC;cursor:pointer;transition:background .2s}
+.side button:hover{background:rgba(217,188,140,.14);border-left-color:var(--oro-claro);color:#fff}
+.side button.on{background:rgba(217,188,140,.22);color:#fff;font-weight:600;border-left:3px solid var(--oro-claro)}
+.side .agendar{margin:0 18px 16px;width:calc(100% - 36px);background:linear-gradient(180deg,#E8D2AB,#C9A46A);color:var(--cafe);border:1px solid var(--oro);border-radius:999px;text-align:center;font-size:11px;font-weight:600;letter-spacing:.15em;text-transform:uppercase;padding:12px}
+.side .agendar:hover{background:var(--crema-claro);color:var(--cafe);border-left-color:var(--oro)}
+.side .agendar.on{background:var(--crema-claro);color:var(--cafe);border:1px solid var(--oro-claro);font-weight:600}
+.badge{background:var(--oro-claro);color:var(--cafe);border-radius:10px;font-size:10px;padding:1px 7px;margin-left:6px;font-weight:600}
 
-/* ---------- Contenido y títulos (letra delicada, dorado) ---------- */
-main{flex:1;max-width:1000px;margin:0 auto;padding:36px 28px}
-h1{font-family:'Cormorant Garamond',serif;font-weight:500;font-size:44px;letter-spacing:.5px;margin:0 0 4px;color:var(--dorado)}
-h1 em{color:var(--rosa)}
-.tit{font-family:'Cormorant Garamond',serif;font-weight:600;font-size:26px;margin:0 0 14px;color:var(--dorado)}
-.sub{color:var(--gris);font-size:13px;margin-bottom:24px}
+/* ---------- Contenido y títulos ---------- */
+main{flex:1;max-width:1040px;margin:0 auto;padding:40px 32px}
+h1{font-family:'Cinzel',serif;font-weight:600;font-size:38px;letter-spacing:.06em;margin:0 0 6px;color:var(--cafe)}
+h1 em{font-family:'Great Vibes',cursive;font-style:normal;font-weight:400;font-size:52px;letter-spacing:0;color:var(--dorado);text-transform:none}
+.tit{font-family:'Cinzel',serif;font-weight:600;font-size:21px;letter-spacing:.05em;margin:0 0 14px;color:var(--cafe)}
+.sub{color:var(--gris);font-size:14px;margin-bottom:26px}
 
-/* ---------- Filtros de categorías (negro con dorado) ---------- */
-.tools{display:flex;gap:10px;flex-wrap:wrap;margin-bottom:24px}
-.chip{padding:10px 16px;border:1px solid var(--oro);background:var(--negro);font-size:11px;letter-spacing:.12em;text-transform:uppercase;cursor:pointer;color:var(--oro)}
-.chip:hover{background:rgba(212,178,106,.12)}
-.chip.on{background:var(--oro);color:var(--negro);border-color:var(--oro);font-weight:600}
+/* ---------- Filtros de categorías (etiquetas doradas) ---------- */
+.tools{display:flex;gap:10px;flex-wrap:wrap;margin-bottom:28px}
+.chip{padding:10px 18px;border:1px solid var(--oro-claro);border-radius:999px;background:var(--marfil);font-family:'Montserrat',sans-serif;font-size:11px;font-weight:600;letter-spacing:.12em;text-transform:uppercase;cursor:pointer;color:var(--cafe);transition:background .2s}
+.chip:hover{background:#F5E8D3}
+.chip.on{background:linear-gradient(180deg,#E8D2AB,#C9A46A);color:var(--cafe);border-color:var(--oro);box-shadow:0 2px 6px rgba(74,53,36,.15)}
 
 /* ---------- Tarjetas de servicios ---------- */
-.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(250px,1fr));gap:18px}
-.card{background:#fff;border:1px solid var(--linea);display:flex;flex-direction:column}
-.thumb{height:240px;background:linear-gradient(135deg,#e9dccd,#d8c1a8);position:relative}
-.card:nth-child(4n+2) .thumb{background:linear-gradient(135deg,#e8d5d0,#c9a79a)}
-.card:nth-child(4n+3) .thumb{background:linear-gradient(135deg,#d9cdbf,#b8a58e)}
-.card:nth-child(4n+4) .thumb{background:linear-gradient(135deg,#efe3d3,#d6b98f)}
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(250px,1fr));gap:22px}
+.card{background:var(--marfil);border:1px solid var(--linea);border-radius:16px;overflow:hidden;display:flex;flex-direction:column;box-shadow:0 10px 26px rgba(74,53,36,.08);transition:transform .2s,box-shadow .2s}
+.card:hover{transform:translateY(-3px);box-shadow:0 16px 34px rgba(74,53,36,.13)}
+.thumb{height:240px;background:linear-gradient(135deg,#EFE3D3,#D9BC8C);position:relative}
+.card:nth-child(4n+2) .thumb{background:linear-gradient(135deg,#F3E3DC,#D9A39A)}
+.card:nth-child(4n+3) .thumb{background:linear-gradient(135deg,#EDE2D3,#C9B39A)}
+.card:nth-child(4n+4) .thumb{background:linear-gradient(135deg,#F5EBDC,#E2C99F)}
 /* Cuando la tarjeta tiene foto: se ve completa, sobre fondo beige */
 .card .thumb.con-foto{background-color:var(--beige);background-repeat:no-repeat;background-position:center;background-size:contain}
-.tag{position:absolute;top:10px;left:10px;background:var(--crema);padding:4px 8px;font-size:9px;letter-spacing:.15em;text-transform:uppercase;color:var(--gris)}
-.body{padding:16px;display:flex;flex-direction:column;flex:1}
-.body h3{font-family:'Playfair Display',serif;font-size:17px;margin:0 0 6px}
-.body p{font-size:12px;color:var(--gris);margin:0 0 12px;flex:1}
-.pie{display:flex;justify-content:space-between;align-items:flex-end}
-.precio{font-family:'Playfair Display',serif;font-size:20px;font-weight:700}
+.tag{position:absolute;top:12px;left:12px;background:rgba(255,251,245,.92);border:1px solid var(--linea);border-radius:999px;padding:4px 10px;font-size:9px;font-weight:600;letter-spacing:.15em;text-transform:uppercase;color:var(--cafe-2)}
+.body{padding:18px;display:flex;flex-direction:column;flex:1}
+.body h3{font-family:'Cormorant Garamond',serif;font-weight:700;font-size:23px;margin:0 0 6px;color:var(--cafe)}
+.body p{font-size:13px;color:var(--gris);margin:0 0 14px;flex:1;line-height:1.5}
+.pie{display:flex;justify-content:space-between;align-items:flex-end;gap:10px}
+.precio{font-family:'Cormorant Garamond',serif;font-size:26px;font-weight:700;color:var(--cafe)}
 .dur{font-size:11px;color:var(--gris);margin-bottom:2px}
-.btn-card{background:var(--cafe);color:#fff;border:0;padding:10px 16px;font-size:10px;font-weight:600;letter-spacing:.14em;text-transform:uppercase;cursor:pointer}
-.btn-card:hover{background:var(--dorado)}
+.btn-card{background:linear-gradient(180deg,#E8D2AB,#C9A46A);color:var(--cafe);border:1px solid var(--oro);border-radius:999px;padding:10px 18px;font-family:'Montserrat',sans-serif;font-size:10px;font-weight:600;letter-spacing:.14em;text-transform:uppercase;cursor:pointer;box-shadow:0 2px 6px rgba(74,53,36,.12);transition:background .2s,color .2s}
+.btn-card:hover{background:var(--cafe);color:var(--crema-claro);border-color:var(--cafe)}
 
-/* ---------- Paneles, tablas y botones (negro con dorado) ---------- */
-.vacio,.panel,.item,.cita-card,.pol,.nivel-box{background:var(--negro);color:var(--oro);border:1px solid var(--oro)}
+/* ---------- Paneles, tablas y botones (marfil con dorado) ---------- */
+.vacio,.panel,.item,.cita-card,.pol,.nivel-box{background:var(--marfil);color:var(--tinta);border:1px solid var(--linea);border-radius:14px;box-shadow:0 10px 26px rgba(74,53,36,.07)}
 .vacio,.panel{padding:24px}
 .panel{max-width:560px}
 .panel p{margin:0 0 14px}
-.panel label{display:block;margin:14px 0 4px;font-size:11px;letter-spacing:.1em;text-transform:uppercase;color:var(--oro)}
-.panel input,.panel select,.panel textarea{width:100%;padding:10px 12px;border:1px solid rgba(212,178,106,.5);background:var(--panel);color:#f1e6cf;font:inherit}
-.panel input:disabled{color:#a99876}
+.panel label{display:block;margin:14px 0 6px;font-size:11px;font-weight:600;letter-spacing:.1em;text-transform:uppercase;color:var(--cafe-2)}
+.panel input,.panel select,.panel textarea{width:100%;padding:10px 14px;border:1px solid var(--oro-claro);border-radius:10px;background:var(--marfil);color:var(--tinta);font:inherit}
+.panel input:focus,.panel select:focus,.panel textarea:focus{outline:3px solid rgba(184,146,90,.3);border-color:var(--oro)}
+.panel input:disabled{color:var(--gris)}
 
-table{width:100%;border-collapse:collapse;background:var(--negro);border:1px solid var(--oro)}
-th{background:var(--panel);text-align:left;padding:12px 14px;font-size:11px;letter-spacing:.1em;text-transform:uppercase;color:var(--oro);border-bottom:1px solid var(--oro)}
-td{padding:13px 14px;border-top:1px solid rgba(212,178,106,.25);font-size:14px;color:var(--texto-claro)}
+table{width:100%;border-collapse:separate;border-spacing:0;background:var(--marfil);border:1px solid var(--linea);border-radius:14px;overflow:hidden;box-shadow:0 10px 26px rgba(74,53,36,.07)}
+th{background:linear-gradient(180deg,#EFDFC3,#E2C99F);text-align:left;padding:13px 16px;font-size:11px;font-weight:600;letter-spacing:.12em;text-transform:uppercase;color:var(--cafe);border-bottom:1px solid rgba(184,146,90,.5)}
+td{padding:13px 16px;border-top:1px solid var(--linea);font-family:'Cormorant Garamond',serif;font-weight:600;font-size:17px;color:var(--tinta)}
+tbody tr:nth-child(even){background:#FBF4EA}
 
-.btn{display:inline-block;background:var(--oro);color:var(--negro);border:0;padding:11px 20px;font-size:11px;font-weight:600;letter-spacing:.12em;text-transform:uppercase;cursor:pointer}
-.btn:hover{background:#e6c985}
+.btn{display:inline-block;background:linear-gradient(180deg,#E8D2AB,#C9A46A);color:var(--cafe);border:1px solid var(--oro);border-radius:999px;padding:11px 22px;font-family:'Montserrat',sans-serif;font-size:11px;font-weight:600;letter-spacing:.12em;text-transform:uppercase;cursor:pointer;box-shadow:0 2px 6px rgba(74,53,36,.12);transition:background .2s,color .2s}
+.btn:hover{background:var(--cafe);color:var(--crema-claro);border-color:var(--cafe)}
 .btn:disabled{opacity:.45;cursor:not-allowed}
-.btn-del{background:transparent;color:#ef8b7e;border:1px solid #c9a79a}
-.btn-del:hover{background:#a33;color:#fff}
+.btn:disabled:hover{background:linear-gradient(180deg,#E8D2AB,#C9A46A);color:var(--cafe)}
+.btn-del{background:#FFF5F2;color:#8A2C22;border:1px solid #C9877B;box-shadow:none}
+.btn-del:hover{background:#8A2C22;color:#FFF5F2;border-color:#8A2C22}
+.pol .panel{box-shadow:none;background:transparent;border-radius:0}
 .item{display:flex;justify-content:space-between;align-items:center;gap:12px;padding:14px 18px;margin-bottom:10px;max-width:700px}
 
-/* ---------- Mensajes para la clienta (negro con letras doradas) ---------- */
-.msg{background:var(--negro);color:var(--oro);border:1px solid var(--oro);border-radius:12px;padding:22px 28px;margin:0 0 22px;font-family:'Playfair Display',Georgia,serif;font-size:17px;line-height:1.7;letter-spacing:.3px;text-align:center;box-shadow:0 4px 14px rgba(0,0,0,.25)}
-.msg.error{border-color:var(--rosa);color:#E7B9AE}
+/* ---------- Mensajes para la clienta ---------- */
+.msg{background:var(--marfil);color:var(--cafe);border:1px solid var(--oro-claro);border-radius:14px;padding:20px 28px;margin:0 0 22px;font-family:'Cormorant Garamond',Georgia,serif;font-weight:600;font-size:20px;line-height:1.6;text-align:center;box-shadow:0 10px 26px rgba(74,53,36,.08)}
+.msg.error{border-color:#C9877B;color:#8A2C22;background:#FFF5F2}
 .sec{display:none}.sec.on{display:block}
 
 /* ---------- Beneficios ---------- */
 .nivel-box{padding:24px;max-width:560px;margin-bottom:18px}
-.nivel-box small{font-size:10px;letter-spacing:.2em;text-transform:uppercase;color:var(--oro)}
-.nivel-box b{display:block;font-family:'Cormorant Garamond',serif;font-weight:600;font-size:32px;margin:6px 0 14px;color:var(--oro)}
-.nivel-box .barra{height:6px;background:#3a3128}
-.nivel-box .barra i{background:var(--oro)}
-.nivel-box .pct{margin-top:8px;font-size:12px;color:var(--texto-claro)}
+.nivel-box small{font-size:10px;font-weight:600;letter-spacing:.2em;text-transform:uppercase;color:var(--dorado)}
+.nivel-box b{display:block;font-family:'Cinzel',serif;font-weight:600;font-size:28px;margin:6px 0 14px;color:var(--cafe)}
+.nivel-box .barra{height:8px;background:#EFDFC3}
+.nivel-box .pct{margin-top:10px;font-size:13px;color:var(--gris)}
 
 /* ---------- Cancelar cita: política y tarjetas ---------- */
 .pol{border-left:3px solid var(--oro);padding:20px 24px;max-width:700px;margin-bottom:28px}
-.pol .t{display:block;font-size:13px;font-weight:600;margin-bottom:12px;color:var(--oro)}
-.pol .f{display:flex;justify-content:space-between;gap:12px;font-size:12px;color:#d9c9a8;padding:5px 0}
-.pol .ok{color:#8fc27a;font-weight:600}
-.pol .med{color:#e3b8ab;font-weight:600}
-.pol .no{color:#ef8b7e;font-weight:600}
-.pol .abono{border-top:1px solid rgba(212,178,106,.35);margin-top:10px;padding-top:12px;font-size:12px;line-height:1.5;color:var(--texto-claro)}
-.pol .abono b{color:var(--oro)}
+.pol .t{display:block;font-family:'Cinzel',serif;font-size:15px;font-weight:600;letter-spacing:.04em;margin-bottom:12px;color:var(--cafe)}
+.pol .f{display:flex;justify-content:space-between;gap:12px;font-size:13px;color:var(--tinta);padding:6px 0;border-top:1px dashed var(--linea)}
+.pol .f:first-of-type{border-top:0}
+.pol .ok{color:#4F7A3A;font-weight:600}
+.pol .med{color:#A8672E;font-weight:600}
+.pol .no{color:#A33A2C;font-weight:600}
+.pol .abono{border-top:1px solid var(--linea);margin-top:10px;padding-top:12px;font-size:13px;line-height:1.6;color:var(--tinta)}
+.pol .abono b{color:var(--cafe)}
 .cita-card{display:flex;justify-content:space-between;align-items:center;gap:12px;padding:18px 20px;margin-bottom:12px;max-width:700px}
-.cita-card .info{display:flex;align-items:center;gap:12px;font-family:'Cormorant Garamond',serif;font-weight:600;font-size:20px}
-.cita-card .dot{width:14px;height:14px;border:1px solid var(--oro);border-radius:50%;flex-shrink:0}
+.cita-card .info{display:flex;align-items:center;gap:12px;font-family:'Cormorant Garamond',serif;font-weight:600;font-size:20px;color:var(--cafe)}
+.cita-card .dot{width:14px;height:14px;border:2px solid var(--oro);border-radius:50%;flex-shrink:0}
 
 /* ---------- Agendar cita: calendario y formulario ---------- */
-.agenda{display:grid;grid-template-columns:minmax(280px,340px) 1fr;gap:24px;max-width:820px}
-.cal{background:var(--negro);border:1px solid var(--oro);padding:20px;align-self:start}
-.cal-top{display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;color:var(--oro);font-family:'Cormorant Garamond',serif;font-weight:600;font-size:26px}
-.cal-top button{background:transparent;border:1px solid var(--oro);color:var(--oro);width:32px;height:32px;cursor:pointer;font-size:16px}
-.cal-top button:hover{background:rgba(212,178,106,.15)}
-#cal-grid{display:grid;grid-template-columns:repeat(7,1fr);gap:4px;text-align:center}
-#cal-grid b{font-size:10px;color:var(--oro);font-weight:600;padding:4px 0}
-#cal-grid button{border:0;background:var(--panel);color:var(--oro);padding:9px 0;cursor:pointer;font:inherit;font-size:13px}
-#cal-grid button:hover:not(:disabled){background:rgba(212,178,106,.25)}
-#cal-grid button:disabled{background:none;color:#5a4d3a;cursor:not-allowed}
-/* Días disponibles: azul / bloqueados por la dueña: rojo / domingos y pasados: gris */
-#cal-grid button.libre{background:#1e4f8f;color:#fff}
-#cal-grid button.libre:hover:not(:disabled){background:#2a68b8}
-#cal-grid button.bloqueado:disabled{background:#a33;color:#fff;cursor:not-allowed}
-#cal-grid button.sel{background:var(--oro);color:var(--negro);font-weight:600}
+.agenda{display:grid;grid-template-columns:minmax(280px,340px) 1fr;gap:24px;max-width:840px}
+.cal{background:var(--marfil);border:1px solid var(--linea);border-radius:14px;padding:22px;align-self:start;box-shadow:0 10px 26px rgba(74,53,36,.08)}
+.cal-top{display:flex;justify-content:space-between;align-items:center;margin-bottom:14px;color:var(--cafe);font-family:'Cinzel',serif;font-weight:600;font-size:19px}
+.cal-top button{background:linear-gradient(180deg,#E8D2AB,#C9A46A);border:1px solid var(--oro);border-radius:999px;color:var(--cafe);width:38px;height:32px;cursor:pointer;font-size:16px}
+.cal-top button:hover{background:var(--cafe);color:var(--crema-claro)}
+#cal-grid{display:grid;grid-template-columns:repeat(7,1fr);gap:5px;text-align:center}
+#cal-grid b{font-size:10px;color:var(--dorado);font-weight:600;padding:4px 0}
+#cal-grid button{border:0;border-radius:8px;background:#F3EADC;color:var(--cafe);padding:9px 0;cursor:pointer;font:inherit;font-size:13px}
+#cal-grid button:hover:not(:disabled){background:#E2C99F}
+#cal-grid button:disabled{background:none;color:#C9B9A3;cursor:not-allowed}
+/* Días disponibles: dorado suave / bloqueados por la dueña: rosa / domingos y pasados: gris claro */
+#cal-grid button.libre{background:#EFDFC3;color:var(--cafe)}
+#cal-grid button.libre:hover:not(:disabled){background:#E2C99F}
+#cal-grid button.bloqueado:disabled{background:#D9A39A;color:#5A1F17;cursor:not-allowed}
+#cal-grid button.sel,#cal-grid button.sel:hover:not(:disabled){background:var(--cafe);color:var(--crema-claro);font-weight:600}
 
-.agenda .datos{background:var(--negro);border:1px solid var(--oro);padding:22px}
-.agenda label{display:block;margin:0 0 6px;font-size:11px;letter-spacing:.1em;text-transform:uppercase;color:var(--oro)}
-.agenda select,.agenda input[type=text]{width:100%;padding:10px 12px;border:1px solid rgba(212,178,106,.5);background:var(--panel);color:#f1e6cf;font:inherit}
-.agenda option{background:var(--panel);color:#f1e6cf}
-.abono-info{font-size:12px;color:var(--texto-claro);margin-top:8px;background:var(--panel);border-left:3px solid var(--oro);padding:8px 12px;display:none}
+.agenda .datos{background:var(--marfil);border:1px solid var(--linea);border-radius:14px;padding:24px;box-shadow:0 10px 26px rgba(74,53,36,.08)}
+.agenda label{display:block;margin:0 0 6px;font-size:11px;font-weight:600;letter-spacing:.1em;text-transform:uppercase;color:var(--cafe-2)}
+.agenda select,.agenda input[type=text]{width:100%;padding:10px 14px;border:1px solid var(--oro-claro);border-radius:10px;background:var(--marfil);color:var(--tinta);font:inherit}
+.agenda select:focus,.agenda input[type=text]:focus{outline:3px solid rgba(184,146,90,.3);border-color:var(--oro)}
+.agenda option{background:var(--marfil);color:var(--tinta)}
+.abono-info{font-size:13px;color:var(--tinta);margin-top:10px;background:#FBF4EA;border-left:3px solid var(--oro);border-radius:0 8px 8px 0;padding:10px 14px;display:none}
 .abono-info.on{display:block}
 .horas{display:grid;grid-template-columns:repeat(auto-fill,minmax(84px,1fr));gap:8px;margin:10px 0 18px}
-.horas .sub{color:#d9c9a8;margin-bottom:0;grid-column:1 / -1}
-.horas button{padding:10px 0;border:1px solid rgba(212,178,106,.5);background:var(--panel);color:var(--oro);cursor:pointer;font:inherit;font-size:13px}
-.horas button:hover:not(:disabled){background:rgba(212,178,106,.25)}
-.horas button:disabled{background:none;color:#5a4d3a;border-color:rgba(212,178,106,.15);text-decoration:line-through;cursor:not-allowed}
-.horas button.sel{background:var(--oro);color:var(--negro);border-color:var(--oro);font-weight:600}
+.horas .sub{color:var(--gris);margin-bottom:0;grid-column:1 / -1}
+.horas button{padding:10px 0;border:1px solid var(--oro-claro);border-radius:999px;background:var(--marfil);color:var(--cafe);cursor:pointer;font:inherit;font-size:13px}
+.horas button:hover:not(:disabled){background:#F5E8D3}
+.horas button:disabled{background:none;color:#C9B9A3;border-color:var(--linea);text-decoration:line-through;cursor:not-allowed}
+.horas button.sel{background:var(--cafe);color:var(--crema-claro);border-color:var(--cafe);font-weight:600}
 #f-ok{width:100%;padding:14px}
 
-@media(max-width:700px){.side{display:none}.agenda{grid-template-columns:1fr}h1{font-size:36px}}
+/* ---------- Productos: cantidad y resumen de compra ---------- */
+.cant{display:flex;align-items:center;gap:6px}
+.cant button{width:32px;height:32px;border:1px solid var(--oro);border-radius:50%;background:var(--marfil);color:var(--cafe);font-size:16px;cursor:pointer}
+.cant button:hover{background:#F5E8D3}
+.cant input{width:44px;text-align:center;padding:6px 0;border:1px solid var(--oro-claro);border-radius:8px;background:var(--marfil);color:var(--tinta);font:inherit}
+.stock{font-size:11px;color:var(--gris);margin-bottom:10px}
+.sin-stock{font-size:11px;font-weight:600;letter-spacing:.1em;text-transform:uppercase;color:#A33A2C}
+.resumen{position:sticky;bottom:16px;margin-top:26px;background:var(--marfil);border:1px solid var(--oro-claro);border-radius:14px;padding:16px 22px;display:flex;justify-content:space-between;align-items:center;gap:16px;flex-wrap:wrap;box-shadow:0 10px 26px rgba(74,53,36,.14)}
+.resumen .total{font-family:'Cormorant Garamond',serif;font-size:26px;font-weight:700;color:var(--cafe)}
+.resumen small{display:block;font-size:12px;color:var(--gris)}
+
+@media(max-width:700px){.side{display:none}.agenda{grid-template-columns:1fr}h1{font-size:30px}h1 em{font-size:42px}}
+/* ---------- Ajustes para partes que tienen estilo dentro de la página ---------- */
+.top small{font-size:0!important}
+.top small::after{content:'Studio Fantasy';font-size:20px}
+.top .der b{font-family:'Montserrat',sans-serif!important;font-weight:600;letter-spacing:0;text-transform:none;color:var(--crema-claro)!important}
+.panel input[readonly]{color:var(--gris)!important;background:#FBF4EA!important;cursor:default}
+.panel input[type=date]{color-scheme:light!important}
+.btn-sec{background:transparent!important;color:var(--cafe)!important;border:1px solid var(--oro)!important}
+.btn-sec:hover{background:var(--cafe)!important;color:var(--crema-claro)!important}
+.pol[style*="ef8b7e"]{border-left-color:#C9877B!important}
+.pol .t[style*="ef8b7e"]{color:#8A2C22!important}
 </style>
 </head>
 <body>
@@ -173,7 +201,8 @@ td{padding:13px 14px;border-top:1px solid rgba(212,178,106,.25);font-size:14px;c
   </div>
 
   <button class="agendar" data-sec="agendar">Agendar cita</button>
-  <button class="on" data-sec="inicio">Inicio</button>
+  <button class="on" data-sec="inicio">Servicios</button>
+  <button data-sec="productos">Productos</button>
   <button data-sec="beneficios">Mis beneficios</button>
   <button data-sec="historial">Historial</button>
   <button data-sec="notificaciones">Notificaciones{% if citas %}<span class="badge">{{ citas|length }}</span>{% endif %}</button>
@@ -206,6 +235,44 @@ td{padding:13px 14px;border-top:1px solid rgba(212,178,106,.25);font-size:14px;c
     </article>
     {% endfor %}
   </div>
+</section>
+
+<section id="productos" class="sec">
+  <h1>Productos</h1>
+  <div class="sub">Elige tus productos, paga con Webpay y retíralos en la peluquería presentando tu boleta.</div>
+  {% if productos %}
+  <form method="post" action="{% url 'comprar_productos' %}" id="form-productos">
+    {% csrf_token %}
+    <div class="grid">
+      {% for p in productos %}
+      <article class="card prod" data-precio="{{ p.precio }}">
+        <div class="thumb{% if p.imagen %} con-foto{% endif %}"{% if p.imagen %} style="background-image:url('{{ p.imagen }}')"{% endif %}>{% if p.categoria %}<span class="tag">{{ p.categoria }}</span>{% endif %}</div>
+        <div class="body">
+          <h3>{{ p.nombre }}</h3>
+          <p>{{ p.descripcion|default:"Consulta los detalles en el salón." }}</p>
+          {% if p.stock > 0 %}<div class="stock">Disponibles: {{ p.stock }}</div>{% endif %}
+          <div class="pie">
+            <div class="precio">{{ p.precio_fmt }}</div>
+            {% if p.stock > 0 %}
+            <div class="cant">
+              <button type="button" data-paso="-1" aria-label="Quitar">−</button>
+              <input type="number" name="cant_{{ p.pk }}" value="0" min="0" max="{{ p.stock }}" aria-label="Cantidad">
+              <button type="button" data-paso="1" aria-label="Agregar">+</button>
+            </div>
+            {% else %}<span class="sin-stock">Sin stock</span>{% endif %}
+          </div>
+        </div>
+      </article>
+      {% endfor %}
+    </div>
+    <div class="resumen">
+      <div><small id="prod-n">No has elegido productos</small><span class="total" id="prod-total">$0</span></div>
+      <button class="btn" type="submit" id="prod-pagar" disabled>Pagar con Webpay</button>
+    </div>
+  </form>
+  {% else %}
+  <div class="vacio">Por ahora no hay productos disponibles.</div>
+  {% endif %}
 </section>
 
 <section id="beneficios" class="sec">
@@ -241,6 +308,11 @@ td{padding:13px 14px;border-top:1px solid rgba(212,178,106,.25);font-size:14px;c
         {% for s in servicios %}<option value="{{ s.pk }}" data-abono="{{ s.abono }}">{{ s.nombre }} · {{ s.precio }}</option>{% endfor %}
       </select>
       <div id="abono-info" class="abono-info"></div>
+      <label style="margin-top:18px">Profesional</label>
+      <select name="profesional" id="f-profesional" required>
+        <option value="">Elige quién te atiende...</option>
+        {% for p in profesionales %}<option value="{{ p.pk }}"{% if p.pk == profesional_actual %} selected{% endif %}>{{ p.nombre }}</option>{% endfor %}
+      </select>
       <label style="margin-top:18px">Hora</label>
       <div class="horas" id="horas"><span class="sub">Elige primero un día en el calendario.</span></div>
       <input type="hidden" name="fecha" id="f-fecha">
@@ -390,7 +462,7 @@ function agendarServicio(pk){
 // ---------- Categorías del inicio ----------
 let cat='';
 function filtrar(){
-  document.querySelectorAll('.card').forEach(c=>{
+  document.querySelectorAll('#inicio .card').forEach(c=>{
     c.style.display=(!cat||c.dataset.cat===cat)?'':'none';
   });
 }
@@ -398,6 +470,31 @@ document.querySelectorAll('.chip').forEach(b=>b.onclick=()=>{
   document.querySelectorAll('.chip').forEach(x=>x.classList.remove('on'));
   b.classList.add('on');cat=b.dataset.cat;filtrar();
 });
+
+// ---------- Productos: cantidades y total ----------
+(function(){
+  const f=document.getElementById('form-productos'); if(!f) return;
+  const clp=n=>'$'+n.toLocaleString('es-CL');
+  function total(){
+    let t=0,u=0;
+    f.querySelectorAll('.prod').forEach(c=>{
+      const i=c.querySelector('input'); if(!i) return;
+      let v=parseInt(i.value,10)||0; const max=parseInt(i.max,10)||0;
+      if(v<0)v=0; if(v>max)v=max; i.value=v;
+      t+=v*parseInt(c.dataset.precio,10); u+=v;
+    });
+    document.getElementById('prod-total').textContent=clp(t);
+    document.getElementById('prod-n').textContent=u?(u+' producto'+(u>1?'s':'')+' · Total'):'No has elegido productos';
+    document.getElementById('prod-pagar').disabled=!u;
+  }
+  f.querySelectorAll('.cant button').forEach(b=>b.onclick=()=>{
+    const i=b.parentNode.querySelector('input');
+    i.value=(parseInt(i.value,10)||0)+parseInt(b.dataset.paso,10); total();
+  });
+  f.querySelectorAll('.cant input').forEach(i=>i.oninput=total);
+  f.onsubmit=()=>{document.getElementById('prod-pagar').disabled=true;};
+  total();
+})();
 
 // ---------- Fotos de los servicios ----------
 // Para agregar una foto nueva: guárdala en ventas\static\servicios\
@@ -482,7 +579,7 @@ const FOTOS={
 const limpiar=s=>s.normalize('NFD').replace(/[\u0300-\u036f]/g,'').replace(/\s+/g,' ').trim().toLowerCase();
 const FOTOS_LIMPIAS={};
 Object.keys(FOTOS).forEach(k=>{FOTOS_LIMPIAS[limpiar(k)]=FOTOS[k];});
-document.querySelectorAll('.card').forEach(c=>{
+document.querySelectorAll('#inicio .card').forEach(c=>{
   const f=FOTOS_LIMPIAS[limpiar(c.dataset.nombre)];
   if(!f) return;
   const t=c.querySelector('.thumb');
@@ -554,6 +651,39 @@ document.querySelectorAll('.card').forEach(c=>{
   fetch('/mi-cuenta/dias-bloqueados/').then(r=>r.json()).then(j=>{bloqueados=new Set(j.bloqueados||[]);dibujar();}).catch(()=>{});
   dibujar();
 })();
+</script>
+<!-- OJITO-CLAVE -->
+<script>
+document.addEventListener("DOMContentLoaded", function () {
+  var ojo = '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-7 11-7 11 7 11 7-4 7-11 7S1 12 1 12z"/><circle cx="12" cy="12" r="3"/></svg>';
+  var tapado = '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17.9 17.9A10.4 10.4 0 0 1 12 19C5 19 1 12 1 12a18.5 18.5 0 0 1 5.1-5.9M9.9 4.2A9.6 9.6 0 0 1 12 4c7 0 11 7 11 7a18.6 18.6 0 0 1-2.2 3.2M1 1l22 22"/></svg>';
+  document.querySelectorAll('input[type="password"]').forEach(function (inp) {
+    if (inp.dataset.ojito) return; inp.dataset.ojito = "1";
+    var cs = getComputedStyle(inp);
+    var caja = document.createElement("span");
+    caja.style.cssText = "position:relative;display:block;width:100%";
+    caja.style.margin = cs.margin;
+    inp.parentNode.insertBefore(caja, inp);
+    caja.appendChild(inp);
+    inp.style.margin = "0";
+    inp.style.paddingRight = "44px";
+    inp.style.width = "100%";
+    inp.style.boxSizing = "border-box";
+    var b = document.createElement("button");
+    b.type = "button";
+    b.setAttribute("aria-label", "Mostrar clave");
+    b.innerHTML = ojo;
+    b.style.cssText = "position:absolute;right:12px;top:0;bottom:0;margin:auto 0;height:28px;width:28px;background:none;border:0;padding:0;cursor:pointer;color:#000;display:flex;align-items:center;justify-content:center";
+    b.onclick = function () {
+      var ver = inp.type === "password";
+      inp.type = ver ? "text" : "password";
+      b.innerHTML = ver ? tapado : ojo;
+      b.setAttribute("aria-label", ver ? "Ocultar clave" : "Mostrar clave");
+      inp.focus();
+    };
+    caja.appendChild(b);
+  });
+});
 </script>
 </body>
 </html>

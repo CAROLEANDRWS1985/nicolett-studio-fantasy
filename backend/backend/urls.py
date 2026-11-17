@@ -1,3 +1,4 @@
+from ventas.views_crud import ventas_lista
 from django.urls import re_path
 from django.conf import settings
 from django.views.static import serve
@@ -23,6 +24,7 @@ from ventas import views_cliente
 from ventas import views_usuarios
 from ventas import views_emergencia
 from ventas import views_bloqueos
+from ventas import views_colaboradora   # NUEVO: panel de colaboradoras
 
 
 router = DefaultRouter()
@@ -52,6 +54,7 @@ urlpatterns = [
     path('mi-cuenta/eliminar/', views_cliente.eliminar_cuenta, name='eliminar_cuenta'),
     path('mi-cuenta/webpay/pagar/<int:pk>/', views_cliente.pagar_abono, name='pagar_abono'),   # NUEVO
     path('mi-cuenta/webpay/retorno/', views_cliente.webpay_retorno, name='webpay_retorno'),    # NUEVO
+    path('mi-cuenta/comprar/', views_cliente.comprar_productos, name='comprar_productos'),     # NUEVO: productos
     path('panel/servicios/', views.admin_servicios, name='admin_servicios'),
     path('menu/', LoadMenu.as_view()),
     path('mi-cuenta/', views_cliente.mi_cuenta, name='mi_cuenta'),
@@ -64,6 +67,10 @@ urlpatterns = [
     path('panel/calendario/', views_bloqueos.calendario_bloqueos, name='calendario_bloqueos'),
     path('panel/calendario/datos/', views_bloqueos.bloqueos_datos, name='bloqueos_datos'),
     path('panel/calendario/guardar/', views_bloqueos.bloqueos_guardar, name='bloqueos_guardar'),
+
+    # NUEVO: panel de colaboradoras y horarios del equipo
+    path('panel/mi-agenda/', views_colaboradora.mi_agenda, name='mi_agenda'),
+    path('panel/horarios/', views_colaboradora.horarios_equipo, name='horarios_equipo'),
 
     # Recordatorios por WhatsApp
     path('recordatorios/', views.recordatorios, name='recordatorios'),  # NUEVO
@@ -84,6 +91,7 @@ urlpatterns = [
     path('panel/citas-hoy/', views.admin_citas_hoy, name='admin_citas_hoy'),
     path('panel/precios-promos/', views.admin_precios_promos, name='admin_precios_promos'),
     path('panel/cancelar-emergencia/', views_emergencia.cancelar_emergencia, name='cancelar_emergencia'),
+    path('panel/ventas/', ventas_lista, name='ventas_lista'),   # NUEVO: historial de ventas
 
     # Rutas de la API
     path('api/', include(router.urls)),

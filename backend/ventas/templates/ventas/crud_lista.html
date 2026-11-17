@@ -25,4 +25,36 @@
     {% endfor %}
   </tbody>
 </table>
+{% if clave == "usuarios" %}
+<script>
+document.addEventListener("DOMContentLoaded", function () {
+  function filtrar() {
+    var input = document.querySelector('main input, .content input, input[type="search"], input[type="text"]');
+    if (!input) return;
+    var t = input.value.trim().toLowerCase();
+    var filas = Array.prototype.filter.call(document.querySelectorAll("table tr"), function (tr) {
+      return tr.querySelectorAll("td").length >= 2;
+    });
+    var datos = filas.map(function (tr) {
+      var c = tr.querySelectorAll("td");
+      return { tr: tr, nombre: c[0].textContent.trim().toLowerCase(),
+               correo: c[1].textContent.trim().toLowerCase().split("@")[0] };
+    });
+    var hayExacto = t && datos.some(function (d) { return d.nombre === t; });
+    datos.forEach(function (d) {
+      var ver;
+      if (!t) ver = true;
+      else if (hayExacto) ver = d.nombre === t;
+      else ver = d.nombre.indexOf(t) !== -1 || d.correo.indexOf(t) !== -1;
+      d.tr.style.display = ver ? "table-row" : "none";
+    });
+  }
+  ["input", "keyup", "change"].forEach(function (ev) {
+    document.addEventListener(ev, function () { setTimeout(filtrar, 0); }, true);
+  });
+  document.addEventListener("click", function () { setTimeout(filtrar, 0); }, true);
+  setTimeout(filtrar, 50);
+});
+</script>
+{% endif %}
 {% endblock %}

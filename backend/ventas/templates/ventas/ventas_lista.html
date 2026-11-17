@@ -1,0 +1,55 @@
+{% extends "ventas/base_admin.html" %}
+
+{% block content %}
+<h1 style="margin-bottom:6px;">Ventas de la tienda</h1>
+<p style="color:#6B5B4E;margin-top:0;">Cada compra pagada con Webpay queda registrada aquí automáticamente.</p>
+
+<div style="display:flex;gap:16px;flex-wrap:wrap;margin:18px 0 26px;">
+  <div style="flex:1;min-width:200px;background:#FFFDF9;border:1px solid #E8DCCB;border-radius:10px;padding:18px 22px;">
+    <div style="font-size:12px;letter-spacing:1px;color:#6B5B4E;">VENTAS DEL MES</div>
+    <div style="font-size:30px;font-weight:bold;color:#231F1B;">{{ cantidad_mes }}</div>
+  </div>
+  <div style="flex:1;min-width:200px;background:#FFFDF9;border:1px solid #E8DCCB;border-radius:10px;padding:18px 22px;">
+    <div style="font-size:12px;letter-spacing:1px;color:#6B5B4E;">TOTAL VENDIDO EN EL MES</div>
+    <div style="font-size:30px;font-weight:bold;color:#231F1B;">{{ total_mes }}</div>
+  </div>
+</div>
+
+{% if top %}
+<h2 style="font-size:18px;">Productos más vendidos</h2>
+<table style="width:100%;border-collapse:collapse;margin-bottom:28px;">
+  <tr style="text-align:left;border-bottom:2px solid #E8DCCB;">
+    <th style="padding:8px;">Producto</th><th style="padding:8px;">Unidades vendidas</th>
+  </tr>
+  {% for p in top %}
+  <tr style="border-bottom:1px solid #F0E6D8;">
+    <td style="padding:8px;">{{ p.nombre_producto }}</td><td style="padding:8px;">{{ p.unidades }}</td>
+  </tr>
+  {% endfor %}
+</table>
+{% endif %}
+
+<h2 style="font-size:18px;">Historial de ventas</h2>
+<table style="width:100%;border-collapse:collapse;">
+  <tr style="text-align:left;border-bottom:2px solid #E8DCCB;">
+    <th style="padding:8px;">Fecha</th>
+    <th style="padding:8px;">N° de orden</th>
+    <th style="padding:8px;">Clienta</th>
+    <th style="padding:8px;">Correo</th>
+    <th style="padding:8px;">Productos</th>
+    <th style="padding:8px;text-align:right;">Total</th>
+  </tr>
+  {% for v in filas %}
+  <tr style="border-bottom:1px solid #F0E6D8;">
+    <td style="padding:8px;">{{ v.fecha|date:"d-m-Y H:i" }}</td>
+    <td style="padding:8px;">{{ v.orden }}</td>
+    <td style="padding:8px;">{{ v.clienta }}</td>
+    <td style="padding:8px;">{{ v.email }}</td>
+    <td style="padding:8px;">{{ v.productos }}</td>
+    <td style="padding:8px;text-align:right;">{{ v.total }}</td>
+  </tr>
+  {% empty %}
+  <tr><td colspan="6" style="padding:16px;color:#6B5B4E;">Todavía no hay ventas registradas.</td></tr>
+  {% endfor %}
+</table>
+{% endblock %}

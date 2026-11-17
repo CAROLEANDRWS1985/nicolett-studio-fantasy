@@ -1,12 +1,14 @@
 import html
 import io
 import os
+import random
 import re
 import time as _time
-from datetime import date, datetime, time
+from datetime import date, datetime, time, timedelta
 from urllib.parse import quote
 from django.apps import apps
 from django.conf import settings
+from django.core.cache import cache
 from django.core.mail import send_mail, EmailMessage
 from django.contrib import messages
 from django.contrib.auth import authenticate, logout
@@ -22,7 +24,7 @@ from django.utils import timezone
 from django.views.decorators.csrf import csrf_exempt
 from django.views.decorators.http import require_POST
 
-from .models import ServicioBelleza, Cliente, Cita as CitaModel, Abono, DiaBloqueado
+from .models import ServicioBelleza, Cliente, Cita as CitaModel, Abono, DiaBloqueado, Producto
 from .servicios_nicolett import SERVICIOS
 
 CATEGORIAS = {nombre: cat for nombre, cat, _p, _n in SERVICIOS}
@@ -218,6 +220,7 @@ def mi_cuenta(request):
         logout(request)
         return redirect(destino_login)
 
+    _limpiar_sin_pagar()
     cliente = _cliente(u)
     Cita = _modelo_cita()
     c = _campos_cita(Cita) if Cita else None
@@ -229,11 +232,23 @@ def mi_cuenta(request):
     } for s in ServicioBelleza.objects.filter(activo=True).order_by("nombre")]
     categorias = sorted({s["categoria"] for s in servicios}, key=_orden_categoria)
 
+    # Productos para la sección "Productos" de Mi cuenta
+    productos = []
+    for p in Producto.objects.filter(activo=True).order_by("nombre"):
+        stock = p.inventario.stock_actual if hasattr(p, "inventario") else 0
+        productos.append({
+            "pk": p.pk, "nombre": p.nombre, "descripcion": p.descripcion or "",
+            "precio": int(p.precio), "precio_fmt": _precio(p.precio),
+            "categoria": p.categoria or "", "stock": stock,
+            "imagen": p.imagen.url if p.imagen else "",
+        })
+
     encabezados, filas, citas = [], [], []
     if Cita and c and c["cli"] and cliente:
         campos = [f for f in Cita._meta.fields if f.name not in ("id", c["cli"].name)]
         encabezados = [str(f.verbose_name).capitalize() for f in campos]
-        for o in Cita.objects.filter(**{c["cli"].name: cliente}).order_by("-pk"):
+        # Las citas sin pagar no aparecen en el historial de la clienta
+        for o in Cita.objects.filter(**{c["cli"].name: cliente}).exclude(notas=MARCA_SIN_PAGO).order_by("-pk"):
             filas.append([getattr(o, f.name) for f in campos])
             citas.append({"pk": o.pk, "texto": str(o)})
 
@@ -251,11 +266,17 @@ def mi_cuenta(request):
         "tiene_cliente": cliente is not None, "cliente": cliente,
         "nivel": niveles[nivel_i][1], "siguiente": sig[1] if sig else "",
         "faltan": faltan, "progreso": progreso, "n_citas": n,
+        "productos": productos,
+        # NUEVO: profesionales para elegir al agendar
+        "profesionales": [{"pk": x.pk, "nombre": x.first_name or x.username}
+                          for x in get_user_model().objects.filter(is_staff=True, is_active=True).order_by("first_name")],
+        "profesional_actual": cliente.profesional_id if cliente else None,
     })
 
 
 @login_required(login_url="/")
 def horarios(request):
+    _limpiar_sin_pagar()
     Cita = _modelo_cita()
     try:
         fecha = date.fromisoformat(request.GET.get("fecha", ""))
@@ -280,6 +301,10 @@ def agendar_cita(request):
         messages.error(request, "El modelo Cita no tiene campos de servicio y fecha/hora que pueda usar.")
         return redirect(destino)
 
+    # Se borran las citas vencidas sin pagar y los intentos anteriores sin pagar de esta clienta
+    _limpiar_sin_pagar()
+    CitaModel.objects.filter(cliente=cliente, estado="pendiente", notas=MARCA_SIN_PAGO).delete()
+
     servicio = get_object_or_404(ServicioBelleza, pk=request.POST.get("servicio"), activo=True)
     try:
         fecha = date.fromisoformat(request.POST.get("fecha", ""))
@@ -294,7 +319,13 @@ def agendar_cita(request):
         messages.error(request, "Esa hora ya no está disponible. Elige otra.")
         return redirect(destino)
 
-    datos = {c["cli"].name: cliente, c["srv"].name: servicio}
+    datos = {c["cli"].name: cliente, c["srv"].name: servicio, "notas": MARCA_SIN_PAGO}
+    # NUEVO: profesional elegida por la clienta
+    prof_id = request.POST.get("profesional")
+    if prof_id and hasattr(Cita, "profesional"):
+        prof = get_user_model().objects.filter(pk=prof_id, is_staff=True, is_active=True).first()
+        if prof:
+            datos["profesional"] = prof
     if c["dt"]:
         v = datetime.combine(fecha, hora)
         datos[c["dt"].name] = timezone.make_aware(v) if settings.USE_TZ else v
@@ -553,6 +584,18 @@ def _liberar(cita):
         cita.delete()
 
 
+# ---- Citas de la web que no se pagan ----
+MARCA_SIN_PAGO = "WEB_SIN_PAGO"   # marca que llevan las citas web hasta que se paga el abono
+MINUTOS_PARA_PAGAR = 5            # si no paga en este tiempo, la cita se borra
+
+
+def _limpiar_sin_pagar():
+    """Borra las citas de la web que llevan más de 5 minutos sin pagar.
+    Las citas que crea la dueña desde el panel NO se tocan (no llevan la marca)."""
+    limite = timezone.now() - timedelta(minutes=MINUTOS_PARA_PAGAR)
+    CitaModel.objects.filter(estado="pendiente", notas=MARCA_SIN_PAGO, creado__lt=limite).delete()
+
+
 def _cita_de_orden(orden):
     m = re.match(r"^C(\d+)-", orden or "")
     return CitaModel.objects.filter(pk=int(m.group(1))).first() if m else None
@@ -730,7 +773,8 @@ def webpay_retorno(request):
     if aprobado and cita:
         monto = int(_r(resp, "amount"))
         cita.estado = "confirmada"
-        cita.save(update_fields=["estado"])
+        cita.notas = ""                      # ya pagó: se quita la marca de "sin pagar"
+        cita.save(update_fields=["estado", "notas"])
         Abono.objects.create(
             cliente=cita.cliente, monto=monto,
             motivo=f"Abono Webpay - cita #{cita.pk} - orden {orden}")
@@ -739,9 +783,91 @@ def webpay_retorno(request):
         messages.success(request, f"¡Pago recibido! Tu cita quedó confirmada. Abono pagado: {_precio(monto)}.")
         return redirect("/mi-cuenta/#historial")
 
+    if aprobado and not cita:
+        # Pagó cuando la cita ya se había borrado por tiempo: se le devuelve el abono
+        try:
+            _webpay().refund(token, int(_r(resp, "amount")))
+        except Exception as e:
+            print("No se pudo devolver el abono:", e)
+        messages.error(request, "Se acabó el tiempo para pagar y tu hora quedó libre. "
+                                "Te devolvimos el abono. Puedes agendar de nuevo.")
+        return redirect("/mi-cuenta/#agendar")
+
     _liberar(cita)
     messages.error(request, "El pago no fue aprobado. Tu hora quedó libre, puedes intentar con otra tarjeta.")
     return redirect("/mi-cuenta/#agendar")
+
+# =====================================================================
+#  COMPRA DE PRODUCTOS DESDE MI CUENTA
+#  La clienta ya inició sesión: sus datos salen de su ficha.
+#  Al volver de Webpay, views_catalogo.webpay_carrito_retorno descuenta
+#  el stock y envía la boleta a la clienta y el duplicado a la dueña.
+# =====================================================================
+@login_required(login_url="/")
+@require_POST
+def comprar_productos(request):
+    from .views_catalogo import _tx, _stock
+    destino = "/mi-cuenta/#productos"
+    cliente = _cliente(request.user)
+    if not cliente:
+        messages.error(request, "Tu usuario aún no está vinculado a una ficha de clienta.")
+        return redirect(destino)
+
+    # Cantidades elegidas (los precios se leen de la base de datos, nunca del navegador)
+    items, total = [], 0
+    for p in Producto.objects.filter(activo=True):
+        try:
+            cant = int(request.POST.get(f"cant_{p.pk}", "0") or 0)
+        except ValueError:
+            cant = 0
+        if cant <= 0:
+            continue
+        stock = _stock(p)
+        if cant > stock:
+            messages.error(request, f"Solo quedan {stock} unidades de {p.nombre}.")
+            return redirect(destino)
+        items.append((p.pk, cant))
+        total += int(p.precio) * cant
+
+    if not items:
+        messages.error(request, "Elige al menos un producto.")
+        return redirect(destino)
+
+    session_id = ",".join(f"p{pk}x{cant}" for pk, cant in items)
+    if len(session_id) > 61:
+        messages.error(request, "Son demasiados productos distintos. Compra en dos partes, por favor.")
+        return redirect(destino)
+
+    # Correo para la boleta: el de su ficha o el de su cuenta
+    email = (cliente.email or request.user.email or "").strip()
+    if not email:
+        messages.error(request, "Agrega tu correo en Mi perfil para poder enviarte la boleta.")
+        return redirect("/mi-cuenta/#perfil")
+
+    orden = "C" + str(int(_time.time())) + str(random.randint(100, 999))
+    cache.set("compra_" + orden, {
+        "email": email,
+        "nombre": cliente.nombre,
+        "telefono": cliente.telefono or "",
+        "volver": "/mi-cuenta/#productos",   # al terminar, vuelve a Mi cuenta
+    }, 60 * 60)
+
+    try:
+        r = _tx().create(orden, session_id, total,
+                         request.build_absolute_uri(reverse("webpay_carrito_retorno")))
+    except Exception as e:
+        messages.error(request, f"No se pudo conectar con Webpay: {e}")
+        return redirect(destino)
+
+    return HttpResponse(
+        '<!DOCTYPE html><html lang="es"><head><meta charset="UTF-8"><title>Webpay</title></head>'
+        '<body style="background:#F6EEE3;color:#3E2C1F;font-family:sans-serif;text-align:center;padding-top:20vh">'
+        f'<p>Te llevamos a Webpay para pagar tu compra de {_precio(total)}...</p>'
+        f'<form id="f" method="post" action="{html.escape(r["url"])}">'
+        f'<input type="hidden" name="token_ws" value="{html.escape(r["token"])}">'
+        '<noscript><button type="submit">Ir a pagar</button></noscript></form>'
+        '<script>document.getElementById("f").submit()</script></body></html>')
+
 
 @login_required(login_url="/")
 def dias_bloqueados(request):

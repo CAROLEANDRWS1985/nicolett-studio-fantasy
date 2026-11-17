@@ -5,63 +5,90 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>{% block title %}Panel Administrativo{% endblock %} · Nicolett</title>
-    <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,500;0,600;1,500;1,600&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@500;600;700&family=Cormorant+Garamond:ital,wght@0,500;0,600;0,700;1,500&family=Great+Vibes&family=Montserrat:wght@400;500;600&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="{% static 'css/admin_panel.css' %}">
     <style>
-    /* ===== Nicolett: negro con dorado (igual que el portal de las clientas) ===== */
-    :root{--negro:#121010;--oro:#D4B26A;--panel:#1c1814;--texto-claro:#eadcc0;--dorado:#b8895a;--crema:#faf7f4}
-    body{font-family:'Inter',sans-serif!important}
+    /* ===== Nicolett Studio Fantasy: crema, dorado y café (igual que el afiche) ===== */
+    :root{
+        --cafe:#3E2C1F; --cafe-2:#4A3524; --oro:#B8925A; --oro-claro:#D9BC8C; --oro-suave:#EBDCC3;
+        --crema:#F6EEE3; --marfil:#FFFBF5; --tinta:#2B1F16; --gris:#7A6553; --linea:#E6D7C0;
+    }
+    body{font-family:'Montserrat',sans-serif!important;color:var(--tinta);background:var(--crema)!important}
 
     /* ---------- Menú izquierdo ---------- */
-    .sidebar{background:var(--negro)!important;border-right:1px solid rgba(212,178,106,.35)!important}
-    .sidebar-brand h1{font-family:'Cormorant Garamond',serif!important;font-weight:600!important;font-size:34px!important;color:var(--oro)!important}
-    .sidebar-brand span{color:var(--oro)!important;letter-spacing:.2em}
-    .sidebar-nav a{color:var(--oro)!important;text-decoration:none;display:block;border-left:3px solid transparent}
-    .sidebar-nav a:hover{background:rgba(212,178,106,.12)!important;border-left-color:var(--oro)}
-    .sidebar-footer p,.session-label,.session-email{color:var(--oro)!important}
-    .sidebar-footer a{color:var(--oro)!important;border:1px solid var(--oro);padding:8px 14px;display:inline-block;text-decoration:none;font-size:11px;letter-spacing:.15em}
-    .sidebar-footer a:hover{background:var(--oro);color:var(--negro)!important}
+    .sidebar{background:linear-gradient(180deg,var(--cafe-2) 0%,var(--cafe) 100%)!important;border-right:1px solid rgba(217,188,140,.35)!important}
+    .sidebar-brand{text-align:left}
+    .sidebar-brand h1{font-family:'Cinzel',serif!important;font-weight:700!important;font-size:30px!important;letter-spacing:.08em;text-transform:uppercase;color:#F3E3C6!important;margin:0!important;line-height:1.1}
+    .sidebar-brand .brand-script{font-family:'Great Vibes',cursive;font-size:26px;color:var(--oro-claro);line-height:1.2;margin:2px 0 6px}
+    .sidebar-brand span{font-family:'Montserrat',sans-serif;font-size:10.5px;font-weight:500;color:var(--oro-claro)!important;letter-spacing:.35em}
+    .sidebar-nav a{font-family:'Montserrat',sans-serif;font-size:14px;color:#F1E4CC!important;text-decoration:none;display:block;border-left:3px solid transparent;transition:background .2s,border-color .2s}
+    .sidebar-nav a:hover{background:rgba(217,188,140,.14)!important;border-left-color:var(--oro-claro);color:#fff!important}
+    .sidebar-nav a.activo{background:rgba(217,188,140,.22)!important;border-left-color:var(--oro-claro);color:#fff!important;font-weight:600}
+    .sidebar-footer p,.session-label{font-family:'Montserrat',sans-serif;font-size:11px;letter-spacing:.15em;text-transform:uppercase;color:var(--oro-claro)!important}
+    .session-email{font-family:'Cormorant Garamond',serif!important;font-size:19px!important;font-weight:600;letter-spacing:0!important;text-transform:none!important;color:#F3E3C6!important}
+    .sidebar-footer a{font-family:'Montserrat',sans-serif;color:#F3E3C6!important;border:1px solid var(--oro-claro);border-radius:999px;padding:9px 18px;display:inline-block;text-decoration:none;font-size:11px;letter-spacing:.15em}
+    .sidebar-footer a:hover{background:var(--oro-claro);color:var(--cafe)!important}
 
     /* ---------- Zona principal ---------- */
-    .main{background:var(--crema)!important}
-    .main h1,.main h2,.main h3{font-family:'Cormorant Garamond',serif!important;font-weight:500!important;color:var(--dorado)!important}
-    .main h1{font-size:44px!important;letter-spacing:.5px}
-    .main p{color:#7a6a5d}
+    .main{background:radial-gradient(circle at 90% 0%,rgba(217,188,140,.22),transparent 45%),var(--crema)!important}
+    .main h1,.main h2,.main h3{font-family:'Cinzel',serif!important;font-weight:600!important;color:var(--cafe)!important;letter-spacing:.06em}
+    .main h1{font-size:40px!important}
+    .main h2{font-size:24px!important}
+    .main h3{font-size:19px!important}
+    .main p{color:var(--gris)}
 
-    /* ---------- Tablas ---------- */
-    .main table{background:var(--negro)!important;border:1px solid var(--oro)!important;border-collapse:collapse;width:100%}
-    .main th{background:var(--panel)!important;color:var(--oro)!important;border-bottom:1px solid var(--oro)!important}
-    .main td{background:transparent!important;color:var(--texto-claro)!important;border-top:1px solid rgba(212,178,106,.25)!important}
-
-    /* Todas las filas negras (anula el fondo crema de las filas alternas) */
+    /* ---------- Tablas (estilo "lista de precios") ---------- */
+    .main table{background:var(--marfil)!important;border:1px solid var(--linea)!important;border-collapse:separate!important;border-spacing:0;border-radius:14px;overflow:hidden;width:100%;box-shadow:0 10px 30px rgba(74,53,36,.08)}
+    .main th{background:linear-gradient(180deg,#EFDFC3 0%,#E2C99F 100%)!important;color:var(--cafe)!important;font-family:'Montserrat',sans-serif!important;font-size:11.5px!important;font-weight:600!important;letter-spacing:.14em;text-transform:uppercase;border-bottom:1px solid rgba(184,146,90,.5)!important}
+    .main td{background:transparent!important;color:var(--tinta)!important;font-family:'Cormorant Garamond',serif!important;font-size:17px!important;line-height:1.35;font-weight:600;border-top:1px solid var(--linea)!important}
+    .main th,.main td{padding-left:18px!important;padding-right:18px!important}
     .main table tbody tr,
-    .main table tbody tr:nth-child(odd),
-    .main table tbody tr:nth-child(even){background:var(--negro)!important}
-    .main table tbody tr:nth-child(even){background:#17130f!important}
-    .main table tbody tr:nth-child(even) td,
-    .main table tbody tr:nth-child(odd) td{background:transparent!important;color:var(--texto-claro)!important}
+    .main table tbody tr:nth-child(odd){background:var(--marfil)!important}
+    .main table tbody tr:nth-child(even){background:#FBF4EA!important}
+    .main table tbody tr td{background:transparent!important;color:var(--tinta)!important}
     .main table tbody tr:hover,
-    .main table tbody tr:hover td{background:rgba(212,178,106,.12)!important}
+    .main table tbody tr:hover td{background:#F5E8D3!important}
 
-    /* ---------- Botones y enlaces (+ Nuevo, Editar, Eliminar, Guardar) ---------- */
+    /* ---------- Botones (+ Nuevo, Editar, Eliminar, Guardar) ---------- */
     .main a,.main button,.main .btn,.main input[type=submit],.main input[type=button]{
-        background:var(--negro)!important;color:var(--oro)!important;border:1px solid var(--oro)!important;
-        padding:8px 16px;text-decoration:none;cursor:pointer;display:inline-block}
-    .main a:hover,.main button:hover,.main .btn:hover,.main input[type=submit]:hover{
-        background:var(--oro)!important;color:var(--negro)!important}
+        background:linear-gradient(180deg,#E8D2AB 0%,#C9A46A 100%)!important;color:var(--cafe)!important;border:1px solid var(--oro)!important;
+        border-radius:999px!important;padding:9px 20px;text-decoration:none;cursor:pointer;display:inline-block;
+        font-family:'Montserrat',sans-serif!important;font-size:12px!important;font-weight:600!important;letter-spacing:.1em;
+        box-shadow:0 2px 6px rgba(74,53,36,.12);transition:background .2s,color .2s}
+    .main a:hover,.main button:hover,.main .btn:hover,.main input[type=submit]:hover,.main input[type=button]:hover{
+        background:var(--cafe)!important;color:#F3E3C6!important;border-color:var(--cafe)!important}
     .main button:disabled{opacity:.45;cursor:not-allowed}
+    .main td a,.main td button,.main td input[type=submit]{margin:3px 4px 3px 0}
+    /* Editar y Eliminar siempre juntos en la misma línea */
+    .main td form{display:inline-block!important;margin:0!important}
+    .main td:last-child{white-space:nowrap;width:1%}
+    /* Eliminar en rojo suave */
+    .main .btn-eliminar{background:#FFF5F2!important;color:#8A2C22!important;border:1px solid #C9877B!important}
+    .main .btn-eliminar:hover{background:#8A2C22!important;color:#FFF5F2!important;border-color:#8A2C22!important}
+    /* Botón principal centrado (por ejemplo "Cancelar citas") */
+    .main .boton-centrado{display:block!important;width:auto!important;min-width:260px;margin:24px auto 0!important;padding:14px 36px!important}
 
-    /* ---------- Cajas de texto, buscador y formularios ---------- */
+    /* ---------- Cajas de texto y formularios ---------- */
     .main input:not([type=submit]):not([type=button]):not([type=checkbox]):not([type=radio]),
-    .main select,.main textarea{background:var(--panel)!important;color:#f1e6cf!important;border:1px solid rgba(212,178,106,.5)!important;padding:10px 12px}
-    .main input::placeholder,.main textarea::placeholder{color:#a99876!important}
-    .main label{color:var(--dorado)!important}
-    .main form{color:var(--texto-claro)}
+    .main select,.main textarea{background:var(--marfil)!important;color:var(--tinta)!important;border:1px solid var(--oro-claro)!important;border-radius:10px!important;padding:10px 14px;font-family:'Montserrat',sans-serif!important;font-size:14px}
+    .main input:focus,.main select:focus,.main textarea:focus{outline:3px solid rgba(184,146,90,.3)!important;outline-offset:0;border-color:var(--oro)!important}
+    .main input::placeholder,.main textarea::placeholder{color:#A8927A!important}
+    .main input[type=checkbox],.main input[type=radio]{accent-color:var(--oro)}
+    .main label{font-family:'Montserrat',sans-serif!important;font-size:12px;font-weight:600;letter-spacing:.1em;text-transform:uppercase;color:var(--cafe-2)!important}
+    .main form{color:var(--tinta)}
+    /* Formularios de crear/editar (los que tienen "Guardar"): todas las cajas parten en la misma línea */
+    .main form.form-crud label{display:inline-block;width:150px;margin-right:12px;vertical-align:middle}
+    .main form.form-crud input:not([type=submit]):not([type=button]):not([type=checkbox]):not([type=radio]):not([type=hidden]),
+    .main form.form-crud select{width:360px;max-width:100%;vertical-align:middle}
+    .main form.form-crud textarea{width:360px;max-width:100%;min-height:110px;vertical-align:top}
+    .main form.form-crud p,.main form.form-crud > div{margin:0 0 16px}
+    .main form.form-crud .helptext,.main form.form-crud small{display:inline-block;margin-left:12px;color:var(--gris);font-size:13px}
+    .main .form-acciones{display:flex;gap:10px;flex-wrap:wrap;margin:8px 0 0 162px!important}
 
     /* ---------- Buscador al lado de "+ Nuevo" ---------- */
     .barra-buscar{display:flex;align-items:center;gap:12px;flex-wrap:wrap;margin:0 0 20px}
-    .barra-buscar input{width:340px;max-width:100%;font:inherit;font-size:14px}
-    .sin-resultados{display:none;padding:18px 20px;background:var(--negro);border:1px solid var(--oro);border-top:0;color:var(--oro)}
+    .barra-buscar input{width:340px;max-width:100%;font:inherit;font-size:14px;border-radius:999px!important;padding-left:18px!important}
+    .sin-resultados{display:none;padding:18px 20px;background:var(--marfil);border:1px solid var(--linea);border-top:0;border-radius:0 0 14px 14px;color:var(--gris);font-family:'Cormorant Garamond',serif;font-size:18px}
     </style>
 </head>
 <body class="{% block body_class %}{% endblock %}">
@@ -71,10 +98,11 @@
             <div>
                 <div class="sidebar-brand">
                     <h1>Nicolett</h1>
+                    <div class="brand-script">Studio Fantasy</div>
                     <span>ADMIN PANEL</span>
-                </div>
-             <nav class="sidebar-nav">
+                <nav class="sidebar-nav">
     <a href="{% url 'usuarios_lista' %}">Colaboradores del salón</a>
+    <a href="{% url 'horarios_equipo' %}">Horarios del equipo</a>
     <a href="{% url 'crud_lista' 'clientes' %}">Clientas</a>
     <a href="{% url 'crud_lista' 'citas' %}">Citas</a>
     <a href="{% url 'recordatorios' %}">Recordatorios</a>
@@ -82,6 +110,7 @@
     <a href="{% url 'crud_lista' 'productos' %}">Productos</a>
     <a class="nav-precios" href="{% url 'admin_precios_promos' %}">Precios</a>
     <a href="{% url 'crud_lista' 'inventario' %}">Inventario</a>
+    <a href="{% url 'ventas_lista' %}">Ventas</a>
     <a href="{% url 'cancelar_emergencia' %}">Cancelar por emergencia</a>
     <a href="{% url 'crud_lista' 'proveedores' %}">Proveedores</a>
     <a href="{% url 'crud_lista' 'compras' %}">Compras a proveedores</a>
@@ -101,55 +130,141 @@
     </div>
 
 <script>
-// ---------- Buscador al lado de "+ Nuevo" (Usuarios, Clientas, Citas, Productos, Inventario) ----------
+// ---------- Marca en el menú la sección en la que estás ----------
+(function(){
+  var ruta = location.pathname, mejor = null, largo = 0;
+  document.querySelectorAll('.sidebar-nav a').forEach(function(a){
+    var p = new URL(a.href, location.origin).pathname;
+    if (ruta.indexOf(p) === 0 && p.length > largo) { mejor = a; largo = p.length; }
+  });
+  if (mejor) mejor.classList.add('activo');
+})();
+
+// ---------- Datos cortos (RUT, teléfono, precio) en una sola línea ----------
+document.querySelectorAll('.main td').forEach(function(td){
+  if (td.textContent.trim().length <= 18) td.style.whiteSpace = 'nowrap';
+});
+
+// ---------- Buscador al lado de "+ Nuevo" ----------
 (function(){
   var ruta = location.pathname.toLowerCase();
   var textos = [
-    ['usuarios', 'Buscar colaborador...'],
-    ['clientes',   'Buscar cliente...'],
-    ['citas',      'Buscar clienta...'],
-    ['productos',  'Buscar producto...'],
-    ['inventario', 'Buscar producto...']
+    ['usuarios',    'Buscar colaborador...'],
+    ['clientes',    'Buscar cliente...'],
+    ['citas',       'Buscar clienta...'],
+    ['productos',   'Buscar producto...'],
+    ['inventario',  'Buscar producto...'],
+    ['proveedores', 'Buscar proveedor...'],
+    ['compras',     'Buscar compra...']
   ];
   var ph = null;
   textos.forEach(function(t){ if(!ph && ruta.indexOf(t[0]) !== -1) ph = t[1]; });
-  if(!ph) return;                       // otras pantallas (Precios, etc.) quedan igual
-
+  if(!ph) return;
   var tabla = document.querySelector('.main table');
   if(!tabla) return;
-
-  // Crea la barra: "+ Nuevo" y la caja de búsqueda una al lado de la otra
   var nuevo = Array.prototype.slice.call(document.querySelectorAll('.main a, .main button'))
     .filter(function(e){ return /nuevo/i.test(e.textContent); })[0];
   var barra = document.createElement('div');
   barra.className = 'barra-buscar';
   if(nuevo){ nuevo.parentNode.insertBefore(barra, nuevo); barra.appendChild(nuevo); }
   else { tabla.parentNode.insertBefore(barra, tabla); }
-
   var caja = document.createElement('input');
-  caja.type = 'search';
-  caja.placeholder = ph;
-  caja.setAttribute('aria-label', ph);
+  caja.type = 'search'; caja.placeholder = ph; caja.setAttribute('aria-label', ph);
   barra.appendChild(caja);
-
   var vacio = document.createElement('div');
   vacio.className = 'sin-resultados';
   vacio.textContent = 'No se encontraron resultados.';
   tabla.parentNode.insertBefore(vacio, tabla.nextSibling);
-
   function limpiar(s){ return s.normalize('NFD').replace(/[\u0300-\u036f]/g,'').toLowerCase().trim(); }
-
   caja.addEventListener('input', function(){
-    var q = limpiar(caja.value);
-    var filas = tabla.querySelectorAll('tbody tr');
-    var visibles = 0;
-    filas.forEach(function(f){
+    var q = limpiar(caja.value), visibles = 0;
+    tabla.querySelectorAll('tbody tr').forEach(function(f){
       var ok = !q || limpiar(f.textContent).indexOf(q) !== -1;
       f.style.display = ok ? '' : 'none';
       if(ok) visibles++;
     });
     vacio.style.display = (q && visibles === 0) ? 'block' : 'none';
   });
+})();
+
+// ---------- Botones de los formularios ----------
+(function(){
+  function texto(b){ return (b.textContent || b.value || '').trim(); }
+  document.querySelectorAll('.main a, .main button, .main input[type=submit]').forEach(function(b){
+    if (/^eliminar$/i.test(texto(b))) b.classList.add('btn-eliminar');
+  });
+
+  // Formularios fuera de las tablas
+  var formularios = Array.prototype.filter.call(document.querySelectorAll('.main form'), function(f){ return !f.closest('table'); });
+
+  // "Cancelar por emergencia" y otros formularios sin "Guardar": botón principal al medio
+  formularios.forEach(function(f){
+    var tieneGuardar = Array.prototype.some.call(f.querySelectorAll('button, input[type=submit]'), function(b){ return /guardar/i.test(texto(b)); });
+    if (tieneGuardar) return;
+    var envios = f.querySelectorAll('button[type=submit], input[type=submit], button:not([type])');
+    if (envios.length === 1) envios[0].classList.add('boton-centrado');
+  });
+
+  // Formulario de crear/editar (el que tiene "Guardar"): Guardar / Cancelar / Eliminar bajo las cajas
+  var form = formularios.filter(function(f){
+    return Array.prototype.some.call(f.querySelectorAll('button, input[type=submit]'), function(b){ return /guardar/i.test(texto(b)); });
+  })[0];
+  if (!form) return;
+  form.classList.add('form-crud');
+  var ruta = location.pathname;
+  if (/editar/i.test(ruta) && !/eliminar/i.test(form.textContent)) {
+    var del = document.createElement('a');
+    del.href = ruta.replace(/editar/i, 'eliminar');
+    del.textContent = 'Eliminar';
+    del.className = 'btn-eliminar';
+    del.addEventListener('click', function(e){
+      if (!confirm('¿Seguro que quieres eliminar este registro? No se puede deshacer.')) e.preventDefault();
+    });
+    form.appendChild(del);
+  }
+  var botones = Array.prototype.filter.call(form.querySelectorAll('a, button, input[type=submit]'),
+    function(b){ return /^(guardar|cancelar|eliminar)$/i.test(texto(b)); });
+  if (!botones.length) return;
+  var fila = document.createElement('div');
+  fila.className = 'form-acciones';
+  botones[0].parentNode.insertBefore(fila, botones[0]);
+  botones.forEach(function(b){ fila.appendChild(b); });
+})();
+
+// ---------- Calendario "Días sin atención" en marfil y dorado ----------
+(function(){
+  var main = document.querySelector('.main');
+  if (!main || !/sin atenci/i.test(main.textContent)) return;
+  function rgb(s){ var m = s.match(/[\d.]+/g); return m ? m.map(Number) : [0,0,0,0]; }
+  function set(el, p, v){ el.style.setProperty(p, v, 'important'); }
+  function visible(bg){ return bg.length < 4 || bg[3] > 0.5; }
+  function pintar(){
+    main.querySelectorAll('*:not([data-pintado])').forEach(function(el){
+      var bg = rgb(getComputedStyle(el).backgroundColor);
+      if (visible(bg) && bg[0] < 45 && bg[1] < 45 && bg[2] < 45) {
+        set(el, 'background-color', '#FFFBF5'); set(el, 'border-color', '#E6D7C0');
+        set(el, 'border-radius', '14px'); set(el, 'box-shadow', '0 10px 30px rgba(74,53,36,.08)');
+        el.setAttribute('data-cal', '1'); el.setAttribute('data-pintado', '1');
+      }
+    });
+    main.querySelectorAll('[data-cal] *:not([data-pintado])').forEach(function(el){
+      el.setAttribute('data-pintado', '1');
+      if (el.matches('button')) return;
+      var cs = getComputedStyle(el), bg = rgb(cs.backgroundColor), c = rgb(cs.color);
+      if (visible(bg) && bg[2] > bg[0] + 50 && bg[2] > 110) { set(el,'background-color','#EFDFC3'); set(el,'color','#3E2C1F'); set(el,'border-radius','8px'); return; }
+      if (visible(bg) && bg[0] > 140 && bg[1] < 100 && bg[2] < 100) { set(el,'background-color','#D9A39A'); set(el,'color','#5A1F17'); set(el,'border-radius','8px'); return; }
+      if (visible(bg) && bg[0] > 180 && bg[1] > 150 && bg[2] < 140) { set(el,'background-color','#3E2C1F'); set(el,'color','#F3E3C6'); set(el,'border-radius','8px'); return; }
+      if (c[0] > 200 && c[1] > 200 && c[2] > 180) set(el, 'color', '#3E2C1F');
+      else if (c[0] > 180 && c[1] > 150 && c[2] < 140) set(el, 'color', '#3E2C1F');
+      else if (c[0] >= 70 && c[0] <= 120 && c[1] >= 60 && c[1] <= 100 && c[2] <= 80) set(el, 'color', '#C9B9A3');
+    });
+  }
+  pintar();
+  var pendiente = false;
+  new MutationObserver(function(){
+    if (pendiente) return; pendiente = true;
+    requestAnimationFrame(function(){ pendiente = false; pintar(); });
+  }).observe(main, { childList: true, subtree: true });
 })();
 </script>
 </body>

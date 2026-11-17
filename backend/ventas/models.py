@@ -87,7 +87,18 @@ class Cita(models.Model):
     hora = models.TimeField()
     estado = models.CharField(max_length=20, choices=ESTADOS, default='pendiente')
     notas = models.TextField(blank=True, null=True)
+    # NUEVO: colaboradora que atiende la cita (si queda vacío, se toma la colaboradora de la clienta)
+    profesional = models.ForeignKey(User, on_delete=models.SET_NULL, blank=True, null=True,
+                                    related_name='citas_asignadas', verbose_name='Colaborador')
     creado = models.DateTimeField(auto_now_add=True)
+
+    def save(self, *args, **kwargs):
+        # NUEVO: si la cita no tiene colaboradora, se le asigna la de la clienta
+        if self.profesional_id is None and self.cliente_id:
+            prof = Cliente.objects.filter(pk=self.cliente_id).values_list('profesional', flat=True).first()
+            if prof:
+                self.profesional_id = prof
+        super().save(*args, **kwargs)
 
     def __str__(self):
         return f"{self.cliente.nombre} - {self.fecha} {self.hora}"
@@ -230,3 +241,81 @@ class CompraProveedor(models.Model):
 
     def __str__(self):
         return f"{self.proveedor.nombre} - {self.fecha}"
+
+
+# ===================== HORARIO DEL EQUIPO (NUEVO) =====================
+
+class HorarioColaboradora(models.Model):
+    DIAS = [
+        (0, 'Lunes'), (1, 'Martes'), (2, 'Miércoles'), (3, 'Jueves'),
+        (4, 'Viernes'), (5, 'Sábado'), (6, 'Domingo'),
+    ]
+
+    colaborador = models.ForeignKey(User, on_delete=models.CASCADE, related_name='horarios',
+                                    verbose_name='Colaborador')
+    dia_semana = models.PositiveSmallIntegerField(choices=DIAS, verbose_name='Día')
+    hora_entrada = models.TimeField(verbose_name='Entrada')
+    hora_salida = models.TimeField(verbose_name='Salida')
+
+    class Meta:
+        ordering = ['colaborador', 'dia_semana']
+        unique_together = [('colaborador', 'dia_semana')]
+        verbose_name = 'Horario de colaboradora'
+        verbose_name_plural = 'Horarios de colaboradoras'
+
+    def __str__(self):
+        return f"{self.colaborador} - {self.get_dia_semana_display()} {self.hora_entrada:%H:%M}-{self.hora_salida:%H:%M}"
+
+
+class DiaLibreColaboradora(models.Model):
+    colaborador = models.ForeignKey(User, on_delete=models.CASCADE, related_name='dias_libres',
+                                    verbose_name='Colaborador')
+    fecha = models.DateField(verbose_name='Fecha')
+    motivo = models.CharField(max_length=150, blank=True, verbose_name='Motivo')
+
+    class Meta:
+        ordering = ['fecha']
+        unique_together = [('colaborador', 'fecha')]
+        verbose_name = 'Día libre de colaboradora'
+        verbose_name_plural = 'Días libres de colaboradoras'
+
+    def __str__(self):
+        return f"{self.colaborador} - {self.fecha} ({self.motivo or 'Libre'})"
+
+    
+
+# ===================== VENTAS DE LA TIENDA (NUEVO) =====================
+
+class Venta(models.Model):
+    cliente = models.ForeignKey(Cliente, on_delete=models.SET_NULL, blank=True, null=True,
+                                related_name='ventas', verbose_name='Clienta')
+    nombre_cliente = models.CharField(max_length=150, blank=True, verbose_name='Nombre')
+    email = models.EmailField(blank=True, verbose_name='Correo')
+    orden_compra = models.CharField(max_length=50, unique=True, verbose_name='Orden de compra')
+    total = models.DecimalField(max_digits=12, decimal_places=0, default=0, verbose_name='Total')
+    fecha = models.DateTimeField(auto_now_add=True, verbose_name='Fecha')
+
+    class Meta:
+        ordering = ['-fecha']
+        verbose_name = 'Venta'
+        verbose_name_plural = 'Ventas'
+
+    def __str__(self):
+        return f"Venta {self.orden_compra} - {self.nombre_cliente or 'Sin nombre'}"
+
+
+class DetalleVenta(models.Model):
+    venta = models.ForeignKey(Venta, on_delete=models.CASCADE, related_name='detalles')
+    producto = models.ForeignKey(Producto, on_delete=models.SET_NULL, blank=True, null=True,
+                                 related_name='ventas_detalle')
+    nombre_producto = models.CharField(max_length=150, verbose_name='Producto')
+    cantidad = models.PositiveIntegerField(default=1, verbose_name='Cantidad')
+    precio_unitario = models.DecimalField(max_digits=10, decimal_places=0, default=0,
+                                          verbose_name='Precio unitario')
+
+    @property
+    def subtotal(self):
+        return self.cantidad * self.precio_unitario
+
+    def __str__(self):
+        return f"{self.nombre_producto} x {self.cantidad}"

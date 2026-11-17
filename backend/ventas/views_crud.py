@@ -50,7 +50,7 @@ def _form(M):
     # Colaborador: solo los profesionales del salón
     if "profesional" in Form.base_fields:
         campo = Form.base_fields["profesional"]
-        campo.queryset = User.objects.filter(is_staff=True, is_superuser=False).order_by("first_name")
+        campo.queryset = User.objects.filter(is_staff=True, is_active=True).order_by("first_name")
         campo.label = "Colaborador"
         campo.label_from_instance = lambda u: _nombre_usuario(u)
     for f in Form.base_fields.values():
@@ -132,3 +132,44 @@ def precios(request):
         return redirect(request.path)
     return render(request, "ventas/precios_promos.html",
                   {"servicios": ServicioBelleza.objects.order_by("nombre")})
+
+
+
+# ===================== VENTAS DE LA TIENDA (NUEVO) =====================
+
+def _pesos(n):
+    return "$" + f"{int(n or 0):,}".replace(",", ".")
+
+
+@solo_equipo
+def ventas_lista(request):
+    """Historial de ventas de la tienda: solo para consultar, no se edita ni se borra."""
+    from django.db.models import Sum
+    from django.utils import timezone
+    from .models import Venta, DetalleVenta
+
+    hoy = timezone.localdate()
+    ventas = Venta.objects.select_related("cliente").prefetch_related("detalles")
+    del_mes = ventas.filter(fecha__year=hoy.year, fecha__month=hoy.month)
+
+    filas = []
+    for v in ventas:
+        filas.append({
+            "fecha": v.fecha,
+            "orden": v.orden_compra,
+            "clienta": v.nombre_cliente or (v.cliente.nombre if v.cliente else "Sin nombre"),
+            "email": v.email,
+            "productos": ", ".join(f"{d.nombre_producto} x{d.cantidad}" for d in v.detalles.all()),
+            "total": _pesos(v.total),
+        })
+
+    top = (DetalleVenta.objects.values("nombre_producto")
+           .annotate(unidades=Sum("cantidad"))
+           .order_by("-unidades")[:5])
+
+    return render(request, "ventas/ventas_lista.html", {
+        "filas": filas,
+        "cantidad_mes": del_mes.count(),
+        "total_mes": _pesos(del_mes.aggregate(t=Sum("total"))["t"]),
+        "top": top,
+    })

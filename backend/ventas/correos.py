@@ -32,7 +32,8 @@ def _enviar(asunto, destinatario, html, nombre_pdf, pdf):
     msg.send()
 
 
-def enviar_boletas(numero, cliente_nombre, cliente_email, items, metodo_pago='Webpay'):
+def enviar_boletas(numero, cliente_nombre, cliente_email, items, metodo_pago='Webpay',
+                   cliente_telefono=''):
     """
     items: lista de dicts con nombre, descripcion, cantidad, precio_unitario.
     - A la clienta: su boleta en el correo + PDF adjunto.
@@ -54,6 +55,7 @@ def enviar_boletas(numero, cliente_nombre, cliente_email, items, metodo_pago='We
         'fecha': timezone.localtime().strftime('%d-%m-%Y %H:%M'),
         'cliente_nombre': cliente_nombre,
         'cliente_email': cliente_email,
+        'cliente_telefono': cliente_telefono,   # NUEVO: para mostrarlo en la boleta y el aviso
         'items': filas,
         'neto_fmt': clp(neto),
         'iva_fmt': clp(total - neto),

@@ -11,6 +11,8 @@ from django.shortcuts import get_object_or_404
 from django.urls import reverse
 from django.utils.html import escape
 from django.views.decorators.csrf import csrf_exempt
+from django.core.validators import validate_email
+from django.core.exceptions import ValidationError
 from .models import Producto, Inventario
 
 from transbank.webpay.webpay_plus.transaction import Transaction
@@ -104,6 +106,7 @@ def webpay_producto_retorno(request):
     if r.get('status') == 'AUTHORIZED' and r.get('response_code') == 0:
         pk = int(r['buy_order'][1:].split('T')[0])
         Inventario.objects.filter(producto_id=pk, stock_actual__gt=0).update(stock_actual=F('stock_actual') - 1)
+        _registrar_venta(request, r, [('p', pk, 1)])   # NUEVO: guarda la venta
         monto = '{:,}'.format(int(r['amount'])).replace(',', '.')
         return _pagina('¡Pago aprobado!', 'Monto pagado: $' + monto + '. Gracias por tu compra.')
 
@@ -134,19 +137,133 @@ def _registrar_abono(monto, orden):
     pass
 
 
-def carrito_pagar(request):
+def _registrar_venta(request, r, items):
+    """NUEVO: guarda la venta y sus productos para el historial del panel."""
+    from .models import Venta, DetalleVenta, Cliente
+    productos = [(num, cant) for tipo, num, cant in items if tipo == 'p']
+    if not productos:
+        return
     try:
-        items = _leer_items(request.GET.get('items', ''))
+        orden = str(r['buy_order'])
+        if Venta.objects.filter(orden_compra=orden).exists():
+            return   # ya estaba guardada (por si se recarga la página)
+        datos = cache.get('compra_' + orden) or {}
+        email = datos.get('email', '')
+        cliente = None
+        if request.user.is_authenticated:
+            cliente = Cliente.objects.filter(usuario=request.user).first()
+        if cliente is None and email:
+            cliente = Cliente.objects.filter(email__iexact=email).first()
+
+        venta = Venta.objects.create(
+            cliente=cliente,
+            nombre_cliente=datos.get('nombre', '') or (cliente.nombre if cliente else ''),
+            email=email or (cliente.email if cliente and cliente.email else ''),
+            orden_compra=orden,
+            total=0,
+        )
+        total = 0
+        for num, cant in productos:
+            p = Producto.objects.filter(pk=num).first()
+            precio = int(p.precio) if p else 0
+            DetalleVenta.objects.create(
+                venta=venta,
+                producto=p,
+                nombre_producto=p.nombre if p else 'Producto ' + str(num),
+                cantidad=cant,
+                precio_unitario=precio,
+            )
+            total += precio * cant
+        venta.total = total
+        venta.save(update_fields=['total'])
+    except Exception as e:
+        print('Error guardando la venta:', e)
+
+
+def _fmt(n):
+    return '$' + '{:,}'.format(int(n)).replace(',', '.')
+
+
+def _datos_guardados(request):
+    """Si la clienta tiene sesión, trae su nombre, teléfono y correo para dejarlos escritos."""
+    nombre = telefono = email = ''
+    if request.user.is_authenticated:
+        email = request.user.email or ''
+        nombre = request.user.get_full_name() or request.user.username
+        try:
+            from .models import Cliente
+            c = Cliente.objects.filter(usuario=request.user).first()
+            if c:
+                nombre = c.nombre or nombre
+                telefono = c.telefono or ''
+                email = c.email or email
+        except Exception:
+            pass
+    return nombre, telefono, email
+
+
+def _formulario_datos(items_txt, resumen, total, nombre='', telefono='', email='', error=''):
+    """Página que pide nombre, teléfono y correo antes de ir a Webpay."""
+    filas = ''.join(
+        '<tr><td>' + escape(n) + '</td><td style="text-align:center">' + str(c) + '</td>'
+        '<td style="text-align:right">' + _fmt(st) + '</td></tr>'
+        for n, c, st in resumen
+    )
+    aviso = ('<p style="background:#F8E1DC;color:#8A3B2E;padding:10px 14px;border-radius:6px;">'
+             + escape(error) + '</p>') if error else ''
+    campo = ('<label style="display:block;text-align:left;font-size:12px;letter-spacing:1px;'
+             'margin:16px 0 6px;color:#231F1B;">{lbl}</label>'
+             '<input name="{name}" type="{tipo}" value="{val}" required {extra} '
+             'style="width:100%;box-sizing:border-box;padding:12px;border:1px solid #D8C3A5;'
+             'border-radius:6px;font-size:15px;background:#fff;">')
+    return HttpResponse(
+        '<!DOCTYPE html><html lang="es"><head><meta charset="utf-8">'
+        '<meta name="viewport" content="width=device-width, initial-scale=1">'
+        '<title>Tus datos para la boleta</title></head>'
+        '<body style="font-family:Arial,sans-serif;background:#F7F2EC;color:#231F1B;margin:0;padding:40px 16px;">'
+        '<div style="max-width:480px;margin:0 auto;background:#FFFDF9;border:1px solid #E8DCCB;'
+        'border-radius:12px;padding:32px;">'
+        '<h1 style="font-weight:normal;margin:0 0 6px;font-size:26px;">Tus datos para la boleta</h1>'
+        '<p style="color:#6B5B4E;margin:0 0 20px;font-size:14px;">Te enviaremos la boleta a tu correo. '
+        'Preséntala en la peluquería para retirar tu producto.</p>'
+        + aviso +
+        '<table style="width:100%;border-collapse:collapse;font-size:14px;margin-bottom:8px;">'
+        '<tr style="border-bottom:1px solid #E8DCCB;"><th style="text-align:left;padding:6px 0;">Producto</th>'
+        '<th>Cant.</th><th style="text-align:right">Subtotal</th></tr>' + filas +
+        '<tr><td colspan="3" style="text-align:right;padding-top:10px;color:#C4867A;font-weight:bold;">'
+        'Total: ' + _fmt(total) + '</td></tr></table>'
+        '<form method="get" action="">'
+        '<input type="hidden" name="items" value="' + escape(items_txt) + '">'
+        '<input type="hidden" name="confirmar" value="1">'
+        + campo.format(lbl='NOMBRE Y APELLIDO', name='nombre', tipo='text', val=escape(nombre), extra='maxlength="80"')
+        + campo.format(lbl='TELÉFONO', name='telefono', tipo='tel', val=escape(telefono),
+                       extra='placeholder="+56 9 1234 5678" maxlength="20"')
+        + campo.format(lbl='CORREO ELECTRÓNICO', name='email', tipo='email', val=escape(email), extra='maxlength="120"') +
+        '<button type="submit" style="width:100%;margin-top:24px;padding:14px;background:#231F1B;color:#F7F2EC;'
+        'border:none;border-radius:6px;font-size:14px;letter-spacing:1px;cursor:pointer;">CONTINUAR AL PAGO</button>'
+        '</form>'
+        '<p style="text-align:center;margin-top:18px;"><a href="' + TIENDA_URL + '" '
+        'style="color:#6B5B4E;font-size:13px;">Volver a la tienda</a></p>'
+        '</div></body></html>'
+    )
+
+
+def carrito_pagar(request):
+    items_txt = request.GET.get('items', '')
+    try:
+        items = _leer_items(items_txt)
     except ValueError:
         return _pagina('Carrito no válido', 'No pudimos leer tu carrito. Vuelve a la tienda e inténtalo de nuevo.')
 
     # Los precios se leen de la base de datos, nunca del navegador.
     total = 0
+    resumen = []
     for tipo, num, cant in items:
         if tipo == 'a':
             if num not in ABONOS_VALIDOS or cant != 1:
                 return _pagina('Abono no válido', 'Los abonos disponibles son de $5.000 y $10.000.')
             total += num
+            resumen.append(('Abono a cita', 1, num))
         else:
             p = Producto.objects.filter(pk=num, activo=True).first()
             if p is None:
@@ -156,27 +273,44 @@ def carrito_pagar(request):
                 return _pagina('Stock insuficiente',
                                'Solo quedan ' + str(stock) + ' unidades de ' + escape(p.nombre) + '.')
             total += int(p.precio) * cant
+            resumen.append((p.nombre, cant, int(p.precio) * cant))
 
     # El carrito viaja en session_id (máx. 61 caracteres) y Webpay lo devuelve al confirmar.
     session_id = ','.join(t + str(n) + 'x' + str(c) for t, n, c in items)
     if len(session_id) > 61:
         return _pagina('Carrito muy grande', 'Reduce la cantidad de productos distintos e inténtalo de nuevo.')
 
+    # Paso 1: pedir nombre, teléfono y correo (con o sin sesión).          # ← NUEVO
+    if request.GET.get('confirmar') != '1':
+        nombre, telefono, email = _datos_guardados(request)
+        return _formulario_datos(items_txt, resumen, total, nombre, telefono, email)
+
+    # Paso 2: revisar los datos que escribió.                              # ← NUEVO
+    nombre = request.GET.get('nombre', '').strip()
+    telefono = request.GET.get('telefono', '').strip()
+    email = request.GET.get('email', '').strip()
+
+    error = ''
+    if len(nombre) < 2:
+        error = 'Escribe tu nombre y apellido.'
+    elif not (8 <= len(re.sub(r'\D', '', telefono)) <= 12):
+        error = 'Escribe un teléfono válido, por ejemplo +56 9 1234 5678.'
+    else:
+        try:
+            validate_email(email)
+        except ValidationError:
+            error = 'Escribe un correo válido, por ejemplo nombre@gmail.com.'
+    if error:
+        return _formulario_datos(items_txt, resumen, total, nombre, telefono, email, error)
+
     orden = 'C' + str(int(time.time())) + str(random.randint(100, 999))
 
-    # Guardar quién compra, para enviarle la boleta al volver de Webpay          # ← NUEVO
-    print('Compra iniciada por:', request.user)                                   # ← NUEVO
-    if request.user.is_authenticated:                                             # ← NUEVO
-        email_clienta = request.user.email                                        # ← NUEVO
-        nombre_clienta = request.user.get_full_name() or request.user.username    # ← NUEVO
-    else:                                                                         # ← NUEVO
-        email_clienta = request.GET.get('email', '')                              # ← NUEVO
-        nombre_clienta = request.GET.get('nombre', '') or 'Clienta'               # ← NUEVO
-    if email_clienta:                                                             # ← NUEVO
-        cache.set('compra_' + orden, {                                            # ← NUEVO
-            'email': email_clienta,                                               # ← NUEVO
-            'nombre': nombre_clienta,                                             # ← NUEVO
-        }, 60 * 60)                                                               # ← NUEVO
+    # Guardar quién compra, para enviarle la boleta al volver de Webpay.
+    cache.set('compra_' + orden, {
+        'email': email,
+        'nombre': nombre,
+        'telefono': telefono,
+    }, 60 * 60)
 
     retorno = request.build_absolute_uri(reverse('webpay_carrito_retorno'))
     r = _tx().create(orden, session_id, total, retorno)
@@ -186,8 +320,6 @@ def carrito_pagar(request):
         '<input type="hidden" name="token_ws" value="' + r['token'] + '"></form>'
         '<script>document.getElementById("f").submit();</script>'
     )
-
-
 
 
 def _enviar_boleta_compra(request, r, items):
@@ -227,9 +359,16 @@ def _enviar_boleta_compra(request, r, items):
             cliente_nombre=nombre,
             cliente_email=email,
             items=lineas,
+            cliente_telefono=datos.get('telefono', ''),   # NUEVO
         )
     except Exception as e:
         print('Error enviando boleta:', e)
+
+
+def _volver(orden, defecto):
+    """A dónde vuelve la clienta: a Mi cuenta si compró desde ahí, si no a la tienda."""
+    datos = cache.get('compra_' + str(orden or '')) or {}
+    return datos.get('volver') or defecto
 
 
 @csrf_exempt
@@ -237,7 +376,8 @@ def webpay_carrito_retorno(request):
     datos = request.POST or request.GET
     token = datos.get('token_ws')
     if not token:
-        return _pagina('Pago cancelado', 'No se realizó ningún cobro.')
+        return _pagina('Pago cancelado', 'No se realizó ningún cobro.',
+                       _volver(datos.get('TBK_ORDEN_COMPRA'), TIENDA_URL))
 
     try:
         r = _tx().commit(token)
@@ -261,9 +401,14 @@ def webpay_carrito_retorno(request):
         if abonos:
             _registrar_abono(abonos, r['buy_order'])
 
+        _registrar_venta(request, r, items)         # NUEVO: guarda la venta
         _enviar_boleta_compra(request, r, items)   # ← envía la boleta
 
         monto = '{:,}'.format(int(r['amount'])).replace(',', '.')
-        return _pagina('¡Pago aprobado!', 'Monto pagado: $' + monto + '. Gracias por tu compra.', TIENDA_OK_URL)
+        return _pagina('¡Pago aprobado!',
+                       'Monto pagado: $' + monto + '. Gracias por tu compra. '
+                       'Te enviamos la boleta a tu correo: preséntala en la peluquería para retirar tu producto.',
+                       _volver(r['buy_order'], TIENDA_OK_URL))
 
-    return _pagina('Pago rechazado', 'No se realizó ningún cobro. Puedes intentarlo de nuevo.')
+    return _pagina('Pago rechazado', 'No se realizó ningún cobro. Puedes intentarlo de nuevo.',
+                   _volver(r.get('buy_order'), TIENDA_URL))
