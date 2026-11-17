@@ -10,14 +10,14 @@ Plataforma web de gestión, ventas y atención de clientes para la peluquería N
 
 **Para las clientas:** pueden crear una cuenta, iniciar sesión, ver los servicios de la peluquería, revisar su perfil y conocer los beneficios por ser clientes frecuentes. También agendan sus horas por sí mismas y, para confirmar una cita, deben pagar un abono por el servicio, que se cobra de inmediato mediante WebPay. Al pagar, reciben una boleta de simulación por correo.
 
-**Para las colaboradoras:** las peluqueras y podólogas del equipo tienen su propio usuario y clave. Al entrar ven su agenda con las citas asignadas, los días que tienen agendados, su historial de atenciones y sus horarios: hora de entrada, días que trabajan y días libres.
+**Para las colaboradoras:** las estilistas, manicuristas y podóloga del equipo tienen su propio usuario y clave. Al entrar ven su agenda con las citas asignadas, los días que tienen agendados, su historial de atenciones y sus horarios: hora de entrada, días que trabajan y días libres.
 
 **Avisos:** cada vez que una cliente agenda o cancela, se notifica por correo a la dueña y en el panel administrativo.
 
 **A quién va dirigido:**
 
 - La dueña de la peluquería, que administra el negocio.
-- Las colaboradoras del local (peluqueras y podólogas), que atienden a las clientas y revisan su agenda en su propio panel.
+- Las colaboradoras del local (estilistas, manicuristas y podóloga), que atienden a las clientas y revisan su agenda en su propio panel.
 - Las clientas, que consultan servicios y reservan sus horas.
 
 **Qué problema resuelve:** la dueña no tenía página web y llevaba toda su agenda en un cuaderno o en una planilla de Excel. Esto provocaba que las horas se duplicaran o se perdieran, y que las clientas tuvieran que buscarla por WhatsApp para agendar. Tampoco quedaba registro de qué servicio se realizó, cuánto se cobró ni qué profesional atendió, lo que generaba pérdida de clientela. Además, no existía ningún mecanismo de pago previo, por lo que una cliente podía reservar y no asistir. La plataforma ordena la agenda, asegura cada reserva con un abono, deja un registro de cada atención y de cada cliente, y le da a la dueña un canal propio para ofrecer sus servicios y vender sus productos.
@@ -344,7 +344,7 @@ La cita guarda la profesional elegida en el campo `profesional` del modelo `Cita
 
 ## Panel de colaboradoras
 
-Las colaboradoras de la peluquería (peluqueras y podólogas) entran con su propio usuario y clave a un panel pensado para ellas.
+Las colaboradoras de la peluquería (estilistas, manicuristas y podóloga) entran con su propio usuario y clave a un panel pensado para ellas.
 
 | Sección | Qué muestra |
 |---|---|
