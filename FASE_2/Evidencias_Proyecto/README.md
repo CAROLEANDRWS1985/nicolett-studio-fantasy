@@ -10,12 +10,14 @@ Plataforma web de gestión, ventas y atención de clientes para la peluquería N
 
 **Para las clientas:** pueden crear una cuenta, iniciar sesión, ver los servicios de la peluquería, revisar su perfil y conocer los beneficios por ser clientes frecuentes. También agendan sus horas por sí mismas y, para confirmar una cita, deben pagar un abono por el servicio, que se cobra de inmediato mediante WebPay. Al pagar, reciben una boleta de simulación por correo.
 
+**Para las colaboradoras:** las estilistas, manicuristas y podóloga del equipo tienen su propio usuario y clave. Al entrar ven su agenda con las citas asignadas, los días que tienen agendados, su historial de atenciones y sus horarios: hora de entrada, días que trabajan y días libres.
+
 **Avisos:** cada vez que una cliente agenda o cancela, se notifica por correo a la dueña y en el panel administrativo.
 
 **A quién va dirigido:**
 
 - La dueña de la peluquería, que administra el negocio.
-- Los trabajadores del local, que atienden a las clientas.
+- Las colaboradoras del local (estilistas, manicuristas y podóloga), que atienden a las clientas y revisan su agenda en su propio panel.
 - Las clientas, que consultan servicios y reservan sus horas.
 
 **Qué problema resuelve:** la dueña no tenía página web y llevaba toda su agenda en un cuaderno o en una planilla de Excel. Esto provocaba que las horas se duplicaran o se perdieran, y que las clientas tuvieran que buscarla por WhatsApp para agendar. Tampoco quedaba registro de qué servicio se realizó, cuánto se cobró ni qué profesional atendió, lo que generaba pérdida de clientela. Además, no existía ningún mecanismo de pago previo, por lo que una cliente podía reservar y no asistir. La plataforma ordena la agenda, asegura cada reserva con un abono, deja un registro de cada atención y de cada cliente, y le da a la dueña un canal propio para ofrecer sus servicios y vender sus productos.
@@ -37,6 +39,9 @@ Plataforma web de gestión, ventas y atención de clientes para la peluquería N
 - Formulario de contacto con el WhatsApp de la clienta, y correo a la dueña con un botón para responderle por WhatsApp.
 - Al cerrar sesión, tanto la clienta como la dueña vuelven a la página principal de la peluquería.
 - Gestión de proveedores y de compras a proveedores desde el panel administrativo.
+- Elección de la profesional al agendar: la clienta elige qué profesional del equipo la atiende.
+- Panel de colaboradoras, con usuario y clave, para ver su agenda, sus citas, su historial y sus horarios y días libres.
+- Historial de ventas de la tienda en el panel administrativo, útil para controlar el inventario y planificar las compras a proveedores.
 
 ## Tecnologías utilizadas
 
@@ -331,7 +336,57 @@ No se puede eliminar un proveedor que tiene compras registradas; el panel muestr
 
 Ambas secciones usan el sistema genérico del panel (`ventas/views_crud.py`, plantillas `crud_lista.html` y `crud_form.html`). La migración es `ventas/migrations/0010_proveedor_compraproveedor.py`.
 
+## Elección de profesional al agendar
+
+Al agendar una cita, la clienta elige qué profesional la atenderá. El formulario tiene el campo **Profesional**, junto al nombre y el servicio, con todas las profesionales del equipo. El resto del formulario no cambia.
+
+La cita guarda la profesional elegida en el campo `profesional` del modelo `Cita`, por lo que cada colaboradora ve en su panel solo las citas que le corresponden.
+
+## Panel de colaboradoras
+
+Las colaboradoras de la peluquería (estilistas, manicuristas y podóloga) entran con su propio usuario y clave a un panel pensado para ellas.
+
+| Sección | Qué muestra |
+|---|---|
+| Agenda | Calendario con sus citas y los días que tiene agendados. |
+| Citas | Detalle de cada cita asignada: clienta, servicio, fecha y hora. |
+| Historial | Las atenciones que ya realizó. |
+| Horarios | Hora de entrada, días que trabaja y días libres. |
+
+Un middleware (`ventas/middleware_colaboradoras.py`) controla que cada colaboradora solo entre a su panel y no al panel administrativo de la dueña. Los días libres se guardan en el modelo `DiaLibreColaboradora`.
+
+**Archivos nuevos:**
+
+| Archivo | Función |
+|---|---|
+| `ventas/views_colaboradora.py` | Lógica del panel de colaboradoras. |
+| `ventas/middleware_colaboradoras.py` | Restringe el acceso de las colaboradoras a su propio panel. |
+| `ventas/templates/ventas/colaboradora_agenda.html` | Agenda y citas de la colaboradora. |
+| `ventas/templates/ventas/colaboradora_horarios.html` | Horarios, días de trabajo y días libres. |
+| `ventas/migrations/0011_cita_profesional_dialibrecolaboradora_and_more.py` | Agrega la profesional a la cita y el modelo de días libres. |
+
+## Historial de ventas de la tienda
+
+Antes, cada venta de la tienda solo descontaba el stock y enviaba la boleta. Ahora además queda registrada en el **historial de ventas** del panel administrativo.
+
+| Modelo | Qué guarda |
+|---|---|
+| `Venta` | Cada venta: fecha, clienta y total. |
+| `DetalleVenta` | Cada producto de la venta: producto, cantidad y precio. |
+
+Con este historial la dueña sabe qué productos se venden más, controla el inventario y decide qué comprar a sus proveedores.
+
+**Archivos nuevos:** `ventas/templates/ventas/ventas_lista.html` (lista de ventas en el panel) y la migración `ventas/migrations/0012_venta_detalleventa.py`.
+
 ## Registro de cambios
+
+### 17 de noviembre de 2026
+
+- Al agendar, la clienta elige qué profesional del equipo la atiende.
+- Nuevo panel de colaboradoras con usuario y clave: agenda, citas, historial, horarios y días libres.
+- Middleware que limita a las colaboradoras a su propio panel.
+- Historial de ventas de la tienda en el panel administrativo, con los modelos `Venta` y `DetalleVenta`.
+- Nuevas migraciones `0011` y `0012`.
 
 ### 21 de octubre de 2026
 
@@ -367,7 +422,7 @@ El proyecto se desarrolla con Scrum. Se trabaja con un Product Backlog priorizad
 
 La aplicación sigue la arquitectura MTV (Modelo – Plantilla – Vista) de Django, con una base de datos SQLite:
 
-- **Modelos:** guardan clientas, servicios, citas y el registro de cada atención (servicio realizado, monto cobrado, profesional y si la clienta vino sola o con un hijo).
+- **Modelos:** guardan clientas, servicios, citas (con la profesional asignada), el registro de cada atención (servicio realizado, monto cobrado, profesional y si la clienta vino sola o con un hijo), los días libres de las colaboradoras y las ventas de la tienda con su detalle.
 - **Vistas:** contienen la lógica de inicio de sesión, agendamiento y cancelación de citas, pago del abono con WebPay, boletas y notificaciones.
 - **Plantillas:** generan la interfaz que ven las clientes y la administración.
 - **Despliegue:** contenedor Docker con Django y SQLite, orquestado con Docker Compose. La base de datos y las boletas se conservan mediante volúmenes.
@@ -377,14 +432,14 @@ La aplicación sigue la arquitectura MTV (Modelo – Plantilla – Vista) de Dja
 ```mermaid
 flowchart TB
     subgraph FRONTEND["Frontend · contenedor nicolett-frontend · puerto 9020"]
-        NAV["Navegador web<br/>(clienta, profesional y administrador)"]
+        NAV["Navegador web<br/>(clienta, colaboradora y administrador)"]
         PAG["Página de la peluquería<br/>inicio, servicios, productos,<br/>Rincón Kids, carrito y<br/>contacto con WhatsApp"]
     end
 
     subgraph BACKEND["Backend · contenedor nicolett · puerto 8000"]
         SW["Servidor web"]
         API["Controlador API"]
-        APP["Servidor de aplicación<br/>agendamiento, agenda, alertas, roles,<br/>fidelización, inventario, tienda,<br/>boletas PDF, proveedores y compras"]
+        APP["Servidor de aplicación<br/>agendamiento con profesional, agenda, alertas, roles,<br/>panel de colaboradoras, fidelización, inventario, tienda,<br/>historial de ventas, boletas PDF, proveedores y compras"]
     end
 
     subgraph BD["Base de datos"]
